@@ -63,4 +63,5 @@ ORCH_FOLDER_ID = _s("ORCH_FOLDER_ID")
 ORCH_RELEASE_KEY = _s("ORCH_RELEASE_KEY")
 ORCH_START_STRATEGY = _s("ORCH_START_STRATEGY", "ModernJobsCount")
 ORCH_TIMEOUT_MIN = int(_n("ORCH_TIMEOUT_MIN", 30))
-PUBLIC_BASE_URL = _s("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")   # Job 에 넘기는 음성·결과 주소의 서버 주소
+# 봇 PC에서 접속되는 서버 주소. 기본값을 두지 않는다: 비어 있으면 Job 시작이 502로 바로 실패해 설정 누락을 알 수 있다
+PUBLIC_BASE_URL = _s("PUBLIC_BASE_URL").rstrip("/")
