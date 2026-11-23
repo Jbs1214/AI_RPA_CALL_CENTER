@@ -46,7 +46,8 @@ def interpret(message: str, today: date, history=()) -> Optional[dict]:
     req = urllib.request.Request(
         config.CHAT_AI_BASE_URL + "/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": "Bearer " + config.CHAT_AI_API_KEY},
+        headers={"Content-Type": "application/json", "Authorization": "Bearer " + config.CHAT_AI_API_KEY,
+                 "User-Agent": "callcenter-backend/1.0"},   # 기본값(Python-urllib)은 Groq 앞단에서 403(1010)으로 막힌다
         method="POST",
     )
     try:

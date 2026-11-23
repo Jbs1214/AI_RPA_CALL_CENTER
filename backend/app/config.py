@@ -50,7 +50,7 @@ CORS_ORIGINS = [o.strip() for o in (_s("CORS_ORIGINS") or "*").split(",") if o.s
 CHAT_AI_ENABLED = _b("CHAT_AI_ENABLED", False)
 CHAT_AI_API_KEY = _s("CHAT_AI_API_KEY")
 CHAT_AI_BASE_URL = _s("CHAT_AI_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-CHAT_AI_MODEL = _s("CHAT_AI_MODEL", "llama-3.3-70b-versatile")
+CHAT_AI_MODEL = _s("CHAT_AI_MODEL", "openai/gpt-oss-20b")   # Groq 무료 모델은 바뀔 수 있다(콘솔에서 확인)
 CHAT_AI_TIMEOUT_SEC = _n("CHAT_AI_TIMEOUT_SEC", 8)
 
 ORCH_ENABLED = _b("ORCH_ENABLED", False)
