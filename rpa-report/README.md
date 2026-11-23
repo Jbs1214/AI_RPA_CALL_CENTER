@@ -35,33 +35,80 @@ rpa-report/
     mock_calls_seed14_v1.json     서버 목록 응답 모양의 가짜 데이터 14건
     mock_calls_edge_v1.json       경계 사례 6건
   tools/
+    check_report.ps1              가짜 JSON으로 build_report.ps1을 돌리고 결과 엑셀을 기대값과 비교하는 스크립트
     check_template.py             봇처럼 통화 대장만 다시 쓰고 요약 시트의 값을 확인하는 스크립트
     build_template.py             원본에서 템플릿을 다시 만드는 스크립트
     make_mock.py                  원본의 14건으로 가짜 JSON을 만드는 스크립트
-  config.example.json             설정값 예시
+  build_report.ps1                서버 목록을 받아 통화 대장을 다시 쓰고 엑셀을 저장하는 스크립트
+  config.example.json             설정값 예시. config.json으로 복사해서 쓴다.
 ```
 
-UiPath 프로젝트(`project.json`, `Main.xaml`과 아래 워크플로우)는 이 폴더에 올린다.
+## 구성
 
-| 워크플로우 (제안) | 하는 일 |
+| 부분 | 하는 일 |
 |---|---|
-| `Main.xaml` | 순서대로 아래를 부르고, 예외를 잡아 큐 상태를 정리한다. |
-| `GetQueueSignals.xaml` | 큐의 새 항목을 모두 꺼낸다. |
-| `FetchCalls.xaml` | 서버 목록을 끝까지 받아 표로 돌려준다. 재시도 포함 |
-| `WriteLedger.xaml` | 통화 대장을 다시 쓴다. |
+| `Main.xaml` (UiPath) | 큐의 새 항목을 모두 꺼내고, Asset을 읽어 `build_report.ps1`을 실행한 뒤, 결과에 따라 큐 항목을 성공이나 실패로 표시한다. |
+| `build_report.ps1` | 서버 목록을 끝까지 받아(재시도 포함) 통화일시 순으로 정렬하고, 템플릿 복사본의 통화 대장을 다시 써서 저장한다. |
 
-봇은 통화 대장 시트에만 쓴다. 요약 시트의 담당자·통화일·고객사 목록과 차트는 템플릿의 수식이 통화 대장에서 만든다.
+엑셀을 쓰는 일을 스크립트로 둔 것은 UiPath Studio가 없는 PC에서도 가짜 JSON으로 끝까지 시험할 수 있어서다. 스크립트도 Excel 프로그램으로 템플릿을 열어 쓰므로 차트와 슬라이서가 남는다. Windows PowerShell 5.1과 Excel만 있으면 된다.
+
+스크립트는 통화 대장 시트에만 쓴다. 요약 시트의 담당자·통화일·고객사 목록과 차트는 템플릿의 수식이 통화 대장에서 만든다.
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -BaseUrl http://서버주소:8000 -ApiKey 임시값
+```
+
+- 설정은 스크립트 옆의 `config.json`에서 읽는다(`-ConfigPath`로 바꿀 수 있다). `TemplatePath`와 `OutputPath`가 상대 경로면 설정 파일이 있는 폴더가 기준이다.
+- 종료 코드 0은 저장 성공, 1은 실패다. 실패하면 기존 `콜센터_엑셀_최신.xlsx`는 그대로 둔다.
+- 출력 파일이 열려 있어 못 쓰면 `콜센터_엑셀_최신_날짜시각.xlsx`로 저장하고 경고를 남긴다.
+- 로그에는 건수, 관리번호, 경고만 나온다. 한글이 깨지지 않게 스크립트 본문과 로그 문구는 영문이다.
+
+## Main.xaml 만드는 순서
+
+UiPath 프로젝트(`project.json`, `Main.xaml`)는 이 폴더에 만든다. 아직 없다.
+
+1. 인자 `in_ForceRefresh`(Boolean, 기본값 False)를 만든다.
+2. Get Asset으로 `BACKEND_BASE_URL`, `BACKEND_API_KEY`를 읽는다. `config.json`을 Read Text File로 읽어 `Newtonsoft.Json.Linq.JObject.Parse(내용)("QueueName").ToString`으로 큐 이름을 얻는다.
+3. Get Transaction Item을 결과가 `Nothing`이 될 때까지 되풀이한다. 항목마다 `Reference`와 `SpecificContent("status")`를 로그에 남기고 목록(`List(Of QueueItem)`)에 담는다.
+4. 목록이 비었고 `in_ForceRefresh`가 False면 "할 일 없음"을 로그에 남기고 끝낸다.
+5. Invoke Code(VB)로 스크립트를 실행한다. 인자는 `in_ScriptPath`(In, String), `in_Args`(In, String), `out_ExitCode`(Out, Int32), `out_Output`(Out, String)이고 `in_Args`는 `"-BaseUrl " & 서버주소 & " -ApiKey " & 키`다.
+
+   ```vb
+   Dim psi As New System.Diagnostics.ProcessStartInfo("powershell.exe", "-NoProfile -ExecutionPolicy Bypass -File """ & in_ScriptPath & """ " & in_Args)
+   psi.UseShellExecute = False
+   psi.RedirectStandardOutput = True
+   psi.CreateNoWindow = True
+   Using p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)
+       out_Output = p.StandardOutput.ReadToEnd()
+       p.WaitForExit()
+       out_ExitCode = p.ExitCode
+   End Using
+   ```
+
+6. `out_Output`을 로그에 남긴다. `out_ExitCode`가 0이면 담아 둔 항목을 모두 Set Transaction Status로 Successful, 아니면 모두 Failed(Application)로 표시한다.
+
+5번의 VB 코드는 Studio 밖에서 컴파일해 성공(종료 코드 0)과 실패(1)를 받는 것까지 확인했다. 나머지 단계는 Studio에서 확인해야 한다.
 
 ## 서버 없이 시험하기
 
-`FetchCalls.xaml`이 서버 대신 `testdata/`의 JSON을 읽게 해서 먼저 만든다. 기대값은 아래와 같다.
+`-BaseUrl` 대신 `-MockJson`에 `testdata/`의 JSON을 주면 서버 없이 엑셀을 만든다. 기대값은 아래와 같다.
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -MockJson testdata\mock_calls_seed14_v1.json,testdata\mock_calls_edge_v1.json
+```
 
 | 데이터 | 분석된 통화 | 후속조치 필요 | 검토 필요 | 불만 통화 | 불만 비율 | 가장 많은 유형 | 담당자별·일자별·고객사별 합 |
 |---|---|---|---|---|---|---|---|
 | seed 14건 | 14 | 6 | 2 | 3 | 21% | 질의 | 모두 14 |
 | seed 14건 + 경계 사례 6건 | 20 | 8 | 3 | 4 | 20% | 질의 | 모두 20 |
 
-참고 스크립트로 같은 값을 확인할 수 있다. Python, openpyxl, LibreOffice(수식 재계산용)가 필요하다.
+`tools/check_report.ps1`이 위 두 경우를 돌려 지표, 세 블록의 합, 표 범위, 차트 4개, 슬라이서 2개를 기대값과 비교한다. Excel만 있으면 된다.
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
+```
+
+템플릿만 따로 확인하는 Python 스크립트도 있다. Python, openpyxl, LibreOffice(수식 재계산용)가 필요하다.
 
 ```
 python tools/check_template.py templates/콜센터_엑셀_템플릿_v3.xlsx out testdata/mock_calls_seed14_v1.json testdata/mock_calls_edge_v1.json

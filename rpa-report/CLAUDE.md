@@ -19,6 +19,8 @@
 
 ## 설계 규칙
 
+- 목록 받기와 통화 대장 쓰기는 `build_report.ps1`이 한다. UiPath(`Main.xaml`)는 큐, Asset, 스크립트 실행만 맡는다. 아래 규칙 가운데 서버 호출과 엑셀 쓰기는 이 스크립트에 구현되어 있다.
+- `build_report.ps1`과 `tools/check_report.ps1`은 ASCII로만 쓴다. Windows PowerShell 5.1이 BOM 없는 UTF-8 스크립트의 한글을 잘못 읽는다.
 - 서버에는 읽기만 한다. 호출은 `GET /api/calls?status=DONE&include_transcript=true&size=200` 하나이고, 받은 건수가 응답의 `total`이 될 때까지 `page`를 올린다.
 - 큐 항목의 값은 로그에만 쓴다. 엑셀 값으로 쓰지 않는다. `status`가 `FAILED`인 항목도 들어온다.
 - 큐에 여러 건이 있어도 모두 꺼낸 뒤 엑셀은 한 번만 다시 만든다.
@@ -37,7 +39,7 @@
 ## 시험
 
 - 서버가 없어도 `testdata/`의 가짜 JSON으로 통화 대장 쓰기를 먼저 확인한다. 기대값은 `README.md`에 있다.
-- 템플릿이나 쓰기 규칙을 바꾸면 `tools/check_template.py`로 seed 14건과 경계 사례 6건을 다시 확인한다. 지표 6개와 담당자별·일자별·고객사별 합계가 분석된 통화와 같아야 한다.
+- 템플릿이나 쓰기 규칙(`build_report.ps1`)을 바꾸면 `tools/check_report.ps1`로 seed 14건과 경계 사례 6건을 다시 확인한다. 지표 6개와 담당자별·일자별·고객사별 합계가 분석된 통화와 같아야 한다.
 - 템플릿을 스크립트로 다시 만들었으면 Excel에서 열어 차트 4개가 보이는지 확인한다. 스크립트는 차트가 열리는지까지는 확인하지 못한다.
 - 웹과 숫자가 다르면 서버 통계(`GET /api/stats`)와 먼저 비교한다.
 
