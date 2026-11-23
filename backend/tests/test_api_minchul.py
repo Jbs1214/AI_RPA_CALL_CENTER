@@ -1,3 +1,11 @@
+"""민철 담당 API(1·6) DB 시험. 로컬 DB(.env의 DATABASE_URL)가 없으면 건너뛴다.
+
+주의: tests/smoke_test.py는 pytest 시험이 아니라, 불러오기만 해도 서버에 요청을 보내는 스크립트다.
+그래서 `pytest tests`처럼 폴더째 돌리면 수집 단계에서 오류가 난다. 파일을 지정해서 돌린다.
+    python -X utf8 -m pytest tests/test_logic.py tests/test_api_minchul.py
+smoke 점검은 서버를 띄운 뒤 따로 돌린다.
+    python tests/smoke_test.py http://localhost:8000
+"""
 import hashlib
 import uuid
 
