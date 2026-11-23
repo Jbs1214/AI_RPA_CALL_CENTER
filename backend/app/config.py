@@ -63,4 +63,4 @@ ORCH_FOLDER_ID = _s("ORCH_FOLDER_ID")
 ORCH_RELEASE_KEY = _s("ORCH_RELEASE_KEY")
 ORCH_START_STRATEGY = _s("ORCH_START_STRATEGY", "ModernJobsCount")
 ORCH_TIMEOUT_MIN = int(_n("ORCH_TIMEOUT_MIN", 30))
-PUBLIC_BASE_URL = _s("PUBLIC_BASE_URL").rstrip("/")   # Job 에 넘기는 음성·결과 주소의 서버 주소
+PUBLIC_BASE_URL = _s("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")   # Job 에 넘기는 음성·결과 주소의 서버 주소

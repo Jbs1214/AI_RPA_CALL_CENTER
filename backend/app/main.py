@@ -58,11 +58,17 @@ async def _api_error(_: Request, e: ApiError):
 @app.exception_handler(RequestValidationError)
 async def _validation(_: Request, e: RequestValidationError):
     errs = e.errors()
-    if errs:
-        loc = [str(x) for x in errs[0].get("loc", ()) if x not in ("body", "query", "path")]
-        msg = f"{'.'.join(loc) or '요청'}: 값이 없거나 형식이 올바르지 않습니다({errs[0].get('msg', '')})."
-    else:
+    if not errs:
         msg = "요청 형식이 올바르지 않습니다."
+    else:
+        err = errs[0]
+        loc = ".".join(str(x) for x in err.get("loc", ()) if x not in ("body", "query", "path")) or "요청"
+        if err.get("type") == "missing":
+            msg = f"필수값이 없습니다: {loc}"
+        elif err.get("type") == "value_error" and err.get("ctx", {}).get("error"):
+            msg = str(err["ctx"]["error"])          # 직접 만든 검사 문구는 그대로
+        else:
+            msg = f"{loc}: 값의 형식이 올바르지 않습니다."   # pydantic 영어 문구는 넣지 않는다
     return JSONResponse({"error": "VALIDATION_ERROR", "message": msg}, status_code=422)
 
 

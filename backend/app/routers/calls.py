@@ -25,6 +25,10 @@ router = APIRouter()
 @router.post("/api/calls", status_code=201, tags=["통화"], summary="통화 저장(결과 포함)")
 def create_call(body: CallIn):
     require_tz(body.called_at)
+    # prd.md R1: API 1은 FAILED에 실패 사유가 없으면 422로 돌려보낸다.
+    # API 11(결과 받기)은 봇이 실패 처리되지 않게 기본 사유를 넣는 기존 방식(logic.prepare_analysis)을 그대로 쓴다.
+    if (body.status or "DONE") == "FAILED" and not clean(body.error_message):
+        raise validation_error("FAILED에는 error_message가 필요합니다.")
     agent = clean(body.agent_name)
     filename = clean(body.source_filename)
     if not agent or not filename:
