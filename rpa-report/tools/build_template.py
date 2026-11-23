@@ -122,7 +122,10 @@ for ch in dash._charts:
     elif "$C$34" in first:                    # 고객사별 불만 건수
         ser = ch.series[0]
         ser.tx.strRef.f = "'요약'!C50"; setcat(ser, R[("cp", "A")]); ser.val.numRef.f = R[("cp", "C")]
+        ch.y_axis.majorUnit = 1               # 건수 축에 0.5 눈금이 나오지 않게. 불만이 20건쯤 넘으면 촘촘해진다
         done += 1
 assert done == 3, done
+led = wb["통화 대장"]                          # 머리글이 필터 버튼에 가리지 않게
+led.column_dimensions["I"].width, led.column_dimensions["J"].width = 12, 20
 wb.save(out)
 print("saved", out, "dynamic" if dynamic else "fixed")
