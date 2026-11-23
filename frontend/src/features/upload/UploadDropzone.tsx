@@ -40,7 +40,7 @@ export default function UploadDropzone() {
           setDup(null)
           try {
             await uploadRecording(file as File, {
-              called_at: calledAt ? toKstIso(calledAt.toDate()) : undefined, // +09:00 필수
+              called_at: calledAt ? toKstIso(calledAt.second(0).toDate()) : undefined, // +09:00 필수
               agent_name: agent || undefined,
               customer_company: company || undefined,
             })
@@ -71,7 +71,7 @@ export default function UploadDropzone() {
             label: '통화일시·담당자·고객사 직접 입력 (비우면 파일명에서 읽음)',
             children: (
               <Space wrap>
-                <DatePicker showTime placeholder="통화일시" value={calledAt} onChange={setCalledAt} />
+                <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" placeholder="통화일시" value={calledAt} onChange={setCalledAt} />
                 <Input placeholder="담당자" style={{ width: 130 }} value={agent} onChange={(e) => setAgent(e.target.value)} />
                 <Input placeholder="고객사" style={{ width: 150 }} value={company} onChange={(e) => setCompany(e.target.value)} />
               </Space>
