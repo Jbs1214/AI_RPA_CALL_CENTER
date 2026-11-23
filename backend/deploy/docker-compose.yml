@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: callcenter
+      POSTGRES_USER: callcenter
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+      PGTZ: Asia/Seoul
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ../schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro   # 처음 한 번만 실행된다
+      - ../seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U callcenter -d callcenter"]
+      interval: 5s
+      retries: 10
+    # ports 를 열지 않는다. API 컨테이너만 접속한다.
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://callcenter:${DB_PASSWORD}@db:5432/callcenter
+      STORAGE_DIR: /data/recordings
+      TZ: Asia/Seoul
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${RECORDINGS_HOST_DIR:-./recordings}:/data/recordings
+      - ./logs:/app/logs          # access.log, error.log
+
+volumes:
+  dbdata:
