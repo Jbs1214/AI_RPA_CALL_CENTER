@@ -1,6 +1,6 @@
 {
   "QueueName": "CallCenter_Calls",
-  "TemplatePath": "templates/콜센터_엑셀_최종본_MVP.xlsx",
+  "TemplatePath": "templates/콜센터_엑셀_템플릿_v3.xlsx",
   "OutputPath": "C:/path/to/output/콜센터_엑셀_최신.xlsx",
   "PageSize": 200,
   "MaxRows": 999,
