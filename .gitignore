@@ -1,0 +1,63 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# audio (never commit recordings)
+*.wav
+*.mp3
+*.m4a
+recordings/
+storage/
+
+# bot outputs
+output/
+done/
+failed/
+unsent/
+logs/
+*.log
+
+# generated excel and local config (templates stay under rpa-report/templates/)
+rpa-report/config.json
+콜센터_엑셀_최신*.xlsx
+콜센터_통화목록_*.xlsx
+~$*.xlsx
+~$*.docx
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# node
+node_modules/
+dist/
+.vite/
+
+# uipath
+.local/
+.objects/
+.tmh/
+.screenshots/
+.entities/
+*.nupkg
+
+# db
+*.dump
+backup/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# claude code local settings
+.claude/settings.local.json
+CLAUDE.local.md
