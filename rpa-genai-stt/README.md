@@ -13,7 +13,7 @@
 
 ## 이 폴더에 둘 것
 
-이 폴더는 지금 비어 있다. 담당자가 UiPath 프로젝트(`project.json`, `Main.xaml`과 하위 워크플로우)와 프롬프트 세트를 올린다.
+담당자가 UiPath 프로젝트(`project.json`, `Main.xaml`과 하위 워크플로우)를 이 폴더에 올린다. 프롬프트 세트를 둘 `prompts/` 폴더를 만들어 두었다(제안. 다른 구조가 편하면 바꾼다).
 
 `Main.xaml`의 In 인자는 `in_call_id`, `in_audio_url`, `in_result_url`이다. 서버가 Job을 시작할 때 이 이름으로 값을 넣는다.
 
