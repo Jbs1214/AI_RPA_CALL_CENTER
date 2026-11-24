@@ -1,4 +1,4 @@
-import { Button, DatePicker, Input, Select, Space } from 'antd'
+import { Button, DatePicker, Input, Select } from 'antd'
 import dayjs from 'dayjs'
 import { CATEGORIES, type CallFilters as Filters, type Status } from '../../types/Call'
 import { STATUS_LABEL } from '../../lib/statusLabel'
@@ -23,7 +23,7 @@ export default function CallFilters({ filters, onChange }: Props) {
   const set = (patch: Partial<Filters>) => onChange({ ...filters, ...patch, page: 1 }) // 조건이 바뀌면 1쪽으로
 
   return (
-    <Space wrap size={[8, 8]} style={{ marginBottom: 12 }}>
+    <div className="toolbar">
       <Input.Search
         allowClear
         placeholder="담당자·고객사·요지·조치 검색"
@@ -87,6 +87,6 @@ export default function CallFilters({ filters, onChange }: Props) {
       <Button onClick={() => onChange({ page: 1, size: filters.size })}>초기화</Button>
       {/* 엑셀 다운로드(API 7): 목록과 같은 조건, 완료(DONE) 통화만 12열로 받는다 */}
       <Button href={exportUrl(filters)} target="_blank">엑셀 다운로드</Button>
-    </Space>
+    </div>
   )
 }

@@ -47,7 +47,7 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       render: (v: string | null, row) => {
         if (row.status === 'FAILED') {
           const e = parseErrorMessage(row.error_message)
-          return <span style={{ color: '#a32d2d' }}>{e ? `${e.label}${e.detail ? `: ${e.detail}` : ''}` : '실패'}</span>
+          return <span className="text-danger">{e ? `${e.label}${e.detail ? `: ${e.detail}` : ''}` : '실패'}</span>
         }
         return v ?? '—'
       },
@@ -56,7 +56,7 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       title: '후속조치',
       dataIndex: 'follow_up_needed',
       width: 80,
-      render: (v: boolean | null) => (v === null ? '—' : v ? <span style={{ color: '#a32d2d' }}>Y</span> : 'N'),
+      render: (v: boolean | null) => (v === null ? '—' : v ? <span className="text-danger">Y</span> : 'N'),
     },
     { title: '검토', dataIndex: 'needs_review', width: 70, render: (v: boolean | null) => (v ? <Tag color="gold">검토</Tag> : null) },
     {
@@ -104,11 +104,13 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       rowKey="call_id"
       loading={isLoading}
       columns={columns}
+      scroll={{ x: 900 }} // 좁은 화면에서는 표만 가로로 밀어 본다
       dataSource={data?.items ?? []}
       locale={{ emptyText: '조건에 맞는 통화가 없습니다' }}
       onRow={(r) => ({ onClick: () => onOpen(r.call_id), style: { cursor: 'pointer' } })}
       rowClassName={(r) => (r.status === 'FAILED' ? 'row-failed' : r.needs_review ? 'row-review' : '')}
       pagination={{
+        position: ['bottomCenter'],
         current: data?.page ?? filters.page ?? 1,
         pageSize: data?.size ?? filters.size ?? 20,
         total: data?.total ?? 0,

@@ -134,7 +134,7 @@ export default function CallDrawer({ callId, onClose }: Props) {
   const err = call ? parseErrorMessage(call.error_message) : null
 
   return (
-    <Drawer open={callId !== null} onClose={onClose} width={480} title={callId ?? ''} destroyOnClose>
+    <Drawer open={callId !== null} onClose={onClose} width="min(480px, 100vw)" title={callId ?? ''} destroyOnClose>
       {isLoading && <Spin />}
       {error && <Alert type="error" showIcon message={error.message} />}
       {call && (
@@ -144,7 +144,7 @@ export default function CallDrawer({ callId, onClose }: Props) {
             <Descriptions.Item label="담당자">{call.agent_name}</Descriptions.Item>
             <Descriptions.Item label="상태">
               <Tag color={STATUS_COLOR[call.status]}>{STATUS_LABEL[call.status]}</Tag>
-              {call.retry_count > 0 && <span style={{ color: '#888' }}>재처리 {call.retry_count}회</span>}
+              {call.retry_count > 0 && <span className="text-muted">재처리 {call.retry_count}회</span>}
               <span style={{ marginLeft: 8 }}>
                 <ProcessButton call={call} showWhenDisabled />
               </span>

@@ -1,9 +1,7 @@
-import { Card, Col, Row, Empty } from 'antd'
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   ComposedChart,
   LabelList,
   Legend,
@@ -13,31 +11,30 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import ChartCard from '../../components/ChartCard'
 import { CATEGORIES } from '../../types/Call'
 import { CATEGORY_COLOR } from '../../lib/categoryColor'
+import CategoryDonut from './CategoryDonut'
+import { ChartTooltip, GradientDefs } from './chartParts'
 import { useStats, type DateRange } from './useStats'
 
-const H = 300
-const FONT = 12
+const FONT = 11 // 차트가 작아서 글자도 조금 작게
+const TOP_RADIUS: [number, number, number, number] = [6, 6, 0, 0] // 막대 위쪽 모서리를 둥글게
+const AGENT_COLORS = ['#4f8fd9', '#e9a23b']
+/** 막대 위로 올렸을 때 보이는 배경 강조(둥근 모서리) */
+const TOOLTIP_CURSOR = { fill: 'rgba(128, 128, 128, 0.1)', radius: 6 }
+const LIGHT_GRID ={ strokeDasharray: '2 4', vertical: false } as const
 
 /** 0은 숫자를 적지 않는다 */
 const showValue = (v: unknown) => (Number(v) > 0 ? String(v) : '')
 
-function Box({ title, hint, empty, children }: { title: string; hint?: string; empty: boolean; children: React.ReactNode }) {
-  return (
-    <Card size="small" title={title} extra={hint ? <span style={{ color: '#888', fontSize: 12 }}>{hint}</span> : null}>
-      {empty ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="데이터 없음" style={{ height: H }} /> : <div style={{ height: H }}>{children}</div>}
-    </Card>
-  )
-}
-
 /** 유형 범례: 쌓인 순서(아래→위)와 같은 순서로 보여 준다 */
 function CategoryLegend() {
   return (
-    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', fontSize: FONT, marginTop: 4 }}>
+    <div className="chart-card__legend">
       {CATEGORIES.map((c) => (
         <span key={c}>
-          <span style={{ display: 'inline-block', width: 10, height: 10, background: CATEGORY_COLOR[c], marginRight: 4 }} />
+          <span className="chart-card__legend-dot" style={{ background: CATEGORY_COLOR[c] }} />
           {c}
         </span>
       ))}
@@ -45,25 +42,21 @@ function CategoryLegend() {
   )
 }
 
-interface DayTooltipProps {
-  active?: boolean
-  label?: unknown
-  payload?: readonly { payload?: Record<string, number | string> }[]
-}
-
-/** 날짜 위에 올리면 유형별 건수와 합계를 보여 준다 */
-function DayTooltip({ active, label, payload }: DayTooltipProps) {
+/** 일자별 차트의 말풍선: 유형별 건수 + 합계 */
+function DayTooltip({ active, label, payload }: { active?: boolean; label?: unknown; payload?: readonly { payload?: Record<string, number | string> }[] }) {
   const row = payload?.[0]?.payload
   if (!active || !row) return null
   return (
-    <div style={{ background: '#fff', border: '1px solid #ddd', padding: '8px 10px', fontSize: FONT }}>
-      <div style={{ fontWeight: 600, marginBottom: 4 }}>{String(label)}</div>
+    <div className="chart-tooltip">
+      <div className="chart-tooltip__title">{String(label)}</div>
       {CATEGORIES.map((c) => (
-        <div key={c} style={{ color: CATEGORY_COLOR[c] }}>
-          {c}: {row[c]}건
+        <div key={c} className="chart-tooltip__row">
+          <span className="chart-tooltip__dot" style={{ background: CATEGORY_COLOR[c] }} />
+          <span className="chart-tooltip__name">{c}</span>
+          <b className="chart-tooltip__value">{row[c]}건</b>
         </div>
       ))}
-      <div style={{ marginTop: 4, borderTop: '1px solid #eee', paddingTop: 4 }}>합계: {row.total}건</div>
+      <div className="chart-tooltip__total">합계 {row.total}건</div>
     </div>
   )
 }
@@ -81,86 +74,87 @@ export default function Charts({ range }: { range: DateRange }) {
   }))
   // 서버가 엑셀과 같은 순서(불만 건수 내림차순, 동률 규칙 포함)로 준다. 다시 정렬하지 않고 상위 10곳만 쓴다.
   const byCompany = data.by_company.slice(0, 10)
-  const room = (max: number) => max + 1 // 막대 위 숫자가 잘리지 않게 위쪽 여유
+  const room = (max: number) => Math.ceil(max * 1.25) || 1 // 막대 위 숫자가 잘리지 않게 위쪽 여유
 
   return (
-    <Row gutter={[12, 12]}>
-      <Col xs={24} xl={12}>
-        <Box title="유형별 건수" hint="분석된 통화를 유형별로" empty={data.analyzed === 0}>
-          <ResponsiveContainer>
-            <BarChart data={byCategory} margin={{ top: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="category" fontSize={FONT} />
-              <YAxis allowDecimals={false} fontSize={FONT} domain={[0, room]} />
-              <Tooltip />
-              <Bar dataKey="count" name="건수">
-                {byCategory.map((c) => (
-                  <Cell key={c.category} fill={CATEGORY_COLOR[c.category]} />
-                ))}
-                <LabelList dataKey="count" position="top" fontSize={FONT} formatter={showValue} />
+    <div className="chart-grid">
+      {/* 1) 유형별 건수: 전체 중 몫이라 도넛으로 */}
+      <ChartCard title="유형별 건수" hint="분석된 통화 기준" empty={data.analyzed === 0}>
+        <CategoryDonut data={byCategory} total={data.analyzed} />
+      </ChartCard>
+
+      {/* 2) 일자별 유형 추이: 쌓은 막대, 조각 사이에 얇은 틈 */}
+      <ChartCard title="일자별 유형 추이" hint="색 = 유형, 위 숫자 = 합계" empty={byDay.length === 0} footer={<CategoryLegend />}>
+        <ResponsiveContainer>
+          <ComposedChart data={byDay} margin={{ top: 18, right: 4, left: 4 }} barCategoryGap="28%">
+            <GradientDefs prefix="day" colors={CATEGORIES.map((c) => CATEGORY_COLOR[c])} />
+            <CartesianGrid {...LIGHT_GRID} />
+            <XAxis dataKey="date" fontSize={FONT} tickLine={false} />
+            <YAxis hide domain={[0, room]} />
+            <Tooltip cursor={TOOLTIP_CURSOR} content={DayTooltip} />
+            {CATEGORIES.map((c, i) => (
+              <Bar
+                key={c}
+                dataKey={c}
+                stackId="day"
+                fill={`url(#day-${i})`}
+                stroke="var(--glass-bg)"
+                strokeWidth={1.5}
+                radius={i === CATEGORIES.length - 1 ? TOP_RADIUS : 0}
+                maxBarSize={34}
+              >
+                <LabelList dataKey={c} position="center" fill="#fff" fontSize={10} formatter={showValue} />
               </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Col>
-      <Col xs={24} xl={12}>
-        <Box title="일자별 유형 추이" hint="막대 하나 = 하루. 색 = 유형, 위의 숫자 = 그날 합계" empty={byDay.length === 0}>
-          <div style={{ height: H - 24 }}>
-            <ResponsiveContainer>
-              <ComposedChart data={byDay} margin={{ top: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="date" fontSize={FONT} />
-                <YAxis allowDecimals={false} fontSize={FONT} domain={[0, room]} />
-                <Tooltip content={DayTooltip} />
-                {CATEGORIES.map((c) => (
-                  <Bar key={c} dataKey={c} stackId="day" fill={CATEGORY_COLOR[c]}>
-                    <LabelList dataKey={c} position="center" fill="#fff" fontSize={FONT} formatter={showValue} />
-                  </Bar>
-                ))}
-                {/* 합계를 막대 위에 적기 위한 보이지 않는 선 */}
-                <Line dataKey="total" stroke="none" dot={false} activeDot={false} legendType="none" isAnimationActive={false}>
-                  <LabelList dataKey="total" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
-                </Line>
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-          <CategoryLegend />
-        </Box>
-      </Col>
-      <Col xs={24} xl={12}>
-        <Box title="담당자별 통화·후속조치" hint="파랑 = 통화 건수, 주황 = 후속조치 필요" empty={data.by_agent.length === 0}>
-          <ResponsiveContainer>
-            <BarChart data={data.by_agent} margin={{ top: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="agent_name" fontSize={FONT} />
-              <YAxis allowDecimals={false} fontSize={FONT} domain={[0, room]} />
-              <Tooltip />
-              <Legend wrapperStyle={{ fontSize: FONT }} />
-              <Bar dataKey="count" name="통화 건수" fill="#4f8fd9">
-                <LabelList dataKey="count" position="top" fontSize={FONT} formatter={showValue} />
-              </Bar>
-              <Bar dataKey="follow_up_count" name="후속조치" fill="#e9a23b">
-                <LabelList dataKey="follow_up_count" position="top" fontSize={FONT} formatter={showValue} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Col>
-      <Col xs={24} xl={12}>
-        <Box title="고객사별 불만 건수" hint="불만이 많은 상위 10곳" empty={byCompany.length === 0}>
-          <ResponsiveContainer>
-            <BarChart data={byCompany} layout="vertical" margin={{ left: 10, right: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" allowDecimals={false} fontSize={FONT} domain={[0, room]} />
-              <YAxis type="category" dataKey="customer_company" width={100} fontSize={FONT} />
-              <Tooltip />
-              <Bar dataKey="complaint_count" name="불만 건수" fill={CATEGORY_COLOR['불만']}>
-                <LabelList dataKey="complaint_count" position="right" fontSize={FONT} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Col>
-    </Row>
+            ))}
+            {/* 합계를 막대 위에 적기 위한 보이지 않는 선 */}
+            <Line dataKey="total" stroke="none" dot={false} activeDot={false} legendType="none" isAnimationActive={false}>
+              <LabelList dataKey="total" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+            </Line>
+          </ComposedChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      {/* 3) 담당자별: 통화 건수와 후속조치를 나란히 */}
+      <ChartCard title="담당자별 통화·후속조치" hint="파랑 통화 · 주황 후속조치" empty={data.by_agent.length === 0}>
+        <ResponsiveContainer>
+          <BarChart data={data.by_agent} margin={{ top: 18, right: 4, left: 4 }} barGap={3} barCategoryGap="24%">
+            <GradientDefs prefix="agent" colors={AGENT_COLORS} />
+            <CartesianGrid {...LIGHT_GRID} />
+            <XAxis dataKey="agent_name" fontSize={FONT} tickLine={false} />
+            <YAxis hide domain={[0, room]} />
+            <Tooltip cursor={TOOLTIP_CURSOR} content={<ChartTooltip />} />
+            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: FONT }} />
+            <Bar dataKey="count" name="통화 건수" fill="url(#agent-0)" radius={TOP_RADIUS} maxBarSize={22}>
+              <LabelList dataKey="count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+            </Bar>
+            <Bar dataKey="follow_up_count" name="후속조치" fill="url(#agent-1)" radius={TOP_RADIUS} maxBarSize={22}>
+              <LabelList dataKey="follow_up_count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      {/* 4) 고객사별: 가로 막대, 뒤에 옅은 바탕 띠를 깔아 0건도 줄이 보이게 */}
+      <ChartCard title="고객사별 불만 건수" hint="상위 10곳" empty={byCompany.length === 0}>
+        <ResponsiveContainer>
+          <BarChart data={byCompany} layout="vertical" margin={{ left: 0, right: 28 }} barCategoryGap="30%">
+            <GradientDefs prefix="company" colors={[CATEGORY_COLOR['불만']]} horizontal />
+            <XAxis type="number" hide domain={[0, room]} />
+            <YAxis type="category" dataKey="customer_company" width={84} fontSize={FONT} interval={0} tickLine={false} axisLine={false} />
+            <Tooltip cursor={TOOLTIP_CURSOR} content={<ChartTooltip />} />
+            <Bar
+              dataKey="complaint_count"
+              name="불만 건수"
+              fill="url(#company-0)"
+              radius={[0, 6, 6, 0]}
+              maxBarSize={14}
+              background={{ fill: 'rgba(128, 128, 128, 0.12)', radius: 6 }}
+            >
+              <LabelList dataKey="complaint_count" position="right" fontSize={FONT} fontWeight={600} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+    </div>
   )
 }

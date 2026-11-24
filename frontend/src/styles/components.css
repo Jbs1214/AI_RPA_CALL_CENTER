@@ -1,0 +1,116 @@
+/* ==========================================================================
+   부품별 스타일
+
+   차례
+     1. 숫자 카드 (.kpi-card)
+     2. 업로드 영역 (.upload)
+     3. 표 아래 쪽 번호 (.ant-pagination)
+   색 이름(info, warn, danger)은 KpiCard 의 tone 값과 같다.
+   ========================================================================== */
+
+/* 1. 숫자 카드 ---------------------------------------------------------------- */
+.kpi-card {
+  --kpi-accent: #8c8c8c;
+  --kpi-soft: #f2f3f5;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--kpi-accent);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+.kpi-card--info {
+  --kpi-accent: #1677ff;
+  --kpi-soft: #e6f0ff;
+}
+.kpi-card--warn {
+  --kpi-accent: #e9a23b;
+  --kpi-soft: #fff4e0;
+}
+.kpi-card--danger {
+  --kpi-accent: #d9534f;
+  --kpi-soft: #fdecec;
+}
+
+.kpi-card__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--kpi-soft);
+  color: var(--kpi-accent);
+  font-size: 18px;
+}
+.kpi-card__text {
+  min-width: 0;
+}
+.kpi-card__label {
+  overflow: hidden;
+  color: var(--color-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kpi-card__value {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@media (max-width: 767px) {
+  .kpi-card {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .kpi-card__icon {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+  .kpi-card__value {
+    font-size: 22px;
+  }
+}
+
+/* 2. 업로드 영역: 아이콘과 글자를 가로로 놓아 높이를 줄인다 --------------------- */
+.upload .ant-upload.ant-upload-drag {
+  background: var(--upload-bg);
+}
+.upload .ant-upload-drag .ant-upload-btn {
+  padding: 12px 16px;
+}
+.upload .ant-upload-drag-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 16px;
+}
+.upload .ant-upload-drag-icon {
+  margin: 0 !important;
+  font-size: 32px;
+}
+.upload .ant-upload-text,
+.upload .ant-upload-hint {
+  margin: 0 !important;
+}
+.upload__copy {
+  text-align: left;
+}
+@media (max-width: 767px) {
+  .upload__copy {
+    text-align: center;
+  }
+}
+
+/* 3. 쪽 번호는 가운데 정렬 ---------------------------------------------------- */
+.ant-table-wrapper .ant-pagination {
+  justify-content: center;
+}
