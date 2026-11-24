@@ -5,7 +5,6 @@ Rebuilds the Excel dashboard file from the server call list (design doc 4: chapt
 Only the ledger sheet (table tblCalls, A2:L1000) is rewritten; the template formulas do the rest.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -BaseUrl http://host:8000 -ApiKey x
-  powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -MockJson testdata\a.json,testdata\b.json
 
 Exit code 0 = saved. 1 = failed, and the existing output file is left as it was.
 Keep this file ASCII only: Windows PowerShell 5.1 misreads Korean in a UTF-8 script without BOM.
@@ -14,8 +13,7 @@ Logs carry counts and call ids only, never transcripts or phone numbers.
 param(
     [string]$ConfigPath = (Join-Path $PSScriptRoot 'config.json'),
     [string]$BaseUrl,
-    [string]$ApiKey,
-    [string[]]$MockJson
+    [string]$ApiKey
 )
 $ErrorActionPreference = 'Stop'
 $utf8 = [Text.Encoding]::UTF8
@@ -75,21 +73,15 @@ try {
 
     # ---- call list
     $items = New-Object System.Collections.Generic.List[object]
-    if ($MockJson) {
-        foreach ($file in ($MockJson | ForEach-Object { $_ -split ',' })) {
-            $items.AddRange([object[]](Read-Json ([IO.File]::ReadAllText((Resolve-Path -LiteralPath $file), $utf8)))['items'])
-        }
-        Log INFO "source: mock files, $($items.Count) calls"
-    } elseif ($BaseUrl) {
-        $page = 1
-        do {
-            $data = Get-Page $page
-            $got = @($data['items'])
-            $items.AddRange([object[]]$got)
-            $page++
-        } while ($got.Count -gt 0 -and $items.Count -lt $data['total'])
-        Log INFO "source: $BaseUrl, $($items.Count) of $($data['total']) calls"
-    } else { throw 'need -BaseUrl or -MockJson' }
+    if (-not $BaseUrl) { throw 'need -BaseUrl' }
+    $page = 1
+    do {
+        $data = Get-Page $page
+        $got = @($data['items'])
+        $items.AddRange([object[]]$got)
+        $page++
+    } while ($got.Count -gt 0 -and $items.Count -lt $data['total'])
+    Log INFO "source: $BaseUrl, $($items.Count) of $($data['total']) calls"
 
     # ---- oldest first; over the limit keep the latest
     $rows = foreach ($item in $items) {

@@ -18,7 +18,7 @@ Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리�
 | 한 일 | 확인 |
 |---|---|
 | 템플릿 v3: 슬라이서(담당자, 유형), 고객사 차트 눈금 1 단위, 통화 대장 I·J열 너비 | Excel 화면에서 확인함 |
-| `build_report.ps1`: 서버 목록 받기 → 정렬 → 통화 대장 쓰기 → 저장 | `tools/check_report.ps1`이 `all checks passed`(11/24 14:55에도 다시 통과) |
+| `build_report.ps1`: 서버 목록 받기 → 정렬 → 통화 대장 쓰기 → 저장 | 실제 서버로 확인(11/24 15:48, 16건, 지표가 `GET /api/stats`와 같음). 가짜 JSON 옵션(`-MockJson`)은 뺐다 |
 | 실제 서버와의 대조 (11/24) | 엑셀이 `GET /api/stats`, 서버 엑셀(API 7), 웹 카드와 같았다(범수, 수창 확인). 15건일 때 15 / 7 / 2 / 4 / 27% / 질의, 고객사 순서 포함 |
 | 예외 (11/24, 실제 서버) | 서버 주소가 틀릴 때 3회 재시도 뒤 실패와 기존 파일 유지, 출력 파일이 열려 있을 때 다른 이름으로 저장, 완료 통화 0건일 때 머리글만 있는 엑셀(지표 0, 오류 셀 0) |
 | Orchestrator `Shared`: Asset 2개, 외부 앱, 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot` (11/24) | 무인 Job이 Successful. 외부 앱은 범수가 토큰 발급을 확인했다 |
@@ -31,9 +31,9 @@ Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리�
 git pull
 cd rpa-report
 copy config.example.json config.json
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath 임시폴더nfig.json -BaseUrl http://서버주소:8000 -ApiKey 임시값
 ```
-
+- 로그에 `saved rows=N`이 나오고 종료 코드가 0이면 그 PC의 Excel로도 스크립트가 도는 것이다. `임시폴더nfig.json`은 `config.json`을 복사해 `OutputPath`만 임시 폴더로 바꾼 것이다(`README.md`의 "시험").
 - 마지막 줄이 `all checks passed`면 그 PC의 Excel로도 스크립트가 도는 것이다. `FAIL`이 나오면 `Main.xaml`보다 이것부터 본다.
 - `config.json`과 `output/`은 git에 올라가지 않는다. PC마다 새로 만든다.
 - 게시할 PC에서는 `config.json`의 `OutputPath`를 프로젝트 폴더 밖의 전체 경로로 바꾼다(`README.md`의 "다시 게시할 때").
@@ -56,7 +56,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 
 - [ ] 민영: ③ 봇에서 큐에 추가하는 단계를 빼 달라고 한다. **민영이 뺐다고 할 때까지 큐를 지우지 않는다.** 먼저 지우면 ③ 봇이 그 단계에서 실패한다
 - [x] 범수, 민철: 큐 트리거가 없어지고 1분 시간 트리거가 생긴다고 알린다. Job 시작 시험 때 끄는 대상이 시간 트리거로 바뀐다
-- [ ] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철은 확인했다(v2.0 동의). 민영의 답은 아직 없다
+- [x] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철이 확인했고 11/24에 합쳐졌다
 
 Studio
 
@@ -111,8 +111,11 @@ Orchestrator
 
 ## 주의
 
-- `build_report.ps1`과 `tools/check_report.ps1`은 한글을 넣지 않는다. PowerShell 5.1이 잘못 읽는다. 고친 뒤에는 `tools\check_report.ps1`을 다시 돌린다.
+- `build_report.ps1`은 한글을 넣지 않는다. PowerShell 5.1이 잘못 읽는다. 고친 뒤에는 실제 서버로 한 번 돌려 본다(`README.md`의 "시험").
 - 이 폴더 안의 작업은 `git pull --rebase` 후 `main`에 올린다. 파트 사이의 약속을 바꾸는 일은 브랜치와 PR로 올린다(`CONTRIBUTING.md`).
 - API 키가 스크립트의 명령줄 인자로 넘어간다. 지금은 임시 값이라 괜찮다. 서버가 키 확인을 켜면 넘기는 방법을 바꾼다.
 - 서버의 통화 데이터는 팀원들의 시험으로 계속 바뀐다(11/24 14:55에는 0건이었다). 숫자를 비교할 때는 같은 시각의 값으로 한다.
 - 스크립트를 시작하지 못한 경우(파일이 없음 등)에는 이유가 로그에 남지 않고 종료 코드만 남는다. 스크립트 안에서 난 오류는 로그에 남는다.
+- 가짜 데이터(mock)는 쓰지 않는다(11/24 결정). `testdata/`의 가짜 JSON 2개와 `tools/`의 `check_report.ps1`, `check_template.py`, `make_mock.py`를 지웠다. 시험은 자체 제작 음성 15개로 서버에 저장된 통화로 한다. 가짜 데이터로 돌리던 자동 검사는 없어졌다.
+- `docs/설계서_4_RPA_v7.md` 10~11장과 `docs/제품요구사항정의서_v2.0.md`에는 가짜 JSON과 기대값(seed 14건, 20건) 이야기가 남아 있다. 다음에 그 문서를 고칠 때 뺀다.
+- 지금 올라가 있는 프로세스(1.0.7)의 스크립트에는 `-MockJson` 옵션이 남아 있다. 쓰지 않는 옵션이라 동작은 같다. 다음에 게시할 때 빠진다.
