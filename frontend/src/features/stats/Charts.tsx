@@ -79,7 +79,8 @@ export default function Charts({ range }: { range: DateRange }) {
     ...d.by_category,
     total: CATEGORIES.reduce((sum, c) => sum + (d.by_category[c] ?? 0), 0),
   }))
-  const byCompany = [...data.by_company].sort((a, b) => b.complaint_count - a.complaint_count).slice(0, 10)
+  // 서버가 엑셀과 같은 순서(불만 건수 내림차순, 동률 규칙 포함)로 준다. 다시 정렬하지 않고 상위 10곳만 쓴다.
+  const byCompany = data.by_company.slice(0, 10)
   const room = (max: number) => max + 1 // 막대 위 숫자가 잘리지 않게 위쪽 여유
 
   return (
