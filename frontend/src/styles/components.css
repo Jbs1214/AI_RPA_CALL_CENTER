@@ -190,35 +190,11 @@ button:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* 수치 색은 의미가 있을 때만(주의, 오류) */
-.kpi-card--warn .kpi-card__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 8px;
-  min-width: 0;
-}
-.kpi-card__sub {
-  color: var(--color-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-.kpi-card__value {
+/* 수치 색은 의미가 있을 때만: 사람이 처리해야 하는 것(danger)을 빨갛게 */
+.kpi-card--warn .kpi-card__value {
   color: var(--wait-fg);
 }
-.kpi-card--danger .kpi-card__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 8px;
-  min-width: 0;
-}
-.kpi-card__sub {
-  color: var(--color-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-.kpi-card__value {
+.kpi-card--danger .kpi-card__value {
   color: var(--err-fg);
 }
 .kpi-tags {
@@ -238,23 +214,10 @@ button:focus-visible {
   }
 }
 @media (max-width: 767px) {
-  .kpi-card__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 8px;
-  min-width: 0;
-}
-.kpi-card__sub {
-  color: var(--color-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-.kpi-card__value {
+  .kpi-card__value {
     font-size: 20px;
   }
 }
-
 /* 4. 업로드 띠: 옅은 색 면 위에 왼쪽 글자·버튼, 오른쪽 끌어놓기 칸 --------------------- */
 .upload {
   display: grid;
