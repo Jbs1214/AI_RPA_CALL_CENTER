@@ -11,7 +11,7 @@
 
 반영한 것: `Main.xaml`에서 큐 꺼내기와 상태 표시, 인자 `in_ForceRefresh`를 빼고, 시퀀스 3개(서버 주소 읽기, 엑셀 다시 만들기, 결과 확인)에 주석을 달았다. 큐가 없으므로 ④는 Orchestrator 시간 트리거(1분)로 시작한다. 통합본 v2.0, 설계서 v7에 적었다.
 
-Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리거는 지웠고, 시간 트리거 `CallCenter_Report_Every1Min`이 1분마다 시작한다. 큐 `CallCenter_Calls`는 ③ 봇이 큐 추가를 뺄 때까지 남겨 둔다.
+Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리거는 지웠고, 시간 트리거 `CallCenter_Report_Every1Min`이 1분마다 시작한다. 큐 `CallCenter_Calls`도 ③ 봇이 큐 추가를 뺀 뒤 지웠다(15:58). Orchestrator에 큐와 관련된 것은 남아 있지 않다.
 
 ## 지금 상태
 
@@ -44,7 +44,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath
 | 엑셀 대시보드 자동 생성 | 엑셀 템플릿 v3, `build_report.ps1` | 끝 |
 | 메인 RPA 봇 | `project.json`, `Main.xaml` | 끝. 큐를 뺀 1.0.7이 시간 트리거로 돈다 |
 | 큐/예외 처리 | 스크립트의 재시도, `Main.xaml`의 실패 표시 | 큐는 강사 피드백으로 뺐다. 예외 처리는 스크립트 쪽 확인이 끝났고, 실패한 Job이 Faulted로 보이는지는 아직 |
-| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 끝. 큐 `CallCenter_Calls` 지우기만 남았다(③이 큐 추가를 뺀 뒤) |
+| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 끝. 큐와 큐 트리거는 지웠다 |
 | 레거시(CRM/ERP) 입력, 정형 보고서 | 없음 | 만들지 않는다(통합본 FR-R09). 발표 때 확장 계획으로 설명한다 |
 
 ## 이어서 할 일
@@ -53,7 +53,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath
 
 팀에 알리기
 
-- [ ] 민영: ③ 봇에서 큐에 추가하는 단계를 빼 달라고 한다. **민영이 뺐다고 할 때까지 큐를 지우지 않는다.** 먼저 지우면 ③ 봇이 그 단계에서 실패한다
+- [x] 민영: ③ 봇에서 큐에 추가하는 단계를 뺐다. 흐름 A는 큐 없이 서버 저장(201)까지 확인했고, 흐름 B는 코드에서만 뺐다(민영, 11/24)
 - [x] 범수, 민철: 큐 트리거가 없어지고 1분 시간 트리거가 생긴다고 알린다. Job 시작 시험 때 끄는 대상이 시간 트리거로 바뀐다
 - [x] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철이 확인했고 11/24에 합쳐졌다
 
@@ -69,7 +69,7 @@ Orchestrator
 - [x] 큐 트리거 `CallCenter_Calls_Trigger`를 지운다
 - [x] 시간 트리거 `CallCenter_Report_Every1Min`: 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul, 우선순위 High, 5분 뒤 Kill
 - [x] 1분마다 Job이 생기고 Successful인지, 결과 엑셀의 저장 시각이 바뀌는지. 15:38:49, 15:39:47에 이어서 돌았고 엑셀이 그때마다 새로 저장됐다
-- [ ] 민영이 큐 추가를 뺐다고 하면 큐 `CallCenter_Calls`를 지운다
+- [x] 큐 `CallCenter_Calls`를 지웠다(11/24 15:58). 그 뒤에도 시간 트리거 Job은 1분마다 Successful이다
 
 확인이 필요한 점: 정상일 때는 Job이 쌓이지 않았다(한 번에 15초쯤). 앞 Job이 오래 걸릴 때 시간 트리거가 Job을 또 만드는지는 모른다. Pending이 쌓이면 주기를 늘린다.
 
