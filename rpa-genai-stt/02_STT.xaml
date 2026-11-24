@@ -138,7 +138,7 @@
         <OutArgument x:TypeArguments="x:Int32">[out_sttStatusCode]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:Int32">[CInt(response.StatusCode)]</InArgument>
+        <InArgument x:TypeArguments="x:Int32">[If(response Is Nothing, 0, CInt(response.StatusCode))]</InArgument>
       </Assign.Value>
     </Assign>
     <Assign sap:VirtualizedContainerService.HintSize="450,166" sap2010:WorkflowViewState.IdRef="Assign_2">
@@ -146,7 +146,7 @@
         <OutArgument x:TypeArguments="x:String">[out_sttResponse]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[response.TextContent]</InArgument>
+        <InArgument x:TypeArguments="x:String">[If(response Is Nothing, "", response.TextContent)]</InArgument>
       </Assign.Value>
     </Assign>
   </Sequence>

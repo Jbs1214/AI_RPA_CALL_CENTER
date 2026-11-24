@@ -1,4 +1,104 @@
 {
   "version": "2.0",
-  "resources": []
+  "resources": [
+    {
+      "activityDisplayName": "Get Credential: api 시크릿 키 불러오기",
+      "activityId": "GetRobotCredential_1",
+      "resource": "asset",
+      "key": "Shared.CLOVA_SECRET_KEY",
+      "id": "assetShared.CLOVA_SECRET_KEYSharedFalseCLOVA_SECRET_KEYFalse",
+      "value": {
+        "folderPath": {
+          "defaultValue": "Shared",
+          "isExpression": false
+        },
+        "name": {
+          "defaultValue": "CLOVA_SECRET_KEY",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    },
+    {
+      "activityDisplayName": "Get Asset",
+      "activityId": "GetRobotAsset_1",
+      "resource": "asset",
+      "key": "Shared.CLOVA_INVOKE_URL",
+      "id": "assetShared.CLOVA_INVOKE_URLSharedFalseCLOVA_INVOKE_URLFalse",
+      "value": {
+        "folderPath": {
+          "defaultValue": "Shared",
+          "isExpression": false
+        },
+        "name": {
+          "defaultValue": "CLOVA_INVOKE_URL",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    },
+    {
+      "activityDisplayName": "Get Asset",
+      "activityId": "GetRobotAsset_3",
+      "resource": "asset",
+      "key": "Shared.BACKEND_API_KEY",
+      "id": "assetShared.BACKEND_API_KEYSharedFalseBACKEND_API_KEYFalse",
+      "value": {
+        "folderPath": {
+          "defaultValue": "Shared",
+          "isExpression": false
+        },
+        "name": {
+          "defaultValue": "BACKEND_API_KEY",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    },
+    {
+      "activityDisplayName": "Get Asset",
+      "activityId": "GetRobotAsset_2",
+      "resource": "asset",
+      "key": "Shared.BACKEND_BASE_URL",
+      "id": "assetShared.BACKEND_BASE_URLSharedFalseBACKEND_BASE_URLFalse",
+      "value": {
+        "folderPath": {
+          "defaultValue": "Shared",
+          "isExpression": false
+        },
+        "name": {
+          "defaultValue": "BACKEND_BASE_URL",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    },
+    {
+      "activityDisplayName": "Content Generation",
+      "activityId": "ConnectorActivity_1",
+      "resource": "Connection",
+      "key": "e99a4c08-f6d0-4ae7-a483-9cb53a7c5adf",
+      "id": "Connectione99a4c08-f6d0-4ae7-a483-9cb53a7c5adfe99a4c08-f6d0-4ae7-a483-9cb53a7c5adfFalse",
+      "value": {
+        "ConnectionId": {
+          "defaultValue": "e99a4c08-f6d0-4ae7-a483-9cb53a7c5adf",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "UseConnectionService": "true",
+        "BindingsVersion": "2.2",
+        "Connector": "uipath-uipath-airdk",
+        "ActivityName": "Content Generation"
+      }
+    }
+  ]
 }
