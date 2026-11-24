@@ -12,6 +12,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MessageFilled } from '@ant-design/icons'
 import { ChatHeader, Composer, MessageRow, QuickReplies, TypingRow, WelcomeRow } from './ChatParts'
+import CallDrawer from '../calls/CallDrawer'
 import ChatResult from './ChatResult'
 import { actionKey, useChat } from './useChat'
 import { useFloatingPanel } from './useFloatingPanel'
@@ -19,6 +20,7 @@ import './chat.css'
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false)
+  const [openCallId, setOpenCallId] = useState<string | null>(null) // 카드를 눌러 연 통화
   const [text, setText] = useState('')
   const chat = useChat()
   const { panelRef, ...panel } = useFloatingPanel()
@@ -83,6 +85,7 @@ export default function ChatWidget() {
                     acting={chat.isActing}
                     onAction={chat.runAction}
                     onPick={submit}
+                    onOpenCall={setOpenCallId}
                   />
                 )}
               </MessageRow>
@@ -96,6 +99,9 @@ export default function ChatWidget() {
           <Composer value={text} busy={chat.isAsking} inputRef={inputRef} onChange={setText} onSubmit={() => submit(text)} />
         </section>
       )}
+
+      {/* 카드를 누르면 통화 목록에서 여는 것과 같은 상세 화면을 챗봇 위에 연다 */}
+      <CallDrawer callId={openCallId} onClose={() => setOpenCallId(null)} />
     </div>
   )
 }

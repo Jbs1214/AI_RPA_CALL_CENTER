@@ -93,7 +93,7 @@
   position: fixed;
   right: var(--cb-edge);
   bottom: var(--cb-edge);
-  z-index: 1000;
+  z-index: 990; /* 상세 화면(antd Drawer 1000)이 위에 열리도록 */
   width: 60px;
   height: 60px;
   display: flex;
@@ -123,7 +123,7 @@
   position: fixed;
   right: var(--cb-edge);
   bottom: var(--cb-edge);
-  z-index: 1001;
+  z-index: 991;
   display: flex;
   flex-direction: column;
   width: 390px;
@@ -498,6 +498,24 @@
   gap: 6px;
   margin-bottom: 2px;
 }
+/* 누르면 상세 화면이 열리는 카드 */
+.cb-card.clickable {
+  cursor: pointer;
+  transition: box-shadow var(--cb-ease), transform var(--cb-ease);
+}
+.cb-card.clickable:hover,
+.cb-card.clickable:focus-visible {
+  outline: 0;
+  box-shadow: 0 2px 10px rgba(20, 40, 160, 0.18);
+  transform: translateY(-1px);
+}
+.cb-card-link {
+  margin-top: 4px;
+  color: var(--cb-accent-text);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
 .cb-card-id {
   font-size: 12px;
   font-weight: 600;
@@ -512,10 +530,6 @@
 .cb-card-meta {
   color: var(--cb-sub);
   font-size: 12px;
-}
-.cb-card-text {
-  margin-top: 2px;
-  color: var(--cb-text);
 }
 .cb-more {
   color: var(--cb-sub);
