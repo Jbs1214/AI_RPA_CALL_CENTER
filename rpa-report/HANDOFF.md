@@ -79,7 +79,7 @@ UiPath 프로젝트를 `rpa-report/` 폴더에 만든다. 순서는 `README.md`�
 구현이 설계서와 달라졌는데 문서는 아직 그대로다.
 
 - [ ] `docs/설계서_4_RPA_v5.md`를 v6으로: 10장(워크플로우 4개 → `Main.xaml` + `build_report.ps1`), 7장 슬라이서("아직 없다" → 넣었다), 13장(1·2·3·7번이 정해짐)
-- [ ] 설계서 이름이 적힌 곳도 같이 고치기: 루트 `CLAUDE.md`, `docs/README.md`, `docs/제품요구사항정의서_v1.8.md`, 이 폴더의 `CLAUDE.md`와 `README.md`
+- [ ] 설계서 이름이 적힌 곳도 같이 고치기: 루트 `CLAUDE.md`, `docs/README.md`, `docs/제품요구사항정의서_v1.9.md`, 이 폴더의 `CLAUDE.md`와 `README.md`
 - [ ] `plan.md`의 ④ 항목 체크
 
 루트 파일과 통합본이 들어가므로 `main`에 바로 올리지 않고 브랜치를 만들어 PR로 올린다.
