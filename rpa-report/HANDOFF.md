@@ -14,6 +14,10 @@
 | `project.json`, `Main.xaml` (11/24) | Studio에서 실제 서버로 세 가지 실행 확인: 빈 큐(`nothing to do`), `in_ForceRefresh=True`(14건 저장), 큐 2건(둘 다 꺼내고 엑셀은 한 번) |
 | Orchestrator `Shared` 폴더: 큐 `CallCenter_Calls`, Asset 2개, 외부 앱 (11/24) | 큐와 Asset은 위 실행으로 확인. 외부 앱 값은 범수에게 전달함 |
 | Studio가 있는 PC에서 `tools\check_report.ps1` (11/24) | `all checks passed` |
+| 프로세스 `CallCenter_RPA_Report` 1.0.5를 `Shared`에 올림 (11/24) | Assistant 실행과 Orchestrator의 무인 Job 모두 Successful. 실제 서버 목록으로 엑셀 저장 |
+| 무인 실행: 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot` (11/24) | Start Job으로 두 번 Successful |
+| 큐 트리거 `CallCenter_Calls_Trigger` (11/24) | 큐에 2건을 올리자 Job이 저절로 시작되어 Successful |
+| 서버와의 대조 (11/24) | 엑셀이 `GET /api/stats`, 서버 엑셀(API 7)과 같다(범수 확인). 기준: 14행, 14 / 6 / 2, 불만 3(21%), 질의 |
 
 `build_report.ps1`로 확인한 경우: seed 14건, seed + 경계 20건, 0건, 쪽 나눠 받기(한글 포함), 서버 꺼짐(3회 재시도 후 실패, 기존 파일 유지), 500 뒤 재시도 성공, 422는 재시도 없이 실패, 출력 파일이 열려 있을 때 다른 이름으로 저장, `MaxRows` 초과, 깨진 날짜와 `=`·`-`로 시작하는 값.
 
@@ -21,8 +25,8 @@
 
 - 큐 2건 시험은 `testdata/queue_items_2_v1.csv`를 큐 화면에서 올려서 했다. ③ 봇이 넣은 항목으로는 아직 돌려 보지 않았다.
 - 0건일 때의 동작은 스크립트 단계에서만 확인했다. Studio에서는 서버 주소 오류와 출력 파일 열림만 확인했다.
-- 엑셀의 지표를 웹 카드와 비교하지 않았다. `GET /api/stats`, 서버 엑셀(API 7)과는 같았다(14행, 14 / 6 / 2, 불만 3).
-- 올린 프로세스와 무인 실행으로는 돌려 보지 않았다. Studio 실행만 했다.
+- 엑셀의 지표를 웹 카드와 비교하지 않았다(수창의 답을 기다리는 중).
+- 서버가 Job을 시작하는 방식(③ 프로세스)은 범수와 민철이 시험할 예정이다. ④는 Orchestrator에서 직접 시작한 Job과 큐 트리거만 확인했다.
 
 ## 다른 PC에서 먼저 할 일
 
@@ -42,9 +46,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 | 역할 정의서 항목 | 산출물 | 상태 |
 |---|---|---|
 | 엑셀 대시보드 자동 생성 | 엑셀 템플릿 v3, `build_report.ps1` | 끝. 가짜 14건·20건 기대값 통과 |
-| 메인 RPA 봇 | `project.json`, `Main.xaml` | 파일 작성, Studio 분석기 오류 0. Studio 실행은 아직 |
-| 큐/예외 처리 | `Main.xaml`의 큐 처리, 스크립트의 재시도 | 스크립트 쪽은 10가지 경우 확인. 큐 쪽은 한 번도 돌리지 않음 |
-| Orchestrator 세팅 | 큐, Asset, 외부 앱, 무인 실행 | 환경 확인만 됨. 큐, Asset, 외부 앱 모두 아직 |
+| 메인 RPA 봇 | `project.json`, `Main.xaml` | 끝. Studio, Assistant, 무인 Job으로 실행 확인 |
+| 큐/예외 처리 | `Main.xaml`의 큐 처리, 스크립트의 재시도 | 끝. 큐 2건, 서버 주소 오류, 출력 파일 열림 확인. 0건은 스크립트 단계에서만 확인 |
+| Orchestrator 세팅 | 큐, Asset, 외부 앱, 무인 실행 | 끝. 큐, Asset 2개, 외부 앱, 프로세스, 머신, 로봇 계정, 큐 트리거 |
 | 레거시(CRM/ERP) 입력, 정형 보고서 | 없음 | 만들지 않는다(통합본 FR-R09, 결정 13번). 시연 때 확장 계획으로 설명한다 |
 
 ## 이어서 할 일
@@ -78,7 +82,7 @@ Orchestrator 세팅. 웹에서 한다.
 - [x] 서버 엑셀(API 7)과 행 수가 같은지(범수). 14행이고 지표도 같았다
 - [ ] 엑셀의 지표 6개가 웹 카드와 같은지(수창)
 - [x] 고객사 차트에서 불만 건수가 같을 때의 순서. 서버가 첫 통화가 이른 순으로 바뀌어 엑셀과 같아졌다(PR #7)
-- [ ] 범수가 서버를 재시작한 뒤 `GET /api/stats`의 고객사 순서가 엑셀과 같은지 다시 보기(11/24 10:50에는 아직 이름순이었다)
+- [x] 범수가 서버를 재시작한 뒤 `GET /api/stats`의 고객사·담당자 순서가 엑셀과 같은지 다시 보기. 같았다(11/24 11:39)
 
 확인이 필요한 점: 스크립트 경로를 `Environment.CurrentDirectory`로 만든다. Studio에서 실행할 때 이 값이 프로젝트 폴더가 아니면 로그에 `-File` 오류가 나온다. 그때는 `in_ScriptPath`를 고친다.
 
@@ -92,30 +96,35 @@ Orchestrator 세팅. 웹에서 한다.
 
 기록
 
-- [ ] 확인이 끝난 `project.json`, `Main.xaml`, `README.md`, 이 파일을 커밋
+- [x] 확인이 끝난 `project.json`, `Main.xaml`, `README.md`, 이 파일을 커밋
 
 ### C. 수 12:00까지 (기능 동결)
 
 Orchestrator 세팅
 
-- [ ] `config.json`의 `OutputPath`를 전체 경로로 바꾸기. 프로세스를 올리면 출력 폴더가 패키지 설치 폴더 아래로 간다
-- [ ] 프로세스 `CallCenter_RPA_Report`를 `Shared`에 올리기
-- [ ] 무인 실행 설정(머신 등록, `Shared` 폴더 연결)
-- [ ] ③ 프로세스 키를 범수에게 알리기
-- [ ] 봇 PC 머신 연결이 되면 민철에게 알리기. Job 시작 시험에 외부 앱 값과 머신 연결이 필요하다(민철 요청, 11/24)
-- [ ] 큐 트리거(무인 실행이 되면)
+- [x] `config.json`의 `OutputPath`를 전체 경로로 바꾸기. 저장소 루트의 `output\` 폴더로 정했다(프로젝트 폴더 밖)
+- [x] 프로세스 `CallCenter_RPA_Report`를 `Shared`에 올리기. 1.0.5
+- [x] 무인 실행 설정. 머신 `CallCenter_BotPC`(런타임 1개), 로봇 계정 `CallCenter_Robot`, `Shared` 폴더
+- [x] ③ 프로세스 키. 범수가 Orchestrator에서 직접 조회했다
+- [x] 봇 PC 머신 연결을 범수와 민철에게 알리기
+- [x] 큐 트리거 `CallCenter_Calls_Trigger`. 동시 Job 1개
+- [ ] 범수가 Job 시작 시험 시간을 알리면(10분 전) 큐 트리거를 끄고, 끝났다고 하면 다시 켜기. Triggers → Queue triggers → ⋮ → Disable/Enable
+- [ ] 민영의 통화가 다시 저장되면 엑셀이 15행이 되고 새 관리번호가 들어갔는지 보기
 - [ ] 서버가 시연 노트북으로 옮겨지면 Asset `BACKEND_BASE_URL` 바꾸고 접속 다시 확인
 
-문서(브랜치 + PR). 브랜치 `docs/rpa-design-v6`에서 고쳐 PR로 올렸다(11/24). 합쳐지면 끝이다.
+문서(브랜치 + PR). PR #8로 올려 `main`에 합쳐졌다(11/24). 통합본은 v1.9 그대로 두었다(범수 결정).
 
 - [x] 설계서를 v6으로(`docs/설계서_4_RPA_v6.md`): 10장(워크플로우 4개 → `Main.xaml` + `build_report.ps1`), 7장 슬라이서("아직 없다" → 넣었다), 13장(1·2·3·7번이 정해짐)
 - [x] v6에서 15~16행 참고 문서 표의 옛 이름도 고치기: 통합본 v1.8 → v1.9, 백엔드 PRD v2 → v3 (민철 요청, 11/24)
 - [x] 설계서 이름이 적힌 곳도 같이 고치기: 루트 `CLAUDE.md`, `docs/README.md`, `docs/제품요구사항정의서_v1.9.md`, 이 폴더의 `CLAUDE.md`와 `README.md`
 - [x] `plan.md`의 ④ 항목 체크
 
-- [ ] PR이 합쳐졌는지 확인하고 `main`을 다시 받기
+- [x] PR이 합쳐졌는지 확인하고 `main`을 다시 받기
+- [ ] 설계서 v6에는 무인 실행과 큐 트리거가 "수 오전"으로 적혀 있다. 다음에 설계서를 고칠 때 끝난 것으로 바꾸고, `plan.md`의 무인 실행·큐 트리거도 체크한다
 
 ### D. 수 오후 (시연)
+
+- [ ] 시연 전에 봇 PC를 켜고 `woori` 계정으로 로그인해 두기. 로봇이 사용자 방식이라 로그인되어 있어야 Job이 돈다
 
 - [ ] 레거시(CRM/ERP) 입력과 정형 보고서를 만들지 않은 이유와 확장 계획을 설명할 두세 문장 준비. 순서는 `docs/시나리오_0_시연_v1.md`의 11번에 있다
 - [ ] 리허설에서 큐 신호 → 엑셀 다시 만들기를 한 번 돌려 보기
@@ -128,7 +137,9 @@ Orchestrator 세팅
 | 큐 이름 | `CallCenter_Calls` (설계서 제안 그대로) |
 | ④ 프로세스 이름 | `CallCenter_RPA_Report` (설계서 제안 그대로) |
 | 통화 대장 정렬 | 통화일시 오름차순 |
-| 엑셀 저장 폴더 | `rpa-report/output/` (`config.json`의 `OutputPath`로 바꿀 수 있다) |
+| 엑셀 저장 폴더 | 봇 PC에서는 저장소 루트의 `output\`(`config.json`의 `OutputPath`에 전체 경로). 프로젝트 폴더 안에 두면 결과 엑셀이 게시 패키지에 들어간다. `config.example.json`의 기본값은 `output/` 그대로다 |
+| 게시 패키지에서 빼는 파일 | `project.json`의 `ignoredFiles`에 파일을 하나씩 적는다. 폴더 이름과 와일드카드는 듣지 않는다. `testdata`나 `tools`에 파일을 더하면 여기에도 적는다 |
+| Orchestrator 이름 | 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot`, 큐 트리거 `CallCenter_Calls_Trigger` |
 | 슬라이서 | 통화 대장 시트의 표 오른쪽. 대시보드 숫자는 바뀌지 않는 한계를 그대로 둔다 |
 | 구현 방식 | 엑셀 쓰기는 스크립트, UiPath는 큐·Asset·스크립트 실행 |
 | 레거시 입력, 정형 보고서 | 만들지 않는다. 시연 때 확장 계획으로 설명한다 (11/24 다시 확인) |
