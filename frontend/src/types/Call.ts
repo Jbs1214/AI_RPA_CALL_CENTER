@@ -48,6 +48,13 @@ export interface CallList {
   items: Call[]
 }
 
+/** POST /api/calls/{id}/process (API 12) 응답 */
+export interface ProcessResult {
+  call_id: string
+  status: 'PROCESSING'
+  job_key: string | null // Orchestrator 를 켜지 않았으면 null
+}
+
 /** 목록·통계·엑셀 다운로드가 같이 쓰는 필터 조건 */
 export interface CallFilters {
   q?: string
