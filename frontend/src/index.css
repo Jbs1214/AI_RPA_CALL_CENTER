@@ -7,7 +7,7 @@ body {
   margin: 0;
 }
 
-/* 검토 필요는 노란 배경, 실패는 붉은 배경 */
+/* 검토 필요는 노란 기운, 실패는 붉은 기운의 행 */
 .row-review > td {
   background: var(--row-review-bg) !important;
 }

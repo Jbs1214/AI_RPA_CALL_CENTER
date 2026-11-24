@@ -1,41 +1,28 @@
 /* ==========================================================================
-   라이트·다크 공통 적용 (tokens.css 의 변수를 화면에 입히는 곳)
+   전체 바탕, 차트 글자, 통화 상세의 대화 말풍선 — 규칙은 frontend/DESIGN.md
 
    차례
-     1. 바탕 (body 와 그라데이션)
-     2. 유리 카드 (antd Card, 머리말, 숫자 카드)
-     3. 차트 (recharts 글자, 눈금, 말풍선)
-     4. 통화 상세의 대화 말풍선
-   라이트 값은 기존 모양과 같고, 다크에서만 달라지는 것은 [data-theme='dark'] 아래에 둔다.
+     1. 바탕과 글꼴
+     2. 차트 (recharts 글자, 눈금, 말풍선)
+     3. 통화 상세의 대화 말풍선
    ========================================================================== */
 
-/* 1. 바탕 -------------------------------------------------------------------- */
+/* 1. 바탕과 글꼴 -------------------------------------------------------------- */
 body {
-  background-color: var(--color-bg);
-  background-image: var(--bg-image);
-  background-attachment: fixed;
+  background: var(--color-bg); /* 단색. 그라데이션은 쓰지 않는다 */
   color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums; /* 바뀌는 숫자가 흔들리지 않게 */
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.025em;
 }
 
-/* 2. 유리 카드 ---------------------------------------------------------------- */
-.ant-card {
-  background: var(--glass-bg);
-  border-color: var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-}
-
-/* 다크: 카드 테두리에 은은한 빛, 숫자 카드는 색에 맞춰 번짐 */
-[data-theme='dark'] .ant-card {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-}
-[data-theme='dark'] .kpi-card {
-  box-shadow: 0 0 18px color-mix(in srgb, var(--kpi-accent) var(--kpi-glow-strength), transparent);
-}
-[data-theme='dark'] .kpi-card__icon {
-  background: color-mix(in srgb, var(--kpi-accent) 20%, transparent);
-}
-
-/* 3. 차트 -------------------------------------------------------------------- */
+/* 2. 차트 -------------------------------------------------------------------- */
 .recharts-cartesian-axis-tick-value,
 .recharts-legend-item-text {
   fill: var(--color-text-sub);
@@ -52,33 +39,25 @@ body {
 }
 .recharts-default-tooltip {
   background-color: var(--tooltip-bg) !important;
-  border-color: var(--glass-border) !important;
+  border-color: var(--color-line-strong) !important;
 }
 .recharts-default-tooltip .recharts-tooltip-label,
 .recharts-default-tooltip .recharts-tooltip-item {
   color: var(--color-text) !important;
 }
-.recharts-tooltip-cursor {
-  fill: rgba(128, 128, 128, 0.12);
-}
-/* 막대 위 숫자: 다크에서는 밝은 글자(막대 안의 흰 글자는 그대로 밝다) */
-[data-theme='dark'] .recharts-label-list text {
+/* 막대 위 숫자는 본문 글자색으로(막대 안의 어두운 글자는 그대로) */
+.recharts-label-list text:not([fill='#09090b']) {
   fill: var(--color-text);
-}
-
-/* 막대 위 숫자는 본문 글자색으로(막대 안 흰 글자는 그대로) */
-.recharts-label-list text:not([fill='#fff']) {
-  fill: var(--color-text);
+  font-family: var(--font-num);
 }
 
 /* 차트 말풍선 (chartParts.tsx 의 ChartTooltip, 일자별의 DayTooltip) */
 .chart-tooltip {
   min-width: 120px;
   padding: 8px 12px;
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
   background: var(--tooltip-bg);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
   color: var(--color-text);
   font-size: 12px;
 }
@@ -96,7 +75,7 @@ body {
   flex: none;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 2px;
 }
 .chart-tooltip__name {
   flex: 1;
@@ -104,15 +83,17 @@ body {
 }
 .chart-tooltip__value {
   margin-left: 12px;
+  font-family: var(--font-num);
+  font-weight: 500;
 }
 .chart-tooltip__total {
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--color-line);
   font-weight: 600;
 }
 
-/* 4. 통화 상세의 대화 말풍선 -------------------------------------------------- */
+/* 3. 통화 상세의 대화 말풍선 -------------------------------------------------- */
 .transcript {
   display: grid;
   gap: 6px;
@@ -130,7 +111,8 @@ body {
 .transcript__bubble {
   max-width: 80%;
   padding: 6px 10px;
-  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
   background: var(--bubble-agent);
   white-space: pre-wrap;
 }

@@ -1,57 +1,51 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { ConfigProvider, theme as antdTheme, type ThemeConfig } from 'antd'
 import koKR from 'antd/locale/ko_KR'
-import { ThemeContext, type ThemeMode } from './useThemeMode'
 
-const STORAGE_KEY = 'callcenter-theme'
-
-/** 처음 열 때: 저장된 값이 있으면 그것, 없으면 라이트 */
-function readInitialMode(): ThemeMode {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  return saved === 'dark' ? 'dark' : 'light'
-}
-
-/** 다크일 때만 antd 색을 덮어쓴다. 유리 느낌의 반투명 배경은 CSS 변수(tokens.css)와 같은 값을 쓴다. */
-const DARK_THEME: ThemeConfig = {
+/** antd 색을 DESIGN.md 의 값(tokens.css 와 같은 값)으로 맞춘다. 그림자와 큰 모서리는 쓰지 않는다. */
+const THEME: ThemeConfig = {
   algorithm: antdTheme.darkAlgorithm,
   token: {
-    colorPrimary: '#6c7bff',
-    colorBgContainer: 'rgba(255, 255, 255, 0.06)',
-    colorBgElevated: '#141b45',
-    colorBgLayout: 'transparent',
-    colorBorder: 'rgba(255, 255, 255, 0.18)',
-    colorBorderSecondary: 'rgba(255, 255, 255, 0.12)',
-    colorText: '#e8ecff',
-    colorTextSecondary: '#aab3d6',
+    colorPrimary: '#3b82f6',
+    colorBgBase: '#09090b',
+    colorBgContainer: '#111114',
+    colorBgElevated: '#18181b',
+    colorBgLayout: '#09090b',
+    colorBorder: 'rgba(255, 255, 255, 0.12)',
+    colorBorderSecondary: 'rgba(255, 255, 255, 0.08)',
+    colorText: '#fafafa',
+    colorTextSecondary: '#a1a1aa',
+    colorTextTertiary: '#52525b',
+    colorError: '#fb7185',
+    colorWarning: '#fbbf24',
+    colorSuccess: '#34d399',
+    borderRadius: 6,
+    borderRadiusLG: 8,
+    borderRadiusSM: 4,
+    fontSize: 13,
+    fontFamily: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    boxShadow: 'none',
+    boxShadowSecondary: 'none',
   },
   components: {
     Table: {
       colorBgContainer: 'transparent',
-      headerBg: 'rgba(255, 255, 255, 0.05)',
-      rowHoverBg: 'rgba(255, 255, 255, 0.06)',
+      headerBg: '#18181b',
+      rowHoverBg: '#18181b',
     },
+    Card: { headerFontSize: 13 },
   },
 }
 
-const LIGHT_THEME: ThemeConfig = { algorithm: antdTheme.defaultAlgorithm }
-
-/** 라이트·다크 전환. html 의 data-theme 속성으로 CSS 변수를, ConfigProvider 로 antd 색을 바꾼다. */
+/** 다크 단색 테마. html 의 data-theme 은 챗봇의 다크 값(chat.css)도 같이 켠다. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>(readInitialMode)
-
   useEffect(() => {
-    document.documentElement.dataset.theme = mode
-    localStorage.setItem(STORAGE_KEY, mode)
-  }, [mode])
-
-  const toggle = useCallback(() => setMode((m) => (m === 'dark' ? 'light' : 'dark')), [])
-  const value = useMemo(() => ({ mode, toggle }), [mode, toggle])
+    document.documentElement.dataset.theme = 'dark'
+  }, [])
 
   return (
-    <ThemeContext.Provider value={value}>
-      <ConfigProvider locale={koKR} theme={mode === 'dark' ? DARK_THEME : LIGHT_THEME}>
-        {children}
-      </ConfigProvider>
-    </ThemeContext.Provider>
+    <ConfigProvider locale={koKR} theme={THEME}>
+      {children}
+    </ConfigProvider>
   )
 }

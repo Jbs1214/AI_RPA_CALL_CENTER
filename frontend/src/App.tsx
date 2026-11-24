@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { CustomerServiceOutlined } from '@ant-design/icons'
-import PageContainer from './components/PageContainer'
+import AppHeader from './components/AppHeader'
+import AppSidebar from './components/AppSidebar'
 import Section from './components/Section'
-import ThemeToggle from './components/ThemeToggle'
 import KpiCards from './features/stats/KpiCards'
 import Charts from './features/stats/Charts'
 import CallFilters from './features/calls/CallFilters'
@@ -18,34 +17,30 @@ export default function App() {
   const range = { from: filters.from, to: filters.to } // 필터의 기간은 통계에도 같이 보낸다
 
   return (
-    <div className="app">
-      <header className="app__header">
-        <PageContainer>
-          <div className="app__brand">
-            <span className="app__logo">
-              <CustomerServiceOutlined />
-            </span>
-            <h1 className="app__title">콜센터 AI·RPA 비서</h1>
-            <span className="app__subtitle">통화 녹취 분석 대시보드</span>
-            <div className="app__tools">
-              <ThemeToggle />
+    <div className="shell">
+      <AppSidebar />
+      <div className="shell__main">
+        <AppHeader />
+        <main className="workspace">
+          {/* 왼쪽(넓게): 요약 지표와 통화 목록 */}
+          <div className="workspace__main">
+            <KpiCards range={range} />
+            <Section id="calls" title="통화 목록">
+              <CallFilters filters={filters} onChange={setFilters} />
+              <CallTable filters={filters} onChange={setFilters} onOpen={setSelected} />
+            </Section>
+          </div>
+          {/* 오른쪽(좁게): 업로드와 차트 */}
+          <div className="workspace__side">
+            <Section id="upload" title="음성 업로드">
+              <UploadDropzone />
+            </Section>
+            <div id="charts" className="panel-group">
+              <Charts range={range} />
             </div>
           </div>
-        </PageContainer>
-      </header>
-      <PageContainer>
-        <main className="page__body">
-          <Section title="음성 업로드">
-            <UploadDropzone />
-          </Section>
-          <KpiCards range={range} />
-          <Charts range={range} />
-          <Section title="통화 목록">
-            <CallFilters filters={filters} onChange={setFilters} />
-            <CallTable filters={filters} onChange={setFilters} onOpen={setSelected} />
-          </Section>
         </main>
-      </PageContainer>
+      </div>
       <CallDrawer callId={selected} onClose={() => setSelected(null)} />
       <ChatWidget />
     </div>

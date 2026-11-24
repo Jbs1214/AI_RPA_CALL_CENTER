@@ -26,8 +26,8 @@ export default function CategoryDonut({ data, total }: Props) {
               nameKey="category"
               innerRadius="62%"
               outerRadius="92%"
-              paddingAngle={3}
-              cornerRadius={6}
+              paddingAngle={2}
+              cornerRadius={2}
               stroke="none"
               startAngle={90}
               endAngle={-270}

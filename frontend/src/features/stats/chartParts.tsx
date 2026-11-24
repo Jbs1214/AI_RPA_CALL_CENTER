@@ -1,18 +1,4 @@
-/** 차트 4개가 같이 쓰는 부품: 그라데이션 색, 말풍선 */
-
-/** 막대 색 → 위는 진하고 아래는 옅은 세로 그라데이션. 막대의 fill 은 `url(#${prefix}-${번호})` 로 쓴다. */
-export function GradientDefs({ prefix, colors, horizontal = false }: { prefix: string; colors: string[]; horizontal?: boolean }) {
-  return (
-    <defs>
-      {colors.map((c, i) => (
-        <linearGradient key={i} id={`${prefix}-${i}`} x1="0" y1="0" x2={horizontal ? '1' : '0'} y2={horizontal ? '0' : '1'}>
-          <stop offset="0%" stopColor={c} stopOpacity={horizontal ? 0.55 : 1} />
-          <stop offset="100%" stopColor={c} stopOpacity={horizontal ? 1 : 0.55} />
-        </linearGradient>
-      ))}
-    </defs>
-  )
-}
+/** 차트 4개가 같이 쓰는 부품: 말풍선 */
 
 interface Entry {
   name?: string | number
