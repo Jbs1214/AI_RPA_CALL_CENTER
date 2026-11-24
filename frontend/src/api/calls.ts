@@ -42,11 +42,12 @@ export interface UploadMeta {
   customer_company?: string
 }
 
-export async function uploadRecording(file: File, meta: UploadMeta = {}): Promise<Call> {
+/** signal 을 주면 AbortController.abort() 로 올리는 도중에 취소할 수 있다 */
+export async function uploadRecording(file: File, meta: UploadMeta = {}, signal?: AbortSignal): Promise<Call> {
   const form = new FormData()
   form.append('file', file)
   for (const [k, v] of Object.entries(meta)) if (v) form.append(k, v)
-  const { data } = await client.post<Call>('/api/recordings', form)
+  const { data } = await client.post<Call>('/api/recordings', form, { signal })
   return data
 }
 
