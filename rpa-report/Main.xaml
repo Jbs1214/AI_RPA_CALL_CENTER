@@ -1,0 +1,175 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_ForceRefresh" Type="InArgument(x:Boolean)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic.Core</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Platform</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>UiPath.Workflow</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main" sap:VirtualizedContainerService.HintSize="1198,1887" sap2010:WorkflowViewState.IdRef="Sequence_4">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="baseUrl" />
+      <Variable x:TypeArguments="x:String" Name="apiKey" />
+      <Variable x:TypeArguments="x:String" Name="configText" />
+      <Variable x:TypeArguments="x:String" Name="queueName" />
+      <Variable x:TypeArguments="ui:QueueItem" Name="item" />
+      <Variable x:TypeArguments="scg:List(ui:QueueItem)" Default="[New List(Of QueueItem)]" Name="items" />
+      <Variable x:TypeArguments="x:Int32" Default="1" Name="exitCode" />
+      <Variable x:TypeArguments="x:String" Name="output" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="BACKEND_BASE_URL" CacheStrategy="None" DisplayName="Get Asset BACKEND_BASE_URL" sap:VirtualizedContainerService.HintSize="696,176" sap2010:WorkflowViewState.IdRef="GetRobotAsset_1">
+      <ui:GetRobotAsset.Value>
+        <OutArgument x:TypeArguments="x:String">[baseUrl]</OutArgument>
+      </ui:GetRobotAsset.Value>
+    </ui:GetRobotAsset>
+    <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="BACKEND_API_KEY" CacheStrategy="None" DisplayName="Get Asset BACKEND_API_KEY" sap:VirtualizedContainerService.HintSize="696,176" sap2010:WorkflowViewState.IdRef="GetRobotAsset_2">
+      <ui:GetRobotAsset.Value>
+        <OutArgument x:TypeArguments="x:String">[apiKey]</OutArgument>
+      </ui:GetRobotAsset.Value>
+    </ui:GetRobotAsset>
+    <ui:ReadTextFile File="{x:Null}" Content="[configText]" DisplayName="Read config.json" FileName="config.json" sap:VirtualizedContainerService.HintSize="696,124" sap2010:WorkflowViewState.IdRef="ReadTextFile_1" />
+    <Assign DisplayName="큐 이름" sap:VirtualizedContainerService.HintSize="696,175" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[queueName]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Newtonsoft.Json.Linq.JObject.Parse(configText)("QueueName").ToString]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <DoWhile DisplayName="큐 항목 모두 꺼내기" sap:VirtualizedContainerService.HintSize="696,989" sap2010:WorkflowViewState.IdRef="DoWhile_1" Condition="[item IsNot Nothing]">
+      <Sequence DisplayName="한 건 꺼내기" sap:VirtualizedContainerService.HintSize="650,791" sap2010:WorkflowViewState.IdRef="Sequence_2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+        <ui:GetQueueItem ContinueOnError="{x:Null}" DisplayName="큐 항목 한 건 꺼내기" FilterStrategy="StartsWith" sap:VirtualizedContainerService.HintSize="616,176" sap2010:WorkflowViewState.IdRef="GetQueueItem_1" QueueType="[queueName]" TransactionItem="[item]">
+          <ui:GetQueueItem.Reference>
+            <InArgument x:TypeArguments="x:String" />
+          </ui:GetQueueItem.Reference>
+          <ui:GetQueueItem.TimeoutMS>
+            <InArgument x:TypeArguments="x:Int32" />
+          </ui:GetQueueItem.TimeoutMS>
+        </ui:GetQueueItem>
+        <If Condition="[item IsNot Nothing]" DisplayName="항목이 있으면 목록에 담기" sap:VirtualizedContainerService.HintSize="616,555" sap2010:WorkflowViewState.IdRef="If_1">
+          <If.Then>
+            <Sequence DisplayName="로그와 담기" sap:VirtualizedContainerService.HintSize="450,401" sap2010:WorkflowViewState.IdRef="Sequence_1">
+              <sap:WorkflowViewStateService.ViewState>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                </scg:Dictionary>
+              </sap:WorkflowViewStateService.ViewState>
+              <ui:LogMessage DisplayName="Log 큐 항목" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;queue item &quot; &amp; item.Reference &amp; &quot; status=&quot; &amp; If(item.SpecificContent.ContainsKey(&quot;status&quot;), item.SpecificContent(&quot;status&quot;).ToString, &quot;&quot;)]" />
+              <Assign DisplayName="목록에 담기" sap:VirtualizedContainerService.HintSize="416,166" sap2010:WorkflowViewState.IdRef="Assign_2">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="scg:List(ui:QueueItem)">[items]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="scg:List(ui:QueueItem)">[items.Concat({item}).ToList()]</InArgument>
+                </Assign.Value>
+              </Assign>
+            </Sequence>
+          </If.Then>
+        </If>
+      </Sequence>
+    </DoWhile>
+    <If Condition="[items.Count = 0 AndAlso Not in_ForceRefresh]" DisplayName="할 일이 있는지" sap:VirtualizedContainerService.HintSize="696,224" sap2010:WorkflowViewState.IdRef="If_3">
+      <If.Then>
+        <ui:LogMessage DisplayName="Log 할 일 없음" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;nothing to do: queue is empty&quot;]" />
+      </If.Then>
+      <If.Else>
+        <Sequence DisplayName="엑셀 다시 만들기" sap2010:WorkflowViewState.IdRef="Sequence_3">
+          <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA;    Dim psi As New System.Diagnostics.ProcessStartInfo(&quot;powershell.exe&quot;, &quot;-NoProfile -ExecutionPolicy Bypass -File &quot;&quot;&quot; &amp; in_ScriptPath &amp; &quot;&quot;&quot; &quot; &amp; in_Args)&#xA;    psi.UseShellExecute = False&#xA;    psi.RedirectStandardOutput = True&#xA;    psi.CreateNoWindow = True&#xA;    Using p As System.Diagnostics.Process = System.Diagnostics.Process.Start(psi)&#xA;        out_Output = p.StandardOutput.ReadToEnd()&#xA;        p.WaitForExit()&#xA;        out_ExitCode = p.ExitCode&#xA;    End Using&#xA;Catch ex As Exception&#xA;    out_ExitCode = 1&#xA;    out_Output = ex.Message&#xA;End Try" DisplayName="Invoke Code build_report.ps1" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+            <ui:InvokeCode.Arguments>
+              <InArgument x:TypeArguments="x:String" x:Key="in_ScriptPath">[System.IO.Path.Combine(Environment.CurrentDirectory, "build_report.ps1")]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_Args">["-BaseUrl """ &amp; baseUrl &amp; """ -ApiKey """ &amp; apiKey &amp; """"]</InArgument>
+              <OutArgument x:TypeArguments="x:Int32" x:Key="out_ExitCode">[exitCode]</OutArgument>
+              <OutArgument x:TypeArguments="x:String" x:Key="out_Output">[output]</OutArgument>
+            </ui:InvokeCode.Arguments>
+          </ui:InvokeCode>
+          <ui:LogMessage DisplayName="Log 스크립트 결과" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;build_report.ps1 exit=&quot; &amp; exitCode.ToString &amp; Environment.NewLine &amp; output]" />
+          <ui:ForEach x:TypeArguments="ui:QueueItem" CurrentIndex="{x:Null}" DisplayName="꺼낸 항목 상태 표시" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[items]">
+            <ui:ForEach.Body>
+              <ActivityAction x:TypeArguments="ui:QueueItem">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="ui:QueueItem" Name="qi" />
+                </ActivityAction.Argument>
+                <If Condition="[exitCode = 0]" DisplayName="성공인지" sap2010:WorkflowViewState.IdRef="If_2">
+                  <If.Then>
+                    <ui:SetTransactionStatus ContinueOnError="{x:Null}" Reason="{x:Null}" TimeoutMS="{x:Null}" DisplayName="Set Transaction Status (Successful)" ErrorType="Application" sap2010:WorkflowViewState.IdRef="SetTransactionStatus_1" Status="Successful" TransactionItem="[qi]">
+                      <ui:SetTransactionStatus.Analytics>
+                        <scg:Dictionary x:TypeArguments="x:String, InArgument" />
+                      </ui:SetTransactionStatus.Analytics>
+                      <ui:SetTransactionStatus.Output>
+                        <scg:Dictionary x:TypeArguments="x:String, InArgument" />
+                      </ui:SetTransactionStatus.Output>
+                    </ui:SetTransactionStatus>
+                  </If.Then>
+                  <If.Else>
+                    <ui:SetTransactionStatus ContinueOnError="{x:Null}" TimeoutMS="{x:Null}" DisplayName="Set Transaction Status (Failed)" ErrorType="Application" sap2010:WorkflowViewState.IdRef="SetTransactionStatus_2" Reason="[&quot;build_report.ps1 exit code &quot; &amp; exitCode.ToString]" Status="Failed" TransactionItem="[qi]">
+                      <ui:SetTransactionStatus.Analytics>
+                        <scg:Dictionary x:TypeArguments="x:String, InArgument" />
+                      </ui:SetTransactionStatus.Analytics>
+                      <ui:SetTransactionStatus.Output>
+                        <scg:Dictionary x:TypeArguments="x:String, InArgument" />
+                      </ui:SetTransactionStatus.Output>
+                    </ui:SetTransactionStatus>
+                  </If.Else>
+                </If>
+              </ActivityAction>
+            </ui:ForEach.Body>
+          </ui:ForEach>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+</Activity>

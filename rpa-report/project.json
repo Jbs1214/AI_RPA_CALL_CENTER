@@ -1,0 +1,58 @@
+{
+  "name": "CallCenter_RPA_Report",
+  "projectId": "ef38e67d-6ae6-47a4-b0c8-6ddf49ee2508",
+  "description": "큐 신호를 받아 서버의 완료 통화 목록으로 4시트 엑셀을 다시 만든다",
+  "main": "Main.xaml",
+  "dependencies": {
+    "UiPath.System.Activities": "[26.10.0]"
+  },
+  "webServices": [],
+  "entitiesStores": [],
+  "schemaVersion": "4.1",
+  "studioVersion": "26.10.0.0",
+  "projectVersion": "1.0.1",
+  "runtimeOptions": {
+    "autoDispose": false,
+    "netFrameworkLazyLoading": false,
+    "isPausable": true,
+    "isAttended": false,
+    "requiresUserInteraction": false,
+    "supportsPersistence": false,
+    "workflowSerialization": "NewtonsoftJson",
+    "excludedLoggedData": [
+      "Private:*",
+      "*password*"
+    ],
+    "executionType": "Workflow",
+    "readyForPiP": false,
+    "startsInPiP": false,
+    "mustRestoreAllDependencies": true,
+    "pipType": "ChildSession"
+  },
+  "designOptions": {
+    "projectProfile": "Developement",
+    "outputType": "Process",
+    "libraryOptions": {
+      "privateWorkflows": []
+    },
+    "processOptions": {
+      "ignoredFiles": []
+    },
+    "fileInfoCollection": [],
+    "saveToCloud": false
+  },
+  "expressionLanguage": "VisualBasic",
+  "entryPoints": [
+    {
+      "filePath": "Main.xaml",
+      "uniqueId": "d157384e-913c-41ba-a440-5a82208eabd3",
+      "input": [],
+      "output": []
+    }
+  ],
+  "isTemplate": false,
+  "templateProjectData": {},
+  "publishData": {},
+  "targetFramework": "Windows",
+  "dotNetVersion": "net10.0"
+}
