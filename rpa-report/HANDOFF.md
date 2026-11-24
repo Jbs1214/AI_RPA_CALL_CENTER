@@ -34,7 +34,6 @@ copy config.example.json config.json
 powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath 임시폴더nfig.json -BaseUrl http://서버주소:8000 -ApiKey 임시값
 ```
 - 로그에 `saved rows=N`이 나오고 종료 코드가 0이면 그 PC의 Excel로도 스크립트가 도는 것이다. `임시폴더nfig.json`은 `config.json`을 복사해 `OutputPath`만 임시 폴더로 바꾼 것이다(`README.md`의 "시험").
-- 마지막 줄이 `all checks passed`면 그 PC의 Excel로도 스크립트가 도는 것이다. `FAIL`이 나오면 `Main.xaml`보다 이것부터 본다.
 - `config.json`과 `output/`은 git에 올라가지 않는다. PC마다 새로 만든다.
 - 게시할 PC에서는 `config.json`의 `OutputPath`를 프로젝트 폴더 밖의 전체 경로로 바꾼다(`README.md`의 "다시 게시할 때").
 
