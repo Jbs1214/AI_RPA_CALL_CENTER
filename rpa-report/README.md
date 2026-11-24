@@ -91,7 +91,7 @@ Invoke Code의 인자는 `in_ScriptPath`(In, String), `in_Args`(In, String), `ou
 
 - Invoke Code의 VB 코드는 Studio 밖에서 컴파일해 없는 스크립트 경로로 실패(0이 아닌 값)를 받는 것을 확인했다.
 - 큐를 뺀 `Main.xaml`은 Studio의 분석기(`UiPath.Studio.CommandLine.exe analyze -p project.json`)에서 오류 0이고, 게시(컴파일)가 된다.
-- Studio 실행과 올린 프로세스(1.0.7), 시간 트리거로 돌려 확인했다(11/24). Studio에서 실행할 때는 Orchestrator 폴더를 `Shared`로 고른다.
+- Studio 실행과 올린 프로세스(1.0.8), 시간 트리거로 돌려 확인했다(11/24). Studio에서 실행할 때는 Orchestrator 폴더를 `Shared`로 고른다.
 
 ## 다시 게시할 때
 
