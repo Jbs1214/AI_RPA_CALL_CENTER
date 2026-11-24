@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>콜센터 AI·RPA 비서</title>
+    <title>AIRPA</title>
+    <script>
+      // 첫 화면 깜빡임 방지: React 가 뜨기 전에 저장된 테마(callcenter-theme)를 먼저 적용한다
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('callcenter-theme') === 'dark' ? 'dark' : 'light'
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

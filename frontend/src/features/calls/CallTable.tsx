@@ -14,9 +14,11 @@ interface Props {
   filters: CallFilters
   onChange: (next: CallFilters) => void
   onOpen: (callId: string) => void
+  /** 메인 화면용: 쪽 번호와 처리 시작·삭제 버튼 없이 "보기"만 둔다 */
+  compact?: boolean
 }
 
-export default function CallTable({ filters, onChange, onOpen }: Props) {
+export default function CallTable({ filters, onChange, onOpen, compact = false }: Props) {
   const qc = useQueryClient()
   const isMobile = Grid.useBreakpoint().md === false // md = 768px 이상
   const { data, error, isLoading } = useQuery({
@@ -66,8 +68,11 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
     {
       title: '',
       key: 'actions',
-      width: 220,
-      render: (_: unknown, row) => (
+      width: compact ? 70 : 220,
+      render: (_: unknown, row) =>
+        compact ? (
+          <Button size="small" type="link" onClick={() => onOpen(row.call_id)}>보기</Button>
+        ) : (
         <span onClick={(e) => e.stopPropagation()}>
           <ProcessButton call={row} />
           <Button size="small" type="link" onClick={() => onOpen(row.call_id)}>보기</Button>
@@ -82,7 +87,7 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
             <Button size="small" type="link" danger>삭제</Button>
           </Popconfirm>
         </span>
-      ),
+        ),
     },
   ]
 
@@ -100,6 +105,7 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
         onPage={(page, size) => onChange({ ...filters, page, size })}
         onOpen={onOpen}
         onDelete={(id) => del.mutate(id)}
+        compact={compact}
       />
     )
   }
@@ -115,15 +121,19 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       locale={{ emptyText: '조건에 맞는 통화가 없습니다' }}
       onRow={(r) => ({ onClick: () => onOpen(r.call_id), style: { cursor: 'pointer' } })}
       rowClassName={(r) => (r.status === 'FAILED' ? 'row-failed' : r.needs_review ? 'row-review' : '')}
-      pagination={{
-        position: ['bottomCenter'],
-        current: data?.page ?? filters.page ?? 1,
-        pageSize: data?.size ?? filters.size ?? 20,
-        total: data?.total ?? 0,
-        showSizeChanger: true,
-        pageSizeOptions: [10, 20, 50, 100],
-        onChange: (page, size) => onChange({ ...filters, page, size }),
-      }}
+      pagination={
+        compact
+          ? false
+          : {
+              position: ['bottomCenter'],
+              current: data?.page ?? filters.page ?? 1,
+              pageSize: data?.size ?? filters.size ?? 20,
+              total: data?.total ?? 0,
+              showSizeChanger: true,
+              pageSizeOptions: [10, 20, 50, 100],
+              onChange: (page, size) => onChange({ ...filters, page, size }),
+            }
+      }
     />
   )
 }
