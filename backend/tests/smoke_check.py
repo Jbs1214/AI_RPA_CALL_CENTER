@@ -1,5 +1,5 @@
 """실행 중인 서버를 HTTP로 점검한다(추가 설치 없이 python 만 있으면 된다).
-사용: python tests/smoke_test.py http://localhost:8000
+사용: python tests/smoke_check.py http://localhost:8000
 seed 데이터가 들어 있는 DB 기준이다. 만든 시험 데이터는 마지막에 지운다."""
 import hashlib, io, json, sys, urllib.error, urllib.parse, urllib.request, uuid
 
