@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { ChatResponse, SuggestedAction } from '../../types/Chat'
 import { CATEGORY_COLOR } from '../../lib/categoryColor'
 import { formatKst } from '../../lib/date'
+import { EXAMPLES } from './constants'
 
 const QUERY_LABEL: Record<string, string> = {
   q: '검색어',
@@ -28,14 +29,25 @@ interface Props {
   actionKey: (a: SuggestedAction) => string
   acting: boolean
   onAction: (a: SuggestedAction) => void
+  onPick: (text: string) => void // 질문 예시 칩을 눌렀을 때
 }
 
-export default function ChatResult({ response, done, actionKey, acting, onAction }: Props) {
+export default function ChatResult({ response, done, actionKey, acting, onAction, onPick }: Props) {
   const { query, items, stats, suggested_actions: actions, mode, intent } = response
   const conditions = Object.entries(query)
 
   return (
     <div className="cb-result">
+      {intent === 'help' && (
+        <div className="cb-chips">
+          {EXAMPLES.map((ex) => (
+            <button key={ex} className="cb-chip" onClick={() => onPick(ex)}>
+              {ex}
+            </button>
+          ))}
+        </div>
+      )}
+
       {intent !== 'help' && (
         <div className="cb-cond">
           <span>적용된 조건</span>
