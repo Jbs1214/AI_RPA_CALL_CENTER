@@ -108,6 +108,7 @@
 /* 올리기 전에 담아 둔 파일 목록 */
 .upload-queue {
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* 이름이 길어도 줄이 칸 밖으로 나가지 않게 */
   gap: 6px;
   margin: 10px 0 0;
   padding: 0;
