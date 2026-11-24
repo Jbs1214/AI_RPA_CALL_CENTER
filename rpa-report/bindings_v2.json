@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "resources": [
+    {
+      "activityDisplayName": "Get Asset BACKEND_BASE_URL",
+      "activityId": "GetRobotAsset_1",
+      "resource": "asset",
+      "key": "BACKEND_BASE_URL",
+      "id": "assetBACKEND_BASE_URLBACKEND_BASE_URLFalse",
+      "value": {
+        "name": {
+          "defaultValue": "BACKEND_BASE_URL",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    },
+    {
+      "activityDisplayName": "Get Asset BACKEND_API_KEY",
+      "activityId": "GetRobotAsset_2",
+      "resource": "asset",
+      "key": "BACKEND_API_KEY",
+      "id": "assetBACKEND_API_KEYBACKEND_API_KEYFalse",
+      "value": {
+        "name": {
+          "defaultValue": "BACKEND_API_KEY",
+          "isExpression": false
+        }
+      },
+      "metadata": {
+        "BindingsVersion": "2.2"
+      }
+    }
+  ]
+}

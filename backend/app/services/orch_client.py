@@ -18,6 +18,8 @@ class OrchestratorError(Exception):
 
 
 def _post(url: str, data: bytes, headers: dict, timeout: float = 10) -> dict:
+    # 기본 User-Agent(Python-urllib)는 UiPath 앞단에서 403(1010)으로 막힌다
+    headers = {**headers, "User-Agent": "callcenter-backend/1.0"}
     req = urllib.request.Request(url, data=data, headers=headers, method="POST")
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
