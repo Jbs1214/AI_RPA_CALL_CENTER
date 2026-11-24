@@ -87,7 +87,7 @@ def upload_recording(request: Request, file: UploadFile = File(...), called_at: 
                     # 입력값 → 파일명 → 기존 행의 값 (못 읽었다고 기존 값을 '미확인'으로 덮지 않는다)
                     when = given_time or (parsed[0] if parsed else ex["called_at"])
                     agent = clean(agent_name) or (parsed[1] if parsed else ex["agent_name"])
-                    company = clean(customer_company) or (parsed[2] if parsed else ex["customer_company"])
+                    company = clean(customer_company) or (parsed[2] if parsed else ex["customer_company"] or "미확인")
                     call_id, old_rel = ex["call_id"], ex["audio_path"]
                     rel = audio_rel_path(call_id, original, datetime.now(KST))
                     retry_count = conn.execute(
@@ -99,7 +99,7 @@ def upload_recording(request: Request, file: UploadFile = File(...), called_at: 
                 else:
                     when = given_time or (parsed[0] if parsed else datetime.now(KST))
                     agent = clean(agent_name) or (parsed[1] if parsed else "미확인")
-                    company = clean(customer_company) or (parsed[2] if parsed else None)
+                    company = clean(customer_company) or (parsed[2] if parsed else "미확인")
                     call_id = conn.execute(NEXT_ID_SQL).fetchone()["call_id"]
                     rel = audio_rel_path(call_id, original, datetime.now(KST))
                     conn.execute(
@@ -178,13 +178,19 @@ def get_audio(call_id: str, request: Request):
 @router.put("/api/calls/{call_id}/result", tags=["처리"], summary="처리 결과 받기(봇)")
 def put_result(call_id: str, body: AnalysisIn, request: Request):
     check_key(request)
-    a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD)
-    a["analysis_json"] = Jsonb(a["analysis_json"]) if a["analysis_json"] is not None else None
     with connect() as conn:
+        # 검토 필요 판정에 서버에 저장된 담당자·고객사를 쓴다(흐름 B의 봇은 이 값을 모른다)
+        cur = conn.execute("SELECT agent_name, customer_company FROM calls WHERE call_id = %s", (call_id,)).fetchone()
+        if not cur:
+            raise ApiError(404, "NOT_FOUND", "없는 관리번호입니다.")
+        a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD,
+                             agent_name=cur["agent_name"], customer_company=cur["customer_company"])
+        a["analysis_json"] = Jsonb(a["analysis_json"]) if a["analysis_json"] is not None else None
         r = conn.execute(
             "UPDATE calls SET status=%(status)s, category=%(category)s, customer_question=%(customer_question)s, "
             "action_taken=%(action_taken)s, follow_up_needed=%(follow_up_needed)s, needs_review=%(needs_review)s, "
             "confidence=%(confidence)s, transcript=COALESCE(%(transcript)s::text, transcript), "
+            "customer_phone=COALESCE(%(customer_phone)s, customer_phone), "
             "analysis_json=COALESCE(%(analysis_json)s::jsonb, analysis_json), error_message=%(error_message)s "
             "WHERE call_id=%(call_id)s AND status IN ('RECEIVED','PROCESSING','FAILED') "
             "RETURNING call_id, status, needs_review", {**a, "call_id": call_id}).fetchone()

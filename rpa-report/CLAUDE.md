@@ -15,13 +15,13 @@
 - 템플릿 v3의 요약 시트 목록과 차트: 설계서 7장
 - Orchestrator 세팅(Asset, 외부 앱, 무인 실행, 시간 트리거): 설계서 9장
 - 시험 순서와 기대값: 설계서 11장, 이 폴더의 `README.md`
-- 지표 정의(웹과 같아야 한다): `docs/제품요구사항정의서_v2.0.md` 8장
+- 지표 정의(웹과 같아야 한다): `docs/제품요구사항정의서_v2.1.md` 8장
 
 ## 설계 규칙
 
 - 목록 받기와 통화 대장 쓰기는 `build_report.ps1`이 한다. UiPath(`Main.xaml`)는 Asset 읽기, 스크립트 실행, 결과 확인만 맡는다. 아래 규칙 가운데 서버 호출과 엑셀 쓰기는 이 스크립트에 구현되어 있다.
 - `Main.xaml`의 시퀀스에는 쓰는 파일과 하는 일을 주석(Annotation)으로 단다. 시퀀스를 더하거나 바꾸면 주석도 같이 고친다.
-- `build_report.ps1`과 `tools/check_report.ps1`은 ASCII로만 쓴다. Windows PowerShell 5.1이 BOM 없는 UTF-8 스크립트의 한글을 잘못 읽는다.
+- `build_report.ps1`은 ASCII로만 쓴다. Windows PowerShell 5.1이 BOM 없는 UTF-8 스크립트의 한글을 잘못 읽는다.
 - 서버에는 읽기만 한다. 호출은 `GET /api/calls?status=DONE&include_transcript=true&size=200` 하나이고, 받은 건수가 응답의 `total`이 될 때까지 `page`를 올린다.
 - 큐 활동(Get Transaction Item, Set Transaction Status)을 쓰지 않는다. ③ 봇에게서 받는 데이터는 없다.
 - 입력 인자를 두지 않는다. 매 실행이 전체를 다시 만든다.
@@ -39,8 +39,8 @@
 
 ## 시험
 
-- 서버가 없어도 `testdata/`의 가짜 JSON으로 통화 대장 쓰기를 먼저 확인한다. 기대값은 `README.md`에 있다.
-- 템플릿이나 쓰기 규칙(`build_report.ps1`)을 바꾸면 `tools/check_report.ps1`로 seed 14건과 경계 사례 6건을 다시 확인한다. 지표 6개와 담당자별·일자별·고객사별 합계가 분석된 통화와 같아야 한다.
+- 가짜 데이터(mock)를 만들거나 저장소에 두지 않는다. 시험은 자체 제작 음성으로 서버에 저장된 실제 통화로 한다(11/24 결정).
+- 템플릿이나 쓰기 규칙(`build_report.ps1`)을 바꾸면 결과 파일을 건드리지 않는 설정(`-ConfigPath`)으로 실제 서버에 한 번 돌려 본다(`README.md`의 "시험"). 지표 6개와 담당자별·일자별·고객사별 합계가 분석된 통화와 같아야 한다.
 - 템플릿을 스크립트로 다시 만들었으면 Excel에서 열어 차트 4개가 보이는지 확인한다. 스크립트는 차트가 열리는지까지는 확인하지 못한다.
 - 웹과 숫자가 다르면 서버 통계(`GET /api/stats`)와 먼저 비교한다.
 

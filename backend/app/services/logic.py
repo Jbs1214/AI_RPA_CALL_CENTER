@@ -74,7 +74,7 @@ def to_item(r: dict, detail: bool = False, with_transcript: bool = False) -> dic
 
 
 # ---------- 분석 결과 값 보정 (API 1, 11 공통) ----------
-def prepare_analysis(d: dict, threshold: float) -> dict:
+def prepare_analysis(d: dict, threshold: float, *, agent_name: Optional[str], customer_company: Optional[str]) -> dict:
     """분석 결과를 저장할 값으로 바꾼다. 거부하지 않고 고쳐서 저장한다(봇이 실패 처리되지 않게)."""
     status = d.get("status") or "DONE"
     if status not in ("DONE", "FAILED"):
@@ -83,6 +83,7 @@ def prepare_analysis(d: dict, threshold: float) -> dict:
         "status": status,
         "transcript": mask_text(d["transcript"]) if d.get("transcript") else None,
         "analysis_json": d.get("analysis_json"),
+        "customer_phone": mask_text(clean(d.get("customer_phone"))),
     }
     if status == "FAILED":
         out.update(category=None, customer_question=None, action_taken=None, follow_up_needed=None,
@@ -96,11 +97,19 @@ def prepare_analysis(d: dict, threshold: float) -> dict:
     conf = d.get("confidence")
     if conf is None or conf < threshold:  # 신뢰도가 없거나 낮으면 검토 필요
         review = True
+    follow_up = d.get("follow_up_needed")
+    question = clean(d.get("customer_question"))
+    # 저장할 때만 판정한다. 웹에서 '확인 완료'한 건(API 4)은 다시 켜지 않는다
+    if (clean(agent_name) in (None, "미확인") or clean(customer_company) in (None, "미확인")
+            or (category == "불만" and not follow_up)    # 불만인데 후속조치 N
+            or follow_up is None                         # 후속조치를 안 보냄
+            or not question):                            # 질문 요지가 빔(조치 내역은 비어도 정상일 수 있다)
+        review = True
     out.update(
         category=category,
-        customer_question=mask_text(clean(d.get("customer_question"))),
+        customer_question=mask_text(question),
         action_taken=mask_text(clean(d.get("action_taken"))),
-        follow_up_needed=bool(d.get("follow_up_needed")),
+        follow_up_needed=bool(follow_up),
         needs_review=review,
         confidence=conf,
         error_message=None,

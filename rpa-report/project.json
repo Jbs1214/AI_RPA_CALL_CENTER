@@ -38,12 +38,7 @@
     "processOptions": {
       "ignoredFiles": [
         "output\\콜센터_엑셀_최신.xlsx",
-        "testdata\\mock_calls_edge_v1.json",
-        "testdata\\mock_calls_seed14_v1.json",
         "tools\\build_template.py",
-        "tools\\check_report.ps1",
-        "tools\\check_template.py",
-        "tools\\make_mock.py",
         "HANDOFF.md",
         "CLAUDE.md",
         "README.md",

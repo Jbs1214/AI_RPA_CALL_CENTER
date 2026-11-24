@@ -11,14 +11,14 @@
 
 반영한 것: `Main.xaml`에서 큐 꺼내기와 상태 표시, 인자 `in_ForceRefresh`를 빼고, 시퀀스 3개(서버 주소 읽기, 엑셀 다시 만들기, 결과 확인)에 주석을 달았다. 큐가 없으므로 ④는 Orchestrator 시간 트리거(1분)로 시작한다. 통합본 v2.0, 설계서 v7에 적었다.
 
-Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리거는 지웠고, 시간 트리거 `CallCenter_Report_Every1Min`이 1분마다 시작한다. 큐 `CallCenter_Calls`는 ③ 봇이 큐 추가를 뺄 때까지 남겨 둔다.
+Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리거는 지웠고, 시간 트리거 `CallCenter_Report_Every1Min`이 1분마다 시작한다. 큐 `CallCenter_Calls`도 ③ 봇이 큐 추가를 뺀 뒤 지웠다(15:58). Orchestrator에 큐와 관련된 것은 남아 있지 않다.
 
 ## 지금 상태
 
 | 한 일 | 확인 |
 |---|---|
 | 템플릿 v3: 슬라이서(담당자, 유형), 고객사 차트 눈금 1 단위, 통화 대장 I·J열 너비 | Excel 화면에서 확인함 |
-| `build_report.ps1`: 서버 목록 받기 → 정렬 → 통화 대장 쓰기 → 저장 | `tools/check_report.ps1`이 `all checks passed`(11/24 14:55에도 다시 통과) |
+| `build_report.ps1`: 서버 목록 받기 → 정렬 → 통화 대장 쓰기 → 저장 | 실제 서버로 확인(11/24 15:48, 16건, 지표가 `GET /api/stats`와 같음). 가짜 JSON 옵션(`-MockJson`)은 뺐다 |
 | 실제 서버와의 대조 (11/24) | 엑셀이 `GET /api/stats`, 서버 엑셀(API 7), 웹 카드와 같았다(범수, 수창 확인). 15건일 때 15 / 7 / 2 / 4 / 27% / 질의, 고객사 순서 포함 |
 | 예외 (11/24, 실제 서버) | 서버 주소가 틀릴 때 3회 재시도 뒤 실패와 기존 파일 유지, 출력 파일이 열려 있을 때 다른 이름으로 저장, 완료 통화 0건일 때 머리글만 있는 엑셀(지표 0, 오류 셀 0) |
 | Orchestrator `Shared`: Asset 2개, 외부 앱, 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot` (11/24) | 무인 Job이 Successful. 외부 앱은 범수가 토큰 발급을 확인했다 |
@@ -31,10 +31,9 @@ Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리�
 git pull
 cd rpa-report
 copy config.example.json config.json
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath 임시폴더\config.json -BaseUrl http://서버주소:8000 -ApiKey 임시값
 ```
-
-- 마지막 줄이 `all checks passed`면 그 PC의 Excel로도 스크립트가 도는 것이다. `FAIL`이 나오면 `Main.xaml`보다 이것부터 본다.
+- 로그에 `saved rows=N`이 나오고 종료 코드가 0이면 그 PC의 Excel로도 스크립트가 도는 것이다. `임시폴더\config.json`은 `config.json`을 복사해 `OutputPath`만 임시 폴더로 바꾼 것이다(`README.md`의 "시험").
 - `config.json`과 `output/`은 git에 올라가지 않는다. PC마다 새로 만든다.
 - 게시할 PC에서는 `config.json`의 `OutputPath`를 프로젝트 폴더 밖의 전체 경로로 바꾼다(`README.md`의 "다시 게시할 때").
 
@@ -45,7 +44,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 | 엑셀 대시보드 자동 생성 | 엑셀 템플릿 v3, `build_report.ps1` | 끝 |
 | 메인 RPA 봇 | `project.json`, `Main.xaml` | 끝. 큐를 뺀 1.0.7이 시간 트리거로 돈다 |
 | 큐/예외 처리 | 스크립트의 재시도, `Main.xaml`의 실패 표시 | 큐는 강사 피드백으로 뺐다. 예외 처리는 스크립트 쪽 확인이 끝났고, 실패한 Job이 Faulted로 보이는지는 아직 |
-| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 끝. 큐 `CallCenter_Calls` 지우기만 남았다(③이 큐 추가를 뺀 뒤) |
+| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 끝. 큐와 큐 트리거는 지웠다 |
 | 레거시(CRM/ERP) 입력, 정형 보고서 | 없음 | 만들지 않는다(통합본 FR-R09). 발표 때 확장 계획으로 설명한다 |
 
 ## 이어서 할 일
@@ -54,9 +53,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 
 팀에 알리기
 
-- [ ] 민영: ③ 봇에서 큐에 추가하는 단계를 빼 달라고 한다. **민영이 뺐다고 할 때까지 큐를 지우지 않는다.** 먼저 지우면 ③ 봇이 그 단계에서 실패한다
+- [x] 민영: ③ 봇에서 큐에 추가하는 단계를 뺐다. 흐름 A는 큐 없이 서버 저장(201)까지 확인했고, 흐름 B는 코드에서만 뺐다(민영, 11/24)
 - [x] 범수, 민철: 큐 트리거가 없어지고 1분 시간 트리거가 생긴다고 알린다. Job 시작 시험 때 끄는 대상이 시간 트리거로 바뀐다
-- [ ] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철은 확인했다(v2.0 동의). 민영의 답은 아직 없다
+- [x] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철이 확인했고 11/24에 합쳐졌다
 
 Studio
 
@@ -70,12 +69,14 @@ Orchestrator
 - [x] 큐 트리거 `CallCenter_Calls_Trigger`를 지운다
 - [x] 시간 트리거 `CallCenter_Report_Every1Min`: 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul, 우선순위 High, 5분 뒤 Kill
 - [x] 1분마다 Job이 생기고 Successful인지, 결과 엑셀의 저장 시각이 바뀌는지. 15:38:49, 15:39:47에 이어서 돌았고 엑셀이 그때마다 새로 저장됐다
-- [ ] 민영이 큐 추가를 뺐다고 하면 큐 `CallCenter_Calls`를 지운다
+- [x] 큐 `CallCenter_Calls`를 지웠다(11/24 15:58). 그 뒤에도 시간 트리거 Job은 1분마다 Successful이다
 
 확인이 필요한 점: 정상일 때는 Job이 쌓이지 않았다(한 번에 15초쯤). 앞 Job이 오래 걸릴 때 시간 트리거가 Job을 또 만드는지는 모른다. Pending이 쌓이면 주기를 늘린다.
 
 ### B. 연락이 오면 하는 일
 
+- [x] Job 시작 시험 때문에 꺼 두었던 시간 트리거를 다시 켰다(11/24 16:31 끔, 16:49 켬)
+- 참고: Job 시작 시험 결과(11/24). 서버가 시작한 ③ Job 두 건(16:14 `CALL-20261124-081`, 16:34 `CALL-20261124-082`)이 이 PC(`CallCenter_BotPC`)에서 Successful로 끝났다. 서버 → Orchestrator → 봇 PC까지는 된다(외부 앱, 머신, 로봇 계정). 다만 ③ 봇이 인자를 받고 0~2초 만에 로그 없이 끝나 결과가 오지 않았다. 시연은 가져가기 방식으로 하기로 했고 Job 시험은 더 하지 않는다(범수, 민철)
 - [ ] 범수가 Job 시작 시험 시간을 알리면(10분 전) 시간 트리거를 끄고, 끝났다고 하면 다시 켠다. Triggers → Time triggers → ⋮ → Disable/Enable
 - [ ] 서버가 시연 노트북으로 옮겨지거나 주소가 바뀌면 Asset `BACKEND_BASE_URL`을 바꾸고 한 번 실행해 확인한다
 - [ ] 범수가 `X-API-Key`를 켠다고 하면 Asset `BACKEND_API_KEY` 값을 바꾼다
@@ -85,6 +86,7 @@ Orchestrator
 - [ ] 발표 전에 봇 PC를 켜고 `woori` 계정으로 로그인해 둔다. 로봇이 사용자 방식이라 로그인되어 있어야 Job이 돈다
 - [ ] 결과 엑셀은 닫아 둔다. 열려 있으면 1분마다 날짜시각이 붙은 파일이 생긴다. 화면에 띄울 때는 복사본을 연다
 - [ ] 리허설에서 음성 저장 → 1분 안에 엑셀이 바뀌는 것을 한 번 본다
+- [ ] 후속조치 목록을 보여 줄 때는 통화 대장에서 "후속조치" 열을 `Y`로 거른다. 담당자 조치 내역(H열)에 `조치 내용 [후속] 후속 내용`처럼 한 칸에 같이 들어온다. `[후속]`은 `Y`일 때만 끝에 한 번 붙는다(범수, 11/24). 대시보드에 목록 칸을 새로 만들지는 않는다
 - [ ] 레거시(CRM/ERP) 입력과 정형 보고서를 만들지 않은 이유와 확장 계획을 설명할 두세 문장을 발표자와 맞춘다. 순서는 `docs/시나리오_0_시연_v2.md`의 11번에 있다
 - [ ] 큐를 뺀 이유를 물으면: 강사 피드백으로 뺐고, ④는 큐의 값을 쓰지 않고 서버 목록만 읽었기 때문에 엑셀 내용은 달라지지 않는다
 
@@ -111,8 +113,11 @@ Orchestrator
 
 ## 주의
 
-- `build_report.ps1`과 `tools/check_report.ps1`은 한글을 넣지 않는다. PowerShell 5.1이 잘못 읽는다. 고친 뒤에는 `tools\check_report.ps1`을 다시 돌린다.
+- `build_report.ps1`은 한글을 넣지 않는다. PowerShell 5.1이 잘못 읽는다. 고친 뒤에는 실제 서버로 한 번 돌려 본다(`README.md`의 "시험").
 - 이 폴더 안의 작업은 `git pull --rebase` 후 `main`에 올린다. 파트 사이의 약속을 바꾸는 일은 브랜치와 PR로 올린다(`CONTRIBUTING.md`).
 - API 키가 스크립트의 명령줄 인자로 넘어간다. 지금은 임시 값이라 괜찮다. 서버가 키 확인을 켜면 넘기는 방법을 바꾼다.
 - 서버의 통화 데이터는 팀원들의 시험으로 계속 바뀐다(11/24 14:55에는 0건이었다). 숫자를 비교할 때는 같은 시각의 값으로 한다.
 - 스크립트를 시작하지 못한 경우(파일이 없음 등)에는 이유가 로그에 남지 않고 종료 코드만 남는다. 스크립트 안에서 난 오류는 로그에 남는다.
+- 가짜 데이터(mock)는 쓰지 않는다(11/24 결정). `testdata/`의 가짜 JSON 2개와 `tools/`의 `check_report.ps1`, `check_template.py`, `make_mock.py`를 지웠다. 시험은 자체 제작 음성 15개로 서버에 저장된 통화로 한다. 가짜 데이터로 돌리던 자동 검사는 없어졌다.
+- `docs/설계서_4_RPA_v7.md` 10~11장과 `docs/제품요구사항정의서_v2.1.md`에는 가짜 JSON과 기대값(seed 14건, 20건) 이야기가 남아 있다. 다음에 그 문서를 고칠 때 뺀다.
+- 지금 올라가 있는 프로세스(1.0.7)의 스크립트에는 `-MockJson` 옵션이 남아 있다. 쓰지 않는 옵션이라 동작은 같다. 다음에 게시할 때 빠진다.

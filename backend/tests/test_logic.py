@@ -8,32 +8,50 @@ from app.services import storage as helpers
 
 KST = timezone(timedelta(hours=9))
 
+NAMES = {"agent_name": "김민수", "customer_company": "대한유통"}
+OK = {"category": "질의", "customer_question": "문의", "action_taken": "안내", "follow_up_needed": False, "confidence": 0.9}
+
+def prep(d, **names):
+    return logic.prepare_analysis(d, 0.7, **{**NAMES, **names})
+
 def test_done_normal():
-    a = logic.prepare_analysis({"category": "불만", "follow_up_needed": True, "confidence": 0.9, "transcript": "전화 010-1234-5678"}, 0.7)
+    a = prep({**OK, "category": "불만", "follow_up_needed": True, "transcript": "전화 010-1234-5678",
+              "customer_phone": "010-1234-5678"})
     assert a["status"] == "DONE" and a["needs_review"] is False and a["follow_up_needed"] is True
-    assert a["transcript"] == "전화 010-****-5678"
+    assert a["transcript"] == "전화 010-****-5678" and a["customer_phone"] == "010-****-5678"
 
 def test_low_confidence_flags_review():
-    assert logic.prepare_analysis({"category": "질의", "confidence": 0.62}, 0.7)["needs_review"] is True
-    assert logic.prepare_analysis({"category": "질의", "confidence": 0.7}, 0.7)["needs_review"] is False
-    assert logic.prepare_analysis({"category": "질의"}, 0.7)["needs_review"] is True      # 신뢰도 없음
+    assert prep({**OK, "confidence": 0.62})["needs_review"] is True
+    assert prep({**OK, "confidence": 0.7})["needs_review"] is False
+    assert prep({**OK, "confidence": None})["needs_review"] is True      # 신뢰도 없음
 
 def test_unknown_category_becomes_other():
-    a = logic.prepare_analysis({"category": "AAA", "confidence": 0.9}, 0.7)
+    a = prep({**OK, "category": "AAA"})
     assert a["category"] == "기타 문의" and a["needs_review"] is True
-    assert logic.prepare_analysis({"confidence": 0.9}, 0.7)["category"] == "기타 문의"
+    assert prep({**OK, "category": None})["category"] == "기타 문의"
 
-def test_booleans_default_false():
-    a = logic.prepare_analysis({"category": "질의", "confidence": 0.9}, 0.7)
-    assert a["follow_up_needed"] is False and a["needs_review"] is False
+def test_follow_up_missing_fills_false_and_flags_review():
+    a = prep({k: v for k, v in OK.items() if k != "follow_up_needed"})
+    assert a["follow_up_needed"] is False and a["needs_review"] is True
+
+def test_review_rules():
+    assert prep(OK)["needs_review"] is False                               # 모두 갖추면 검토 필요 아님
+    assert prep(OK, agent_name="미확인")["needs_review"] is True
+    assert prep(OK, customer_company="미확인")["needs_review"] is True
+    assert prep(OK, customer_company=None)["needs_review"] is True
+    assert prep(OK, customer_company=" ")["needs_review"] is True
+    assert prep({**OK, "category": "불만", "follow_up_needed": False})["needs_review"] is True
+    assert prep({**OK, "customer_question": " "})["needs_review"] is True
+    assert prep({**OK, "action_taken": None})["needs_review"] is False    # 조치 내역은 비어도 정상일 수 있다
 
 def test_failed_keeps_reason_and_clears_result():
-    a = logic.prepare_analysis({"status": "FAILED", "category": "불만", "error_message": " STT_TIMEOUT: x "}, 0.7)
+    a = prep({"status": "FAILED", "category": "불만", "error_message": " STT_TIMEOUT: x "}, agent_name="미확인")
     assert a["status"] == "FAILED" and a["error_message"] == "STT_TIMEOUT: x" and a["category"] is None
-    assert logic.prepare_analysis({"status": "FAILED"}, 0.7)["error_message"]            # 사유 없어도 채운다
+    assert a["needs_review"] is None                                        # 실패에는 검토 규칙을 쓰지 않는다
+    assert prep({"status": "FAILED"})["error_message"]                     # 사유 없어도 채운다
 
 def test_bad_status():
-    with pytest.raises(ApiError) as e: logic.prepare_analysis({"status": "PROCESSING"}, 0.7)
+    with pytest.raises(ApiError) as e: prep({"status": "PROCESSING"})
     assert e.value.status == 422
 
 def test_tz_required():

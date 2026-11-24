@@ -1,7 +1,8 @@
 /* ==========================================================================
-   챗봇 전용 스타일
+   챗봇 전용 스타일 — 규칙은 frontend/DESIGN.md
    - 모든 클래스에 cb- 를 붙여서 이 폴더 밖 화면에 영향을 주지 않는다.
-   - 색과 크기는 아래 변수만 고치면 한꺼번에 바뀐다.
+   - 색은 tokens.css 의 변수(--color-*)를 --cb-* 에 이어 둔다. 라이트/다크는 그 변수가 알아서 바꾼다.
+   - 그라데이션, 패널 그림자, 이모지를 쓰지 않는다. 그림자는 떠 있는 창 자체에만 쓴다.
 
    차례
      1. 변수
@@ -17,75 +18,34 @@
 
 /* 1. 변수 ------------------------------------------------------------- */
 .cb-root {
-  /* 색 */
-  --cb-blue: #1428a0;
-  --cb-blue-dark: #0c1c7a;
-  --cb-blue-light: #2a45d6;
-  --cb-blue-soft: #e8ecf9;
-  --cb-bg: #f4f5f7;
-  --cb-surface: #fff;
-  --cb-line: #e5e7eb;
-  --cb-text: #1a1a1a;
-  --cb-sub: #6b7280;
-  --cb-disabled: #c8ccd6;
-  --cb-error-bg: #fdecec;
-  --cb-error-text: #a32d2d;
-  --cb-success-bg: #eefaf2;
-  --cb-success-line: #b7e3c7;
-  --cb-success-text: #1f7a45;
+  /* 색: 전부 tokens.css 에서 가져온다 (다크 값도 거기서 바뀐다) */
+  --cb-accent-bg: var(--color-accent); /* 보내기 버튼, 내 말풍선 */
+  --cb-accent-hover: var(--color-accent-hover);
+  --cb-accent-fg: var(--accent-strong); /* 칩, 제안 버튼의 글자 */
+  --cb-accent-weak: var(--accent-weak); /* 옅은 파랑 면 */
+  --cb-bg: var(--color-bg); /* 메시지 영역 바탕 */
+  --cb-surface: var(--color-surface); /* 창, 상대 말풍선, 카드 */
+  --cb-elevated: var(--color-elevated); /* 아바타, 막대 바탕, 눌린 면 */
+  --cb-line: var(--color-line);
+  --cb-text: var(--color-text);
+  --cb-sub: var(--color-text-sub);
+  --cb-muted: var(--color-muted);
+  --cb-hover: var(--hover-bg);
 
-  /* 다크에서 값이 달라지는 색 */
-  --cb-header-bg: linear-gradient(135deg, var(--cb-blue) 0%, var(--cb-blue-light) 100%);
-  --cb-accent-text: #1428a0; /* 칩, 태그, 제안 버튼의 글자·테두리 색 */
-  --cb-bubble-bot: #fff;
-  --cb-date-bg: #e9ebef;
-  --cb-bar-bg: #eef0f4;
-  --cb-disabled-bg: #f3f4f6;
-  --cb-ai-bg: #f1e8fb;
-  --cb-ai-text: #7a3fc0;
-
-  /* 모양 */
-  --cb-radius-panel: 20px;
-  --cb-radius-card: 10px;
-  --cb-radius-bubble: 18px;
-  --cb-radius-pill: 24px;
-  --cb-gap: 14px;
+  /* 모양: 모서리는 8px 하나. 원형은 아바타·점·열기 버튼만 */
+  --cb-radius: var(--radius);
+  --cb-gap: 12px;
   --cb-edge: 24px; /* 화면 가장자리와의 거리 */
   --cb-ease: 0.15s;
 
-  font-family: inherit;
+  font-family: var(--font-ui);
+  letter-spacing: -0.1px;
 }
 
-/* 다크: html 의 data-theme="dark" 일 때 변수만 바꾼다(스위치는 src/theme/) */
-[data-theme='dark'] .cb-root {
-  color-scheme: dark; /* 스크롤바, 입력창 기본색도 어둡게 */
-
-  --cb-blue: #4a5be0;
-  --cb-blue-dark: #3a49c0;
-  --cb-blue-soft: rgba(108, 123, 255, 0.22);
-  --cb-bg: #0b1030;
-  --cb-surface: #121842;
-  --cb-line: rgba(140, 170, 255, 0.22);
-  --cb-text: #e8ecff;
-  --cb-sub: #aab3d6;
-  --cb-disabled: rgba(255, 255, 255, 0.2);
-  --cb-error-bg: rgba(217, 83, 79, 0.2);
-  --cb-error-text: #ff9a98;
-  --cb-success-bg: rgba(90, 161, 127, 0.2);
-  --cb-success-line: rgba(90, 161, 127, 0.5);
-  --cb-success-text: #7be0a8;
-
-  --cb-header-bg: linear-gradient(135deg, #060a3a 0%, #1428a0 55%, #5a3bd6 100%);
-  --cb-accent-text: #9aa6ff;
-  --cb-bubble-bot: #1c2455;
-  --cb-date-bg: rgba(255, 255, 255, 0.1);
-  --cb-bar-bg: rgba(255, 255, 255, 0.12);
-  --cb-disabled-bg: rgba(255, 255, 255, 0.06);
-  --cb-ai-bg: rgba(130, 70, 255, 0.28);
-  --cb-ai-text: #cbb0ff;
-}
-[data-theme='dark'] .cb-panel {
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--cb-line);
+/* 키보드로 움직일 때 2px 바깥선을 항상 보이게 */
+.cb-root :is(button, [role='button']):focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
 }
 
 /* 2. 열기 버튼 --------------------------------------------------------- */
@@ -94,28 +54,25 @@
   right: var(--cb-edge);
   bottom: var(--cb-edge);
   z-index: 990; /* 상세 화면(antd Drawer 1000)이 위에 열리도록 */
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0;
   border-radius: 50%;
-  background: var(--cb-blue);
+  background: var(--cb-accent-bg);
   color: #fff;
-  font-size: 26px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(20, 40, 160, 0.35);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  box-shadow: var(--shadow-lift); /* 떠 있는 버튼이라 그림자 허용 */
+  transition: background var(--cb-ease), opacity var(--cb-ease);
 }
 .cb-launcher:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 10px 26px rgba(20, 40, 160, 0.45);
+  background: var(--cb-accent-hover); /* 크기는 바꾸지 않고 색만 */
 }
 .cb-launcher.hidden {
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.8);
 }
 
 /* 3. 대화 창 ----------------------------------------------------------- */
@@ -126,15 +83,16 @@
   z-index: 991;
   display: flex;
   flex-direction: column;
-  width: 390px;
+  width: 380px;
   height: min(640px, calc(100vh - 2 * var(--cb-edge)));
   overflow: hidden;
-  border-radius: var(--cb-radius-panel);
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
   background: var(--cb-surface);
   color: var(--cb-text);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-lift);
   transform-origin: bottom right;
-  animation: cb-pop 0.2s ease-out;
+  animation: cb-pop 0.16s ease-out;
 }
 .cb-panel.dragging {
   user-select: none; /* 끄는 동안 글자가 선택되지 않게 */
@@ -142,7 +100,7 @@
 @keyframes cb-pop {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.96);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -166,10 +124,11 @@
 .cb-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 14px 16px 18px;
-  background: var(--cb-header-bg);
-  color: #fff;
+  gap: 10px;
+  padding: 10px 8px 10px 14px;
+  border-bottom: 1px solid var(--cb-line);
+  background: var(--cb-surface);
+  color: var(--cb-text);
   cursor: grab; /* 잡아서 옮긴다 */
   touch-action: none;
   user-select: none;
@@ -181,25 +140,17 @@
 .cb-title {
   flex: 1;
   min-width: 0;
-  line-height: 1.3;
+  line-height: 18px;
 }
 .cb-title b {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
 }
 .cb-title span {
+  color: var(--cb-muted);
   font-size: 12px;
-  opacity: 0.85;
-}
-.cb-title span::before {
-  /* 초록색 접속 표시 */
-  content: '';
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: #4ade80;
 }
 
 .cb-icon-btn {
@@ -209,40 +160,36 @@
   width: 32px;
   height: 32px;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--cb-radius);
   background: transparent;
-  color: #fff;
-  font-size: 16px;
+  color: var(--cb-sub);
   cursor: pointer;
   transition: background var(--cb-ease);
 }
 .cb-icon-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--cb-hover);
 }
 .cb-icon-btn:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
-/* 로봇 아바타: 머리말에서는 흰 바탕, 말풍선 옆에서는 파란 바탕 */
+/* 로봇 아바타: 원형은 아바타에만 쓴다 */
 .cb-avatar {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--cb-line);
   border-radius: 50%;
-  background: #fff;
-  color: var(--cb-blue);
-  font-size: 20px;
+  background: var(--cb-elevated);
+  color: var(--cb-sub);
 }
 .cb-avatar.small {
-  width: 30px;
-  height: 30px;
-  background: var(--cb-blue);
-  color: #fff;
-  font-size: 16px;
+  width: 28px;
+  height: 28px;
 }
 
 /* 5. 메시지 영역 ------------------------------------------------------- */
@@ -255,14 +202,6 @@
   overflow-y: auto;
   background: var(--cb-bg);
   scroll-behavior: smooth;
-}
-.cb-date {
-  align-self: center;
-  padding: 2px 10px;
-  border-radius: 10px;
-  background: var(--cb-date-bg);
-  color: var(--cb-sub);
-  font-size: 11px;
 }
 
 /* 한 줄 = 아바타 + 말풍선 묶음. 내 말(.me)은 오른쪽 */
@@ -279,49 +218,51 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  max-width: 82%;
+  max-width: 84%;
 }
 .cb-row.me .cb-col {
   align-items: flex-end;
 }
 
 .cb-bubble {
-  padding: 10px 14px;
-  border-radius: 4px var(--cb-radius-bubble) var(--cb-radius-bubble) var(--cb-radius-bubble);
-  background: var(--cb-bubble-bot);
+  padding: 8px 12px;
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
+  background: var(--cb-surface);
   color: var(--cb-text);
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 22px;
   white-space: pre-wrap;
   word-break: break-word;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 .cb-row.me .cb-bubble {
-  border-radius: var(--cb-radius-bubble) 4px var(--cb-radius-bubble) var(--cb-radius-bubble);
-  background: var(--cb-blue);
+  border-color: transparent;
+  background: var(--cb-accent-bg);
   color: #fff;
 }
 .cb-bubble.error {
-  background: var(--cb-error-bg);
-  color: var(--cb-error-text);
+  border-color: transparent;
+  background: var(--err-bg);
+  color: var(--err-text);
 }
 .cb-time {
-  padding: 0 4px;
-  color: var(--cb-sub);
-  font-size: 11px;
+  padding: 0 2px;
+  color: var(--cb-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 답변을 기다리는 동안의 점 세 개 */
 .cb-typing {
   display: inline-flex;
   gap: 4px;
-  padding: 14px 16px;
+  padding: 14px;
 }
 .cb-typing i {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #9aa3b5;
+  background: var(--cb-muted);
   animation: cb-bounce 1.2s infinite ease-in-out;
 }
 .cb-typing i:nth-child(2) {
@@ -334,31 +275,30 @@
   0%,
   60%,
   100% {
-    transform: translateY(0);
-    opacity: 0.5;
+    opacity: 0.4;
   }
   30% {
-    transform: translateY(-5px);
     opacity: 1;
   }
 }
 
 /* 6. 빠른 질문 칩 ------------------------------------------------------ */
 .cb-chip {
-  padding: 6px 12px;
-  border: 1px solid var(--cb-accent-text);
-  border-radius: 16px;
+  padding: 6px 10px;
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
   background: var(--cb-surface);
-  color: var(--cb-accent-text);
+  color: var(--cb-sub);
+  font-family: inherit;
   font-size: 13px;
-  line-height: 1.3;
+  line-height: 18px;
   text-align: left;
   cursor: pointer;
-  transition: background var(--cb-ease), color var(--cb-ease);
+  transition: background var(--cb-ease);
 }
 .cb-chip:hover:not(:disabled) {
-  background: var(--cb-blue);
-  color: #fff;
+  background: var(--cb-hover);
+  color: var(--cb-text);
 }
 .cb-chip:disabled {
   opacity: 0.5;
@@ -391,7 +331,7 @@
 
 /* 7. 입력창 ------------------------------------------------------------ */
 .cb-footer {
-  padding: 10px 12px 6px;
+  padding: 10px 12px 8px;
   border-top: 1px solid var(--cb-line);
   background: var(--cb-surface);
 }
@@ -399,55 +339,55 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 4px 4px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--cb-radius-pill);
-  background: var(--cb-bg);
-  transition: border-color var(--cb-ease), background var(--cb-ease);
+  padding: 3px 3px 3px 12px;
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
+  background: var(--cb-surface);
+  transition: border-color var(--cb-ease);
 }
 .cb-inputbar:focus-within {
-  border-color: var(--cb-blue);
-  background: var(--cb-surface);
+  border-color: var(--cb-accent-bg);
 }
 .cb-input {
   flex: 1;
   min-width: 0;
-  padding: 8px 0;
+  padding: 6px 0;
   border: 0;
-  outline: 0;
+  outline: 0; /* 입력줄 전체의 테두리가 포커스를 보여 준다 */
   background: transparent;
   color: var(--cb-text);
+  font-family: inherit;
   font-size: 14px;
+}
+.cb-input::placeholder {
+  color: var(--cb-muted);
 }
 .cb-send {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 0;
-  border-radius: 50%;
-  background: var(--cb-blue);
+  border-radius: var(--cb-radius);
+  background: var(--cb-accent-bg);
   color: #fff;
-  font-size: 15px;
   cursor: pointer;
-  transition: background var(--cb-ease), transform 0.1s;
+  transition: background var(--cb-ease);
 }
 .cb-send:hover:not(:disabled) {
-  background: var(--cb-blue-dark);
-}
-.cb-send:active:not(:disabled) {
-  transform: scale(0.92);
+  background: var(--cb-accent-hover);
 }
 .cb-send:disabled {
-  background: var(--cb-disabled);
+  background: var(--cb-elevated);
+  color: var(--cb-muted);
   cursor: default;
 }
 .cb-notice {
   margin-top: 6px;
-  color: var(--cb-sub);
-  font-size: 11px;
+  color: var(--cb-muted);
+  font-size: 12px;
   text-align: center;
 }
 
@@ -464,32 +404,30 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  color: var(--cb-sub);
+  color: var(--cb-muted);
   font-size: 12px;
 }
 .cb-tag {
   display: inline-block;
-  padding: 1px 8px;
-  border-radius: 10px;
-  background: var(--cb-blue-soft);
-  color: var(--cb-accent-text);
+  padding: 0 8px;
+  border-radius: var(--cb-radius);
+  background: var(--cb-accent-weak);
+  color: var(--cb-accent-fg);
   font-size: 12px;
+  line-height: 20px;
 }
 .cb-tag.ai {
-  background: var(--cb-ai-bg);
-  color: var(--cb-ai-text);
+  background: var(--cb-elevated);
+  color: var(--cb-sub);
 }
 
-/* 통화 카드: 왼쪽 띠 색은 통화 유형 색(--cb-accent, 코드에서 지정) */
+/* 통화 카드 */
 .cb-card,
 .cb-stat {
   padding: 8px 12px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius-card);
+  border-radius: var(--cb-radius);
   background: var(--cb-surface);
-}
-.cb-card {
-  border-left: 4px solid var(--cb-accent, #9aa0a6);
 }
 .cb-card-top {
   display: flex;
@@ -498,50 +436,73 @@
   gap: 6px;
   margin-bottom: 2px;
 }
-/* 누르면 상세 화면이 열리는 카드 */
+/* 누르면 상세 화면이 열리는 카드: 올리면 오버레이만 (크기·그림자는 그대로) */
 .cb-card.clickable {
   cursor: pointer;
-  transition: box-shadow var(--cb-ease), transform var(--cb-ease);
+  transition: background var(--cb-ease);
 }
-.cb-card.clickable:hover,
-.cb-card.clickable:focus-visible {
-  outline: 0;
-  box-shadow: 0 2px 10px rgba(20, 40, 160, 0.18);
-  transform: translateY(-1px);
+.cb-card.clickable:hover {
+  background: color-mix(in srgb, var(--cb-text) 4%, var(--cb-surface));
 }
 .cb-card-link {
   margin-top: 4px;
-  color: var(--cb-accent-text);
+  color: var(--cb-accent-fg);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: right;
 }
 .cb-card-id {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
+
+/* 뱃지: 옅은 면 + 진한 글자, 테두리 없음 */
 .cb-badge {
-  padding: 0 7px;
-  border-radius: 9px;
-  color: #fff;
-  font-size: 11px;
-  line-height: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: var(--cb-radius);
+  font-size: 12px;
+  line-height: 20px;
+}
+.cb-badge.neutral {
+  background: var(--cb-elevated);
+  color: var(--cb-sub);
+}
+.cb-badge.err {
+  background: var(--err-bg);
+  color: var(--err-text);
+}
+.cb-badge.wait {
+  background: var(--wait-bg);
+  color: var(--wait-text);
+}
+/* 유형 색은 점으로만 (색 값은 코드의 --cb-accent 로 들어온다) */
+.cb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cb-accent, var(--cb-muted));
 }
 .cb-card-meta {
   color: var(--cb-sub);
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .cb-more {
-  color: var(--cb-sub);
+  color: var(--cb-muted);
   font-size: 12px;
 }
 
-/* 통계 막대 그래프 */
+/* 통계 막대 그래프: 단색 */
 .cb-stat b {
   display: block;
   margin-bottom: 4px;
   color: var(--cb-sub);
   font-size: 12px;
+  font-weight: 500;
 }
 .cb-stat-row {
   display: flex;
@@ -559,6 +520,7 @@
 .cb-stat-row em {
   flex: none;
   min-width: 56px;
+  font-family: var(--font-num);
   font-style: normal;
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -568,42 +530,42 @@
   height: 8px;
   overflow: hidden;
   border-radius: 4px;
-  background: var(--cb-bar-bg);
+  background: var(--cb-elevated);
 }
 .cb-bar i {
   display: block;
   height: 100%;
   border-radius: 4px;
-  background: var(--cb-blue);
+  background: var(--cb-accent-bg);
 }
 
-/* 제안 버튼: 누르기 전 → 비활성 → 처리 완료(.done) */
+/* 제안 버튼(Secondary): 누르기 전 → 비활성 → 처리 완료(.done) */
 .cb-action {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--cb-accent-text);
-  border-radius: var(--cb-radius-card);
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
   background: var(--cb-surface);
-  color: var(--cb-accent-text);
+  color: var(--cb-accent-fg);
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: background var(--cb-ease), color var(--cb-ease);
+  transition: background var(--cb-ease);
 }
 .cb-action:hover:not(:disabled) {
-  background: var(--cb-blue);
-  color: #fff;
+  background: var(--cb-hover);
 }
 .cb-action:disabled {
-  border-color: var(--cb-line);
-  background: var(--cb-disabled-bg);
-  color: var(--cb-sub);
+  background: var(--cb-elevated);
+  color: var(--cb-muted);
   cursor: default;
 }
 .cb-action.done {
-  border-color: var(--cb-success-line);
-  background: var(--cb-success-bg);
-  color: var(--cb-success-text);
+  border-color: transparent;
+  background: var(--ok-bg);
+  color: var(--ok-text);
 }
 
 /* 9. 모바일 (폭 640px 이하) ---------------------------------------------
@@ -613,9 +575,6 @@
   .cb-launcher {
     right: 16px;
     bottom: calc(16px + env(safe-area-inset-bottom));
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
   }
 
   .cb-panel {
@@ -623,14 +582,15 @@
     width: 100% !important;
     height: 100dvh !important; /* 주소창이 줄어들어도 화면에 맞는다 */
     translate: none !important;
+    border: 0;
     border-radius: 0;
     box-shadow: none;
-    animation: cb-slide 0.22s ease-out;
+    animation: cb-slide 0.2s ease-out;
   }
   @keyframes cb-slide {
     from {
       opacity: 0;
-      transform: translateY(24px);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
@@ -645,23 +605,20 @@
   }
 
   .cb-header {
-    padding-top: calc(14px + env(safe-area-inset-top)); /* 노치 아래로 */
+    padding-top: calc(10px + env(safe-area-inset-top)); /* 노치 아래로 */
     cursor: default;
   }
+  /* 눌러야 하는 것은 40px 이상 */
   .cb-icon-btn {
     width: 40px;
     height: 40px;
-    font-size: 18px;
   }
 
   .cb-col {
-    max-width: 86%;
-  }
-  .cb-bubble {
-    font-size: 15px;
+    max-width: 88%;
   }
   .cb-chip {
-    padding: 8px 14px;
+    padding: 8px 12px;
     font-size: 14px;
   }
 

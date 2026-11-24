@@ -36,12 +36,12 @@ def create_call(body: CallIn):
     fh = body.file_hash.strip().lower()
     if not re.fullmatch(r"[0-9a-f]{64}", fh):
         raise validation_error("file_hash는 SHA-256(소문자 16진수 64자)이어야 합니다.")
-    a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD)
+    a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD,
+                         agent_name=agent, customer_company=body.customer_company)
     params = {
         **a,
         "called_at": body.called_at, "agent_name": agent, "source_filename": filename[:255], "file_hash": fh,
         "customer_company": clean(body.customer_company),
-        "customer_phone": mask_text(clean(body.customer_phone)),
         "analysis_json": Jsonb(a["analysis_json"]) if a["analysis_json"] is not None else None,
     }
     with connect() as conn:
