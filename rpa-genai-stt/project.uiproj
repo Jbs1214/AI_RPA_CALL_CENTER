@@ -1,0 +1,6 @@
+{
+  "Name": "CallCenter_GenAI_STT",
+  "ProjectType": "Process",
+  "Description": "CallCenter_GenAI_STT",
+  "MainFile": "Main.xaml"
+}

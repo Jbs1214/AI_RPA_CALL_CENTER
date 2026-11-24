@@ -1,0 +1,142 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="out_responseBody" Type="OutArgument(x:String)" />
+    <x:Property Name="out_statusCode" Type="OutArgument(x:Int32)" />
+    <x:Property Name="in_durationSec" Type="InArgument(x:Int32)" />
+    <x:Property Name="in_customerName" Type="InArgument(x:String)" />
+    <x:Property Name="in_aiRaw" Type="InArgument(x:String)" />
+    <x:Property Name="in_confidence" Type="InArgument(x:Double)" />
+    <x:Property Name="in_followUp" Type="InArgument(x:String)" />
+    <x:Property Name="in_actionTaken" Type="InArgument(x:String)" />
+    <x:Property Name="in_customerQuestion" Type="InArgument(x:String)" />
+    <x:Property Name="in_category" Type="InArgument(x:String)" />
+    <x:Property Name="in_transcript" Type="InArgument(x:String)" />
+    <x:Property Name="in_fileHash" Type="InArgument(x:String)" />
+    <x:Property Name="in_sourceFilename" Type="InArgument(x:String)" />
+    <x:Property Name="in_customerCompany" Type="InArgument(x:String)" />
+    <x:Property Name="in_agentName" Type="InArgument(x:String)" />
+    <x:Property Name="in_calledAt" Type="InArgument(x:String)" />
+    <x:Property Name="in_baseUrl" Type="InArgument(x:String)" />
+    <x:Property Name="in_status" Type="InArgument(x:String)" />
+    <x:Property Name="in_errorMessage" Type="InArgument(x:String)" />
+    <x:Property Name="in_apiKey" Type="InArgument(x:String)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+      <x:String>UiPath.IntegrationService.Activities.SWEntities.CB53A7C5ADF_categorize_Create.Bundle</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Net.Http</AssemblyReference>
+      <AssemblyReference>System.Net.Primitives</AssemblyReference>
+      <AssemblyReference>System.Runtime.InteropServices</AssemblyReference>
+      <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="450,423" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:InvokeCode ContinueOnError="{x:Null}" Code="statusCode = 0&#xA;respBody = &quot;&quot;&#xA;Dim o As New Newtonsoft.Json.Linq.JObject()&#xA;o(&quot;called_at&quot;) = calledAt&#xA;o(&quot;agent_name&quot;) = agentName&#xA;o(&quot;customer_company&quot;) = customerCompany&#xA;o(&quot;source_filename&quot;) = sourceFilename&#xA;o(&quot;file_hash&quot;) = fileHash&#xA;o(&quot;status&quot;) = status&#xA;If status = &quot;FAILED&quot; Then&#xA;    If errorMessage Is Nothing OrElse errorMessage.Trim() = &quot;&quot; Then&#xA;        errorMessage = &quot;UNKNOWN: 사유 불명&quot;&#xA;    End If&#xA;    o(&quot;error_message&quot;) = errorMessage&#xA;Else&#xA;    o(&quot;customer_phone&quot;) = Newtonsoft.Json.Linq.JValue.CreateNull()&#xA;    o(&quot;transcript&quot;) = transcript&#xA;    o(&quot;category&quot;) = category&#xA;    o(&quot;customer_question&quot;) = question&#xA;    o(&quot;action_taken&quot;) = action&#xA;    o(&quot;follow_up_needed&quot;) = New Newtonsoft.Json.Linq.JValue(followUp = &quot;true&quot;)&#xA;    o(&quot;confidence&quot;) = New Newtonsoft.Json.Linq.JValue(Math.Round(confidence, 2))&#xA;    Dim a As New Newtonsoft.Json.Linq.JObject()&#xA;    Try&#xA;        a = Newtonsoft.Json.Linq.JObject.Parse(aiRaw)&#xA;    Catch ex As Exception&#xA;    End Try&#xA;    If custName = &quot;&quot; Then&#xA;        a(&quot;customer_name&quot;) = Newtonsoft.Json.Linq.JValue.CreateNull()&#xA;    Else&#xA;        a(&quot;customer_name&quot;) = custName&#xA;    End If&#xA;    a(&quot;duration_sec&quot;) = durationSec&#xA;    o(&quot;analysis_json&quot;) = a&#xA;    o(&quot;error_message&quot;) = Newtonsoft.Json.Linq.JValue.CreateNull()&#xA;End If&#xA;Dim body As String = o.ToString(Newtonsoft.Json.Formatting.None)&#xA;For attempt As Integer = 1 To 3&#xA;    Try&#xA;        Using client As New System.Net.Http.HttpClient()&#xA;            client.Timeout = TimeSpan.FromSeconds(30)&#xA;            If apiKey IsNot Nothing AndAlso apiKey &lt;&gt; &quot;&quot; Then client.DefaultRequestHeaders.Add(&quot;X-API-Key&quot;, apiKey)&#xA;            Dim content As New System.Net.Http.StringContent(body, System.Text.Encoding.UTF8, &quot;application/json&quot;)&#xA;            Dim resp = client.PostAsync(baseUrl + &quot;/api/calls&quot;, content).GetAwaiter().GetResult()&#xA;            statusCode = CInt(resp.StatusCode)&#xA;            respBody = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()&#xA;        End Using&#xA;        If statusCode &lt; 500 Then Exit For&#xA;    Catch ex As Exception&#xA;        statusCode = 0&#xA;        respBody = &quot;HTTP_ERROR: &quot; + ex.GetType().Name + &quot; &quot; + ex.Message&#xA;    End Try&#xA;    If attempt &lt; 3 Then System.Threading.Thread.Sleep(5000)&#xA;Next&#xA;" DisplayName="Invoke Code: 백엔드에 저장 요청 (POST /api/calls)" sap:VirtualizedContainerService.HintSize="450,400" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+      <ui:InvokeCode.Arguments>
+        <OutArgument x:TypeArguments="x:String" x:Key="respBody">[out_responseBody]</OutArgument>
+        <OutArgument x:TypeArguments="x:Int32" x:Key="statusCode">[out_statusCode]</OutArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="durationSec">[in_durationSec]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="custName">[in_customerName]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="aiRaw">[in_aiRaw]</InArgument>
+        <InArgument x:TypeArguments="x:Double" x:Key="confidence">[in_confidence]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="followUp">[in_followUp]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="action">[in_actionTaken]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="question">[in_customerQuestion]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="category">[in_category]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="transcript">[in_transcript]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="fileHash">[in_fileHash]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="sourceFilename">[in_sourceFilename]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="customerCompany">[in_customerCompany]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="agentName">[in_agentName]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="calledAt">[in_calledAt]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="baseUrl">[in_baseUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="status">[in_status]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="errorMessage">[in_errorMessage]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="apiKey">[in_apiKey]</InArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+  </Sequence>
+</Activity>
