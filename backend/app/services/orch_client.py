@@ -67,7 +67,12 @@ def start_job(call_id: str) -> str:
         except urllib.error.HTTPError as e:
             if e.code == 401 and attempt == 1:
                 continue
-            log.warning("Job 시작 실패: HTTP %s", e.code)
+            # UiPath는 오류 이유(인자 이름, 로봇 없음 등)를 본문에 준다. 토큰·키는 본문에 없다
+            try:
+                detail = e.read().decode("utf-8", "replace")[:300]
+            except Exception:
+                detail = ""
+            log.warning("Job 시작 실패: HTTP %s %s", e.code, detail)
             raise OrchestratorError(f"HTTP {e.code}")
         except Exception as e:
             log.warning("Job 시작 실패: %s", type(e).__name__)
