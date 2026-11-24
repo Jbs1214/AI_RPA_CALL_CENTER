@@ -1,11 +1,11 @@
-import { Alert, Button, Descriptions, Divider, Drawer, Form, Input, Popconfirm, Select, Space, Spin, Switch, Tag, message } from 'antd'
+import { Alert, Button, Descriptions, Divider, Drawer, Form, Input, Popconfirm, Select, Space, Spin, Switch, message } from 'antd'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { audioUrl, deleteCall, fetchCall, patchCall } from '../../api/calls'
 import { CATEGORIES, type CallDetail, type CallPatch } from '../../types/Call'
 import { formatKst } from '../../lib/date'
-import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
 import { parseErrorMessage } from '../../lib/errorLabel'
 import ProcessButton from './ProcessButton'
+import StatusTag from './StatusTag'
 import TranscriptBubbles from './TranscriptBubbles'
 
 interface FormValues {
@@ -143,7 +143,7 @@ export default function CallDrawer({ callId, onClose }: Props) {
             <Descriptions.Item label="통화일시">{formatKst(call.called_at, 'YYYY-MM-DD HH:mm')}</Descriptions.Item>
             <Descriptions.Item label="담당자">{call.agent_name}</Descriptions.Item>
             <Descriptions.Item label="상태">
-              <Tag color={STATUS_COLOR[call.status]}>{STATUS_LABEL[call.status]}</Tag>
+              <StatusTag status={call.status} />
               {call.retry_count > 0 && <span className="text-muted">재처리 {call.retry_count}회</span>}
               <span style={{ marginLeft: 8 }}>
                 <ProcessButton call={call} showWhenDisabled />

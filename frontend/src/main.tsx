@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
+import '@fontsource-variable/inter'
 import { ThemeProvider } from './theme/ThemeProvider'
 import App from './App'
 import './index.css'

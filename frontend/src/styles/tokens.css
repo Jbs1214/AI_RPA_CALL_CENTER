@@ -1,100 +1,134 @@
 /* ==========================================================================
-   디자인 값 (변수)
-   - 간격, 폭, 모서리, 색은 여기만 고치면 화면 전체에 반영된다.
+   디자인 값 (변수) — 규칙은 frontend/DESIGN.md
+   - 값은 Vapor 디자인 시스템의 공개 배포 토큰(라이트·다크)을 옮긴 것이다.
    - 라이트가 기본이고, <html data-theme="dark"> 일 때 아래 [data-theme='dark'] 값이 덮어쓴다.
+   - 색은 여기 변수로만 정하고 화면 코드에 직접 쓰지 않는다.
    - 챗봇(features/chat/chat.css)은 자기 변수(--cb-*)를 따로 쓴다.
    ========================================================================== */
 :root {
   /* 폭과 여백 */
-  --page-max: 1280px; /* 본문 최대 폭 */
-  --page-gutter: 24px; /* 화면 좌우 여백 */
-  --gap: 16px; /* 섹션 사이 간격 */
-  --gap-sm: 12px; /* 카드 사이 간격 */
+  --sidebar-w: 220px;
+  --header-h: 48px;
+  --page-max: 1680px; /* 본문 최대 폭 */
+  --page-gutter: 24px; /* 본문 좌우 여백 */
+  --gap: 16px; /* 영역 사이 간격 */
+  --gap-sm: 12px; /* 작은 영역 사이 간격 */
+  --pad: 16px; /* 패널 안쪽 여백 */
 
   /* 크기 */
-  --chart-h: 220px; /* 차트 높이 */
-  --header-h: 56px;
+  --chart-h: 200px;
   --drawer-w: 480px;
 
-  /* 모양 */
-  --radius: 8px;
+  /* 모양: 기본은 8px 하나 */
+  --radius: 8px; /* 패널 */
+  --radius-md: 8px; /* 버튼, 입력창 */
+  --radius-sm: 8px; /* 뱃지, 태그 */
 
-  /* 색: 바탕과 글자 */
-  --color-bg: #eef1fb;
-  /* 삼성 블루(#1428a0) 계열의 옅은 그라데이션. 위쪽은 hero 띠가 진하게 받쳐 준다 */
-  --bg-image: radial-gradient(1000px 640px at 100% 18%, rgba(42, 69, 214, 0.2), transparent 65%),
-    radial-gradient(900px 600px at 50% 115%, rgba(20, 40, 160, 0.22), transparent 65%),
-    linear-gradient(180deg, #e3e9fb 0%, #eef2fd 55%, #e6ecfc 100%);
-  /* 머리말 뒤 파란 띠 */
-  --hero-gradient: linear-gradient(100deg, #0c1c7a 0%, #1428a0 45%, #2a45d6 100%);
-  --hero-h: 340px;
-  --color-text: #1f1f1f;
-  --color-text-sub: #666;
-  --color-muted: #888;
-  --color-danger: #a32d2d;
-  --color-accent: #1428a0; /* 로고, 강조 */
+  /* 글꼴: 화면은 Pretendard, 숫자는 Inter(tabular-nums) */
+  --font-ui: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-num: 'Inter Variable', Inter, 'Pretendard Variable', Pretendard, sans-serif;
 
-  /* 색: 카드(라이트는 흰 바탕, 다크는 반투명 유리) */
-  --glass-bg: #fff;
-  --glass-border: #eee;
-  --glass-blur: none;
-  --color-surface: var(--glass-bg);
-  --color-line: var(--glass-border);
+  /* 색: 바탕과 글자 (라이트) */
+  --color-bg: #f4f4f4; /* 페이지 바탕: gray-050 */
+  --color-surface: #ffffff; /* 패널, 사이드바 */
+  --color-elevated: #fafafa; /* 표 머리, 눌린 면: gray-025 */
+  --color-line: #e1e1e1; /* 1px 보더: gray-100 */
+  --color-line-strong: #c6c6c6; /* gray-200 */
+  --color-text: #262626; /* gray-900 */
+  --color-text-sub: #4c4c4c; /* gray-700 */
+  --color-muted: #767676; /* gray-500 */
+  --color-accent: #2a72e5; /* blue-500 */
+  --color-accent-hover: #0957c8; /* blue-600 */
+  --accent-weak: #c6e6ff; /* blue-100: 현재 쪽 번호 등 옅은 면 */
+  --accent-strong: #0043b3; /* blue-700 */
+  --color-danger: #bb1225; /* red-600 */
+  --hover-bg: rgba(38, 38, 38, 0.08); /* 올렸을 때 얹는 오버레이 8% */
+
+  /* 색: 상태 뱃지(옅은 면 + 진한 글자) */
+  --ok-text: #00583a;
+  --ok-bg: #bbecd7;
+  --ok-line: #bbecd7;
+  --wait-text: #9e0000;
+  --wait-bg: #ffd9c8;
+  --wait-line: #ffd9c8;
+  --err-text: #9e0006;
+  --err-bg: #ffd8d7;
+  --err-line: #ffd8d7;
+  /* 지표 수치처럼 글자만 칠할 때 */
+  --ok-fg: #006c4b;
+  --wait-fg: #b72100;
+  --err-fg: #bb1225;
+  /* 서버 상태 점 */
+  --state-ok: #058765;
+
+  /* 예전 이름(다른 파일이 쓰는 것)을 새 값에 이어 둔다 */
+  --glass-bg: var(--color-surface);
+  --glass-border: var(--color-line);
 
   /* 색: 차트 */
-  --color-grid: #e8e8e8;
-  --color-axis: #bfbfbf;
-  --tooltip-bg: #fff;
+  --color-grid: #ececec;
+  --color-axis: #c6c6c6;
+  --tooltip-bg: #ffffff;
+  --shadow-lift: 0 4px 10px rgba(0, 0, 0, 0.2); /* 떠 있는 면(말풍선, 팝업)만 */
 
   /* 색: 목록 행과 말풍선 */
-  --row-review-bg: #fff8d6;
-  --row-failed-bg: #fdecec;
-  --row-failed-text: #a32d2d;
-  --bubble-agent: #e5eefc;
-  --bubble-customer: #eef6ee;
-  --upload-bg: #fafbfc;
-
-  /* 숫자 카드의 빛 번짐(라이트는 없음) */
-  --kpi-glow-strength: 0%;
+  --row-review-bg: #fff7e7;
+  --row-failed-bg: #fff5f4;
+  --row-failed-text: #bb1225;
+  --bubble-agent: #f4f4f4;
+  --bubble-customer: #e3effd;
+  --upload-bg: #fafafa;
 }
 
-/* 다크: 짙은 남색 바탕 + 청록·보라 번짐 + 유리 카드 + 네온 포인트 */
+/* 다크 */
 [data-theme='dark'] {
-  --color-bg: #070b24;
-  --bg-image: radial-gradient(900px 520px at 6% -4%, rgba(0, 210, 170, 0.26), transparent 62%),
-    radial-gradient(900px 620px at 100% 8%, rgba(130, 70, 255, 0.3), transparent 62%),
-    radial-gradient(800px 520px at 50% 112%, rgba(40, 100, 255, 0.24), transparent 62%);
-  --hero-gradient: linear-gradient(100deg, #060a3a 0%, #1428a0 50%, #5a3bd6 100%);
-  --color-text: #e8ecff;
-  --color-text-sub: #aab3d6;
-  --color-muted: #9aa4c7;
-  --color-danger: #ff8f8c;
-  --color-accent: #6c7bff;
+  --color-bg: #1f1f1f; /* dark-gray-025 */
+  --color-surface: #282828; /* dark-gray-050 */
+  --color-elevated: #363636; /* dark-gray-100 */
+  --color-line: #474747; /* dark-gray-200 */
+  --color-line-strong: #606060; /* dark-gray-300 */
+  --color-text: #fafafa;
+  --color-text-sub: #bebebe;
+  --color-muted: #898989;
+  --color-accent: #368aed; /* dark-blue-500 */
+  --color-accent-hover: #56acf9;
+  --accent-weak: #002898;
+  --accent-strong: #7bc6ff;
+  --color-danger: #fd8283;
+  --hover-bg: rgba(250, 250, 250, 0.08);
 
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(140, 170, 255, 0.22);
-  --glass-blur: blur(14px);
+  --ok-text: #5dd3aa;
+  --ok-bg: #003f23;
+  --ok-line: #003f23;
+  --wait-text: #fbac88;
+  --wait-bg: #750000;
+  --wait-line: #750000;
+  --err-text: #ffa7a6;
+  --err-bg: #750000;
+  --err-line: #750000;
+  --ok-fg: #46b993;
+  --wait-fg: #f58a56;
+  --err-fg: #fd8283;
+  --state-ok: #46b993;
 
-  --color-grid: rgba(255, 255, 255, 0.12);
-  --color-axis: rgba(255, 255, 255, 0.3);
-  --tooltip-bg: #141b45;
+  --color-grid: rgba(255, 255, 255, 0.08);
+  --color-axis: #606060;
+  --tooltip-bg: #363636;
 
-  --row-review-bg: rgba(233, 162, 59, 0.16);
-  --row-failed-bg: rgba(217, 83, 79, 0.2);
-  --row-failed-text: #ff9a98;
-  --bubble-agent: rgba(108, 123, 255, 0.28);
-  --bubble-customer: rgba(90, 161, 127, 0.28);
-  --upload-bg: rgba(255, 255, 255, 0.04);
-
-  --kpi-glow-strength: 38%;
+  --row-review-bg: rgba(244, 180, 2, 0.1);
+  --row-failed-bg: rgba(241, 79, 90, 0.12);
+  --row-failed-text: #fd8283;
+  --bubble-agent: #363636;
+  --bubble-customer: rgba(54, 138, 237, 0.22);
+  --upload-bg: #232323;
 }
 
-/* 폭이 좁으면 여백과 간격을 줄인다 */
+/* 폭이 좁으면 여백을 줄인다 */
 @media (max-width: 767px) {
   :root {
     --page-gutter: 12px;
     --gap: 12px;
     --gap-sm: 8px;
-    --header-h: 48px;
+    --pad: 12px;
   }
 }

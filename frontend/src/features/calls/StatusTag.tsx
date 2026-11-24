@@ -1,14 +1,13 @@
-import { Tag } from 'antd'
-import { ClockCircleOutlined, SyncOutlined } from '@ant-design/icons'
-import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
+import { STATUS_LABEL, STATUS_TONE } from '../../lib/statusLabel'
 import type { Call } from '../../types/Call'
 
-/** 상태 태그. 대기·처리 중은 아이콘을 붙여 눈에 띄게 한다(처리 중은 빙글빙글). 표와 모바일 카드가 같이 쓴다. */
+/** 상태 뱃지. 처리 중은 앞의 점만 은은하게 깜빡인다. 표와 모바일 카드가 같이 쓴다. */
 export default function StatusTag({ status }: { status: Call['status'] }) {
-  const icon = status === 'PROCESSING' ? <SyncOutlined spin /> : status === 'RECEIVED' ? <ClockCircleOutlined /> : undefined
+  const tone = STATUS_TONE[status]
   return (
-    <Tag color={STATUS_COLOR[status]} icon={icon}>
+    <span className={`badge badge--${tone}`}>
+      <i className={status === 'PROCESSING' ? 'dot dot--pulse' : 'dot'} />
       {STATUS_LABEL[status]}
-    </Tag>
+    </span>
   )
 }

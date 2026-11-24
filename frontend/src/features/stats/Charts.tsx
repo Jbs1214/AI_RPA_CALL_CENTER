@@ -15,15 +15,15 @@ import ChartCard from '../../components/ChartCard'
 import { CATEGORIES } from '../../types/Call'
 import { CATEGORY_COLOR } from '../../lib/categoryColor'
 import CategoryDonut from './CategoryDonut'
-import { ChartTooltip, GradientDefs } from './chartParts'
+import { ChartTooltip } from './chartParts'
 import { useStats, type DateRange } from './useStats'
 
 const FONT = 11 // 차트가 작아서 글자도 조금 작게
-const TOP_RADIUS: [number, number, number, number] = [6, 6, 0, 0] // 막대 위쪽 모서리를 둥글게
-const AGENT_COLORS = ['#4f8fd9', '#e9a23b']
+const TOP_RADIUS: [number, number, number, number] = [3, 3, 0, 0] // 막대 위쪽 모서리는 작게만 둥글린다
+const AGENT_COLORS = ['#4198f2', '#fbbd05'] // 통화 건수, 후속조치
 /** 막대 위로 올렸을 때 보이는 배경 강조(둥근 모서리) */
-const TOOLTIP_CURSOR = { fill: 'rgba(128, 128, 128, 0.1)', radius: 6 }
-const LIGHT_GRID ={ strokeDasharray: '2 4', vertical: false } as const
+const TOOLTIP_CURSOR = { fill: 'var(--hover-bg)', radius: 4 }
+const GRID = { vertical: false } as const
 
 /** 0은 숫자를 적지 않는다 */
 const showValue = (v: unknown) => (Number(v) > 0 ? String(v) : '')
@@ -87,8 +87,7 @@ export default function Charts({ range }: { range: DateRange }) {
       <ChartCard title="일자별 유형 추이" hint="색 = 유형, 위 숫자 = 합계" empty={byDay.length === 0} footer={<CategoryLegend />}>
         <ResponsiveContainer>
           <ComposedChart data={byDay} margin={{ top: 18, right: 4, left: 4 }} barCategoryGap="28%">
-            <GradientDefs prefix="day" colors={CATEGORIES.map((c) => CATEGORY_COLOR[c])} />
-            <CartesianGrid {...LIGHT_GRID} />
+            <CartesianGrid {...GRID} />
             <XAxis dataKey="date" fontSize={FONT} tickLine={false} />
             <YAxis hide domain={[0, room]} />
             <Tooltip cursor={TOOLTIP_CURSOR} content={DayTooltip} />
@@ -97,13 +96,13 @@ export default function Charts({ range }: { range: DateRange }) {
                 key={c}
                 dataKey={c}
                 stackId="day"
-                fill={`url(#day-${i})`}
+                fill={CATEGORY_COLOR[c]}
                 stroke="var(--glass-bg)"
                 strokeWidth={1.5}
                 radius={i === CATEGORIES.length - 1 ? TOP_RADIUS : 0}
                 maxBarSize={34}
               >
-                <LabelList dataKey={c} position="center" fill="#fff" fontSize={10} formatter={showValue} />
+                <LabelList dataKey={c} position="center" fill="#09090b" fontSize={10} formatter={showValue} />
               </Bar>
             ))}
             {/* 합계를 막대 위에 적기 위한 보이지 않는 선 */}
@@ -115,19 +114,18 @@ export default function Charts({ range }: { range: DateRange }) {
       </ChartCard>
 
       {/* 3) 담당자별: 통화 건수와 후속조치를 나란히 */}
-      <ChartCard title="담당자별 통화·후속조치" hint="파랑 통화 · 주황 후속조치" empty={data.by_agent.length === 0}>
+      <ChartCard title="담당자별 통화·후속조치" hint="파랑 통화 · 노랑 후속조치" empty={data.by_agent.length === 0}>
         <ResponsiveContainer>
           <BarChart data={data.by_agent} margin={{ top: 18, right: 4, left: 4 }} barGap={3} barCategoryGap="24%">
-            <GradientDefs prefix="agent" colors={AGENT_COLORS} />
-            <CartesianGrid {...LIGHT_GRID} />
+            <CartesianGrid {...GRID} />
             <XAxis dataKey="agent_name" fontSize={FONT} tickLine={false} />
             <YAxis hide domain={[0, room]} />
             <Tooltip cursor={TOOLTIP_CURSOR} content={<ChartTooltip />} />
-            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: FONT }} />
-            <Bar dataKey="count" name="통화 건수" fill="url(#agent-0)" radius={TOP_RADIUS} maxBarSize={22}>
+            <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: FONT }} />
+            <Bar dataKey="count" name="통화 건수" fill={AGENT_COLORS[0]} radius={TOP_RADIUS} maxBarSize={22}>
               <LabelList dataKey="count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
             </Bar>
-            <Bar dataKey="follow_up_count" name="후속조치" fill="url(#agent-1)" radius={TOP_RADIUS} maxBarSize={22}>
+            <Bar dataKey="follow_up_count" name="후속조치" fill={AGENT_COLORS[1]} radius={TOP_RADIUS} maxBarSize={22}>
               <LabelList dataKey="follow_up_count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
             </Bar>
           </BarChart>
@@ -138,17 +136,16 @@ export default function Charts({ range }: { range: DateRange }) {
       <ChartCard title="고객사별 불만 건수" hint="상위 10곳" empty={byCompany.length === 0}>
         <ResponsiveContainer>
           <BarChart data={byCompany} layout="vertical" margin={{ left: 0, right: 28 }} barCategoryGap="30%">
-            <GradientDefs prefix="company" colors={[CATEGORY_COLOR['불만']]} horizontal />
             <XAxis type="number" hide domain={[0, room]} />
             <YAxis type="category" dataKey="customer_company" width={84} fontSize={FONT} interval={0} tickLine={false} axisLine={false} />
             <Tooltip cursor={TOOLTIP_CURSOR} content={<ChartTooltip />} />
             <Bar
               dataKey="complaint_count"
               name="불만 건수"
-              fill="url(#company-0)"
-              radius={[0, 6, 6, 0]}
+              fill={CATEGORY_COLOR['불만']}
+              radius={[0, 3, 3, 0]}
               maxBarSize={14}
-              background={{ fill: 'rgba(128, 128, 128, 0.12)', radius: 6 }}
+              background={{ fill: 'var(--hover-bg)', radius: 3 }}
             >
               <LabelList dataKey="complaint_count" position="right" fontSize={FONT} fontWeight={600} />
             </Bar>

@@ -1,173 +1,217 @@
 /* ==========================================================================
-   화면 배치 (레이아웃) 스타일
+   화면 배치 (레이아웃) 스타일 — 규칙은 frontend/DESIGN.md 5장
 
    차례
-     1. 페이지 틀 (머리말, 본문 폭)
-     2. 카드 6개 (.kpi-grid)
-     3. 차트 4개 (.chart-grid, .chart-card)
-     4. 필터 줄 (.toolbar)
+     1. 틀 (사이드바 + 헤더 + 본문)
+     2. 본문 두 칸 (왼쪽 넓게, 오른쪽 좁게)
+     3. 지표 칸 (.kpi-grid)
+     4. 차트 (.chart-grid, .chart-card, .donut)
+     5. 필터 줄 (.toolbar)
    값은 tokens.css 의 변수를 쓴다.
    ========================================================================== */
 
-/* 1. 페이지 틀 -------------------------------------------------------------- */
-.app {
-  min-height: 100vh; /* 바탕은 body 에 있다(theme.css) */
+/* 1. 틀 ---------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+}
+.shell__main {
+  min-width: 0;
 }
 
-/* 위쪽 띠: 머리말 뒤에 깔린 파란 그라데이션이 아래로 갈수록 바탕에 녹아든다 */
-.app {
-  position: relative;
-}
-.app::before {
-  content: '';
-  position: absolute;
+/* 사이드바: 왼쪽에 붙어 있고 스크롤해도 따라온다 */
+.sidebar {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  height: var(--hero-h);
-  background: var(--hero-gradient);
-  -webkit-mask-image: linear-gradient(180deg, #000 28%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 28%, transparent 100%);
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 12px;
+  border-right: 1px solid var(--color-line);
+  background: var(--color-surface);
 }
-/* 띠 위에 올라오는 내용(머리말, 본문)은 띠보다 앞에 그린다 */
-.app__header,
-.app > .page {
-  position: relative;
-  z-index: 1;
+.sidebar__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 8px 8px;
+}
+.sidebar__logo {
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.sidebar__name {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-sub);
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sidebar__link:hover {
+  background: var(--hover-bg);
+  color: var(--color-text);
 }
 
-/* 머리말: 배경 없이 띠 위에 글자만. 띠와 한 덩어리로 보이게 한다 */
-.app__header {
-  background: transparent;
-  color: #fff;
+/* 헤더: 48px, 아래 1px 선 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: var(--header-h);
+  padding: 0 var(--page-gutter);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-bg);
 }
-
-/* 로고 + 제목 | 설명 을 한 줄에 */
-.app__brand {
+.topbar__path {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-sub);
+  font-size: 13px;
+}
+.topbar__path b {
+  color: var(--color-text);
+  font-weight: 700;
+}
+.topbar__sep {
+  color: var(--color-muted);
+}
+.topbar__tools {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: var(--header-h);
 }
-.app__logo {
-  display: flex;
+.topbar__status {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  font-size: 18px;
+  gap: 6px;
+  font-family: var(--font-num);
+  font-size: 12px;
 }
-.app__title {
-  margin: 0;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  white-space: nowrap;
+.topbar__status--ok {
+  color: var(--state-ok);
 }
-/* 제목 옆 가는 구분선 + 설명 */
-.app__subtitle {
-  padding-left: 12px;
-  border-left: 1px solid rgba(255, 255, 255, 0.35);
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 13px;
-  white-space: nowrap;
+.topbar__status--wait {
+  color: var(--wait-fg);
 }
-/* 오른쪽 끝에 붙는 도구(다크 모드 스위치) */
-.app__tools {
-  margin-left: auto;
-}
-@media (max-width: 767px) {
-  .app__logo {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-  }
-  .app__title {
-    font-size: 16px;
-  }
-  .app__subtitle {
-    display: none; /* 좁은 화면에서는 설명을 숨긴다 */
-  }
+.topbar__status--err {
+  color: var(--err-fg);
 }
 
-/* 가운데 정렬 + 최대 폭. 폭 종류는 PageContainer 의 width 로 고른다 */
-.page {
+/* 2. 본문 두 칸 --------------------------------------------------------------- */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* 약 2 : 1 */
+  align-items: start;
+  gap: var(--gap);
   box-sizing: border-box;
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 var(--page-gutter);
+  padding: var(--gap) var(--page-gutter) calc(var(--gap) * 4); /* 아래는 챗봇 버튼에 안 가리게 */
 }
-.page--narrow {
-  max-width: 960px;
-}
-.page--wide {
-  max-width: 1600px;
-}
-
-/* 본문: 섹션을 세로로 쌓는다 */
-.page__body {
+.workspace__main,
+.workspace__side {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* 안의 표가 넓어도 화면 밖으로 밀지 않는다 */
   gap: var(--gap);
-  padding-top: var(--gap);
-  padding-bottom: calc(var(--gap) * 4); /* 챗봇 버튼에 가리지 않게 아래 여유 */
+  min-width: 0;
+}
+.panel,
+#charts {
+  scroll-margin-top: calc(var(--header-h) + 8px);
 }
 
-/* 2. 카드 6개 ---------------------------------------------------------------- */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: var(--gap-sm);
-}
 @media (max-width: 1199px) {
-  .kpi-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (max-width: 767px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.kpi-tags {
-  margin-top: 8px;
-}
-
-/* 3. 차트 4개 ---------------------------------------------------------------- */
-.chart-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--gap-sm);
-}
-@media (max-width: 1199px) {
-  .chart-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 767px) {
-  .chart-grid {
+  .workspace {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* 제목 아래에 설명을 작게 붙인다(카드가 좁아도 글자가 잘리지 않게) */
-.chart-card__title {
-  padding: 6px 0;
-  line-height: 1.3;
-  white-space: normal;
+/* 좁은 화면: 사이드바가 위쪽 가로 줄이 된다(하단 탭바는 챗봇 버튼과 겹쳐 쓰지 않는다) */
+@media (max-width: 767px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    height: auto;
+    padding: 6px 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-line);
+    overflow-x: auto;
+  }
+  .sidebar__brand {
+    flex: none;
+    padding: 0 8px 0 0;
+  }
+  .sidebar__name {
+    display: none;
+  }
+  .sidebar__nav {
+    flex-direction: row;
+  }
+  .topbar {
+    position: static;
+  }
 }
+
+/* 3. 지표 칸 ----------------------------------------------------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px; /* 칸 사이 1px 선은 바탕색이 비쳐 만든다 */
+  background: var(--color-line);
+}
+@media (max-width: 479px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 4. 차트 -------------------------------------------------------------------- */
+.chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-sm);
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .chart-card__hint {
   color: var(--color-muted);
   font-size: 11px;
-  font-weight: 400;
 }
 /* 높이는 ChartCard 의 height 값이 --chart-h 로 들어온다 */
 .chart-card__body {
@@ -203,7 +247,8 @@
   pointer-events: none; /* 말풍선이 막히지 않게 */
 }
 .donut__center b {
-  font-size: 24px;
+  font-family: var(--font-num);
+  font-size: 22px;
   line-height: 1.1;
 }
 .donut__center span {
@@ -228,7 +273,7 @@
   flex: none;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 2px;
 }
 .donut__name {
   flex: 1;
@@ -237,9 +282,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.donut__legend b {
+  font-family: var(--font-num);
+  font-weight: 500;
+}
 .donut__pct {
   width: 32px;
   color: var(--color-muted);
+  font-family: var(--font-num);
   font-size: 11px;
   text-align: right;
 }
@@ -250,6 +300,7 @@
   justify-content: center;
   gap: 4px 10px;
   margin-top: 4px;
+  color: var(--color-text-sub);
   font-size: 11px;
 }
 .chart-card__legend-dot {
@@ -257,9 +308,10 @@
   width: 8px;
   height: 8px;
   margin-right: 4px;
+  border-radius: 2px;
 }
 
-/* 4. 필터 줄 ---------------------------------------------------------------- */
+/* 5. 필터 줄 ----------------------------------------------------------------- */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
