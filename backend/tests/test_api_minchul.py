@@ -124,14 +124,19 @@ def test_인수6_하루_조회():
 
 
 # ---------- 흐름 B: 올리기 → 가져가기 → 음성 받기 → 결과 (API 9·12·10·11) ----------
-def _upload(created, minute: str) -> str:
+def _wav() -> bytes:
     b = io.BytesIO()
     with wave.open(b, "wb") as w:                  # 1초 잡음(자체 제작, 매번 해시가 다름)
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(8000); w.writeframes(os.urandom(16000))
+    return b.getvalue()
+
+
+def _upload(created, minute: str, audio: bytes = None) -> str:
     r = client.post("/api/recordings",
-                    files={"file": (f"20261124_11{minute}_시험담당_시험고객사.wav", b.getvalue(), "audio/wav")})
+                    files={"file": (f"20261124_11{minute}_시험담당_시험고객사.wav", audio or _wav(), "audio/wav")})
     assert r.status_code == 201 and r.json()["status"] == "RECEIVED"
-    created.append(r.json()["call_id"])
+    if r.json()["call_id"] not in created:
+        created.append(r.json()["call_id"])
     return r.json()["call_id"]
 
 
@@ -147,7 +152,8 @@ def test_흐름B_가져가기부터_결과까지(created):
     assert client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "질의"}).status_code == 409
 
 
-def test_흐름B_실패_후_다시_가져가기(created):
+def test_Job시작방식_실패_후_다시_시작(created):
+    """Job 시작(ORCH_ENABLED=true)에서 웹의 '처리 시작' 버튼이 FAILED 통화에 API 12를 다시 부르는 경로(prd.md 5.3)."""
     cid = _upload(created, "01")
     client.post(f"/api/calls/{cid}/process")
     r = client.put(f"/api/calls/{cid}/result", json={"status": "FAILED"})   # API 11은 사유가 없어도 기본 사유로 저장
@@ -155,6 +161,24 @@ def test_흐름B_실패_후_다시_가져가기(created):
     assert client.post(f"/api/calls/{cid}/process").status_code == 200
     d = client.get(f"/api/calls/{cid}").json()
     assert (d["status"], d["retry_count"], d["error_message"]) == ("PROCESSING", 1, None)
+
+
+def test_가져가기방식_실패_후_같은_파일_다시_올리기(created):
+    """가져가기에서 FAILED는 봇의 대기 목록에 안 나온다. 같은 파일을 다시 올리면 RECEIVED로 돌아온다
+    (prd.md 5.2, 통합본 5장, 인수 10)."""
+    audio = _wav()
+    cid = _upload(created, "02", audio)
+    client.post(f"/api/calls/{cid}/process")
+    client.put(f"/api/calls/{cid}/result", json={"status": "FAILED", "error_message": "STT_TIMEOUT: 시험"})
+    waiting = lambda: [i["call_id"] for i in client.get("/api/calls", params={"status": "RECEIVED", "size": 200}).json()["items"]]
+    assert cid not in waiting()                                   # 실패 건은 대기 목록에 없다
+    r = client.post("/api/recordings", files={"file": ("20261124_1102_시험담당_시험고객사.wav", audio, "audio/wav")})
+    assert r.status_code == 201
+    assert (r.json()["call_id"], r.json()["status"], r.json()["retry_count"]) == (cid, "RECEIVED", 1)   # 같은 관리번호
+    d = client.get(f"/api/calls/{cid}").json()
+    assert d["error_message"] is None
+    assert cid in waiting()                                       # 다시 대기 목록에 보인다
+    assert client.post(f"/api/calls/{cid}/process").status_code == 200   # 봇이 다시 가져갈 수 있다
 
 
 # ---------- 인수 15: 처리 중 30분 넘으면 FAILED(TIMEOUT) ----------
