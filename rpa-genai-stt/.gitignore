@@ -1,0 +1,4 @@
+# UiPath Studio가 PC마다 다시 만드는 파일
+.local/
+.project/
+.settings/

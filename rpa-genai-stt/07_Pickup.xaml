@@ -1,0 +1,116 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_baseUrl" Type="InArgument(x:String)" />
+    <x:Property Name="in_apiKey" Type="InArgument(x:String)" />
+    <x:Property Name="in_tempFolder" Type="InArgument(x:String)" />
+    <x:Property Name="in_onlyCallId" Type="InArgument(x:String)" />
+    <x:Property Name="out_callId" Type="OutArgument(x:String)" />
+    <x:Property Name="out_audioPath" Type="OutArgument(x:String)" />
+    <x:Property Name="out_message" Type="OutArgument(x:String)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+      <x:String>UiPath.IntegrationService.Activities.SWEntities.CB53A7C5ADF_categorize_Create.Bundle</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Net.Http</AssemblyReference>
+      <AssemblyReference>System.Net.Primitives</AssemblyReference>
+      <AssemblyReference>System.Runtime.InteropServices</AssemblyReference>
+      <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="761,528.6566666666666" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:InvokeCode ContinueOnError="{x:Null}" Code="callId = &quot;&quot;&#xA;audioPath = &quot;&quot;&#xA;message = &quot;&quot;&#xA;Try&#xA;    Using client As New System.Net.Http.HttpClient()&#xA;        client.Timeout = TimeSpan.FromSeconds(60)&#xA;        client.DefaultRequestHeaders.Add(&quot;X-API-Key&quot;, apiKey)&#xA;        ' 1) 대기 건 목록 (API 2)&#xA;        Dim listResp = client.GetAsync(baseUrl + &quot;/api/calls?status=RECEIVED&quot;).GetAwaiter().GetResult()&#xA;        If CInt(listResp.StatusCode) &lt;&gt; 200 Then&#xA;            message = &quot;LIST_FAILED: &quot; + CInt(listResp.StatusCode).ToString()&#xA;        Else&#xA;            Dim listBody As String = listResp.Content.ReadAsStringAsync().GetAwaiter().GetResult()&#xA;            Dim items = Newtonsoft.Json.Linq.JObject.Parse(listBody)(&quot;items&quot;)&#xA;            If items Is Nothing OrElse items.Count() = 0 Then&#xA;                message = &quot;NO_PENDING&quot;&#xA;            Else&#xA;                ' 2) 가져가기 (API 12): 200이면 내 것, 409면 다음 건&#xA;                For Each it In items&#xA;                    Dim cid As String = it(&quot;call_id&quot;).ToString()&#xA;                    If onlyCallId IsNot Nothing AndAlso onlyCallId &lt;&gt; &quot;&quot; AndAlso cid &lt;&gt; onlyCallId Then Continue For&#xA;                    Dim pr = client.PostAsync(baseUrl + &quot;/api/calls/&quot; + cid + &quot;/process&quot;, New System.Net.Http.StringContent(&quot;&quot;, System.Text.Encoding.UTF8, &quot;application/json&quot;)).GetAwaiter().GetResult()&#xA;                    If CInt(pr.StatusCode) = 200 Then&#xA;                        callId = cid&#xA;                        Exit For&#xA;                    End If&#xA;                Next&#xA;                If callId = &quot;&quot; Then&#xA;                    message = If(onlyCallId IsNot Nothing AndAlso onlyCallId &lt;&gt; &quot;&quot;, &quot;TARGET_NOT_PENDING: &quot; + onlyCallId, &quot;ALL_TAKEN&quot;)&#xA;                Else&#xA;                    ' 3) 음성 받기 (API 10): 실패 시 5초 간격 3회&#xA;                    For attempt As Integer = 1 To 3&#xA;                        Dim ar = client.GetAsync(baseUrl + &quot;/api/calls/&quot; + callId + &quot;/audio&quot;).GetAwaiter().GetResult()&#xA;                        If CInt(ar.StatusCode) = 200 Then&#xA;                            Dim ct As String = &quot;&quot;&#xA;                            If ar.Content.Headers.ContentType IsNot Nothing Then ct = ar.Content.Headers.ContentType.MediaType.ToLower()&#xA;                            Dim ext As String = &quot;.wav&quot;&#xA;                            If ct.Contains(&quot;mpeg&quot;) OrElse ct.Contains(&quot;mp3&quot;) Then ext = &quot;.mp3&quot;&#xA;                            If ct.Contains(&quot;mp4&quot;) OrElse ct.Contains(&quot;m4a&quot;) Then ext = &quot;.m4a&quot;&#xA;                            System.IO.Directory.CreateDirectory(tempFolder)&#xA;                            audioPath = System.IO.Path.Combine(tempFolder, callId + ext)&#xA;                            System.IO.File.WriteAllBytes(audioPath, ar.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult())&#xA;                            message = &quot;&quot;&#xA;                            Exit For&#xA;                        End If&#xA;                        message = &quot;AUDIO_FAILED: &quot; + CInt(ar.StatusCode).ToString()&#xA;                        System.Threading.Thread.Sleep(5000)&#xA;                    Next&#xA;                End If&#xA;            End If&#xA;        End If&#xA;    End Using&#xA;Catch ex As Exception&#xA;    message = &quot;HTTP_ERROR: &quot; + ex.GetType().Name + &quot; &quot; + ex.Message&#xA;End Try&#xA;" DisplayName="Invoke Code: 대기 통화 가져가기 (API 2, 12, 10)" sap:VirtualizedContainerService.HintSize="450,394" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="baseUrl">[in_baseUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="apiKey">[in_apiKey]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="tempFolder">[in_tempFolder]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="onlyCallId">[in_onlyCallId]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="callId">[out_callId]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="audioPath">[out_audioPath]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="message">[out_message]</OutArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+  </Sequence>
+</Activity>

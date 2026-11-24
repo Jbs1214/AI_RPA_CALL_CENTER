@@ -1,0 +1,114 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="out_durationSec" Type="OutArgument(x:Int32)" />
+    <x:Property Name="out_confidence" Type="OutArgument(x:Double)" />
+    <x:Property Name="out_transcript" Type="OutArgument(x:String)" />
+    <x:Property Name="in_agentName" Type="InArgument(x:String)" />
+    <x:Property Name="in_sttResponse" Type="InArgument(x:String)" />
+    <x:Property Name="in_result_url" Type="InArgument(x:String)" />
+    <x:Property Name="in_audio_url" Type="InArgument(x:String)" />
+    <x:Property Name="in_call_id" Type="InArgument(x:String)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Reflection.DispatchProxy</AssemblyReference>
+      <AssemblyReference>System.Reflection.TypeExtensions</AssemblyReference>
+      <AssemblyReference>System.Reflection.Metadata</AssemblyReference>
+      <AssemblyReference>System.Private.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities.Design</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="819,505.65666666666664" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:InvokeCode ContinueOnError="{x:Null}" Code="Dim root As Newtonsoft.Json.Linq.JObject = Newtonsoft.Json.Linq.JObject.Parse(sttResponse)&#xA;Dim segs = root(&quot;segments&quot;).ToList()&#xA;&#xA;' 1) 상담원 화자 찾기: 센터 말투가 있는 첫 발화의 화자&#xA;Dim agentLabel As String = &quot;&quot;&#xA;Dim hit = segs.FirstOrDefault(Function(s) System.Text.RegularExpressions.Regex.IsMatch(s(&quot;text&quot;).ToString(), &quot;고객센터|고객 지원|지원 센터|상담|무엇을 도와&quot;))&#xA;If hit IsNot Nothing Then&#xA;    agentLabel = hit(&quot;speaker&quot;)(&quot;label&quot;).ToString()&#xA;ElseIf agentName &lt;&gt; &quot;미확인&quot; Then&#xA;    ' 2) 담당자 이름을 말한 화자&#xA;    hit = segs.FirstOrDefault(Function(s) s(&quot;text&quot;).ToString().Contains(agentName))&#xA;    If hit IsNot Nothing Then agentLabel = hit(&quot;speaker&quot;)(&quot;label&quot;).ToString()&#xA;End If&#xA;' 3) 그래도 못 찾으면 첫 발화자&#xA;If agentLabel = &quot;&quot; AndAlso segs.Count &gt; 0 Then agentLabel = segs(0)(&quot;speaker&quot;)(&quot;label&quot;).ToString()&#xA;&#xA;' 같은 화자가 연속으로 말하면 한 줄로 합치기&#xA;Dim lines As New List(Of String)&#xA;Dim lastLabel As String = Nothing&#xA;For Each s In segs&#xA;    Dim t As String = s(&quot;text&quot;).ToString().Trim()&#xA;    If t = &quot;&quot; Then Continue For&#xA;    Dim lb As String = s(&quot;speaker&quot;)(&quot;label&quot;).ToString()&#xA;    If lb = lastLabel Then&#xA;        lines(lines.Count - 1) = lines(lines.Count - 1) + &quot; &quot; + t&#xA;    Else&#xA;        lines.Add(If(lb = agentLabel, &quot;[상담원] &quot;, &quot;[고객] &quot;) + t)&#xA;        lastLabel = lb&#xA;    End If&#xA;Next&#xA;transcript = String.Join(vbLf, lines)&#xA;&#xA;confidence = root(&quot;confidence&quot;).ToObject(Of Double)()&#xA;durationSec = If(segs.Count &gt; 0, CInt(segs(segs.Count - 1)(&quot;end&quot;).ToObject(Of Integer)() / 1000.0), 0)" DisplayName="Invoke Code" sap:VirtualizedContainerService.HintSize="450,394" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="sttResponse">[in_sttResponse]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="agentName">[in_agentName]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="transcript">[out_transcript]</OutArgument>
+        <OutArgument x:TypeArguments="x:Double" x:Key="confidence">[out_confidence]</OutArgument>
+        <OutArgument x:TypeArguments="x:Int32" x:Key="durationSec">[out_durationSec]</OutArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+  </Sequence>
+</Activity>

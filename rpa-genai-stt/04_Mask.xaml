@@ -1,0 +1,106 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_transcript" Type="InArgument(x:String)" />
+    <x:Property Name="out_maskedTranscript" Type="OutArgument(x:String)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+      <x:String>UiPath.IntegrationService.Activities.SWEntities.CB53A7C5ADF_categorize_Create.Bundle</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Net.Http</AssemblyReference>
+      <AssemblyReference>System.Net.Primitives</AssemblyReference>
+      <AssemblyReference>System.Runtime.InteropServices</AssemblyReference>
+      <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="650,635.6566666666666" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:InvokeCode ContinueOnError="{x:Null}" Code="Dim t As String = If(transcript Is Nothing, &quot;&quot;, transcript)&#xA;' 0) 한글로 읽은 숫자 (공일공 공공공공 칠칠삼삼 등): 숫자 9개 이상 이어지면 숫자로 바꿔서 가림&#xA;Dim digitMap As New Dictionary(Of Char, Char) From {&#xA;    {&quot;공&quot;c, &quot;0&quot;c}, {&quot;영&quot;c, &quot;0&quot;c}, {&quot;일&quot;c, &quot;1&quot;c}, {&quot;이&quot;c, &quot;2&quot;c}, {&quot;삼&quot;c, &quot;3&quot;c}, {&quot;사&quot;c, &quot;4&quot;c},&#xA;    {&quot;오&quot;c, &quot;5&quot;c}, {&quot;육&quot;c, &quot;6&quot;c}, {&quot;륙&quot;c, &quot;6&quot;c}, {&quot;칠&quot;c, &quot;7&quot;c}, {&quot;팔&quot;c, &quot;8&quot;c}, {&quot;구&quot;c, &quot;9&quot;c}}&#xA;Dim digitClass As String = &quot;[공영일이삼사오육륙칠팔구0-9]&quot;&#xA;t = System.Text.RegularExpressions.Regex.Replace(t, &quot;(?:&quot; + digitClass + &quot;[\s\-.,]*){8,}&quot; + digitClass,&#xA;    Function(m As System.Text.RegularExpressions.Match) As String&#xA;        Dim sb As New System.Text.StringBuilder()&#xA;        Dim cut As Integer = -1&#xA;        For i As Integer = 0 To m.Value.Length - 1&#xA;            Dim ch As Char = m.Value(i)&#xA;            If Char.IsDigit(ch) Then&#xA;                sb.Append(ch)&#xA;            ElseIf digitMap.ContainsKey(ch) Then&#xA;                sb.Append(digitMap(ch))&#xA;            End If&#xA;            If cut &lt; 0 AndAlso sb.Length = 11 Then cut = i + 1&#xA;        Next&#xA;        Dim d As String = sb.ToString()&#xA;        Dim rest As String = &quot;&quot;&#xA;        ' 0으로 시작하는데 12자리 이상이면 뒤에 붙은 조사(예: 칠칠삼삼&quot;이&quot;에요)까지 잡힌 것: 11자리만 번호로 보고 나머지는 원문 그대로&#xA;        If d.StartsWith(&quot;0&quot;) AndAlso d.Length &gt; 11 AndAlso cut &gt; 0 Then&#xA;            rest = m.Value.Substring(cut)&#xA;            d = d.Substring(0, 11)&#xA;        End If&#xA;        Dim n As Integer = d.Length&#xA;        If n = 13 AndAlso &quot;1234&quot;.Contains(d(6)) Then Return d.Substring(0, 6) + &quot;-*******&quot;&#xA;        If d.StartsWith(&quot;0&quot;) AndAlso (n = 10 OrElse n = 11) Then&#xA;            Dim pre As String = If(d.StartsWith(&quot;02&quot;), &quot;02&quot;, d.Substring(0, 3))&#xA;            Return pre + &quot;-****-&quot; + d.Substring(n - 4) + rest&#xA;        End If&#xA;        Return New String(&quot;*&quot;c, n - 4) + d.Substring(n - 4) + rest&#xA;    End Function)&#xA;' 1) 주민등록번호 형태: 앞 6자리는 두고 뒤 7자리를 가림 (전화번호보다 먼저 처리)&#xA;t = System.Text.RegularExpressions.Regex.Replace(t, &quot;(?&lt;!\d)(\d{6})[-\s]?[1-4]\d{6}(?!\d)&quot;, &quot;$1-*******&quot;)&#xA;' 2) 전화번호: 가운데 자리를 가림&#xA;t = System.Text.RegularExpressions.Regex.Replace(t, &quot;(?&lt;!\d)(0\d{1,2})[-.\s]?\d{3,4}[-.\s]?(\d{4})(?!\d)&quot;, &quot;$1-****-$2&quot;)&#xA;' 3) 이메일: 첫 글자만 남기고 가림&#xA;t = System.Text.RegularExpressions.Regex.Replace(t, &quot;([A-Za-z0-9._%+-])[A-Za-z0-9._%+-]*@([A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+)&quot;, &quot;$1***@$2&quot;)&#xA;maskedTranscript = t&#xA;" DisplayName="Invoke Code: 한글 숫자, 주민번호, 전화번호, 이메일 가리기" sap:VirtualizedContainerService.HintSize="450,394" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="transcript">[in_transcript]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="maskedTranscript">[out_maskedTranscript]</OutArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+  </Sequence>
+</Activity>

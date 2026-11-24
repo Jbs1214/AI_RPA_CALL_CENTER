@@ -1,0 +1,380 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" VisualBasic.Settings="{x:Null}" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ss="clr-namespace:System.Security;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>UiPath.Shared.Activities.Business</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+      <x:String>System.Globalization</x:String>
+      <x:String>System.Security.Cryptography</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>System.Security</x:String>
+      <x:String>UiPath.Platform.ResourceHandling</x:String>
+      <x:String>UiPath.Platform</x:String>
+      <x:String>UiPath.IntegrationService.Activities.SWEntities.CB53A7C5ADF_categorize_Create.Bundle</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Mail.Activities</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Security.Cryptography</AssemblyReference>
+      <AssemblyReference>UiPath.Platform</AssemblyReference>
+      <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main B: 가져가기 방식" sap:VirtualizedContainerService.HintSize="729,3604" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="clovaSecretKey" />
+      <Variable x:TypeArguments="ss:SecureString" Name="clovaPassword" />
+      <Variable x:TypeArguments="x:String" Name="clovaInvokeUrl" />
+      <Variable x:TypeArguments="x:String" Name="backendUrl" />
+      <Variable x:TypeArguments="x:String" Name="apiKey" />
+      <Variable x:TypeArguments="x:String" Default="C:\CallCenter\temp" Name="tempFolder" />
+      <Variable x:TypeArguments="x:String" Name="onlyCallId" />
+      <Variable x:TypeArguments="x:String" Name="callId" />
+      <Variable x:TypeArguments="x:String" Name="audioPath" />
+      <Variable x:TypeArguments="x:String" Name="pickMsg" />
+      <Variable x:TypeArguments="x:String" Name="failMsg" />
+      <Variable x:TypeArguments="x:String" Name="sttResponse" />
+      <Variable x:TypeArguments="x:String" Name="sttResult" />
+      <Variable x:TypeArguments="x:Int32" Name="sttStatusCode" />
+      <Variable x:TypeArguments="x:Int32" Name="durationSec" />
+      <Variable x:TypeArguments="x:Double" Name="sttConfidence" />
+      <Variable x:TypeArguments="x:String" Name="transcript" />
+      <Variable x:TypeArguments="x:String" Name="maskedTranscript" />
+      <Variable x:TypeArguments="x:String" Name="aiRaw" />
+      <Variable x:TypeArguments="x:String" Name="customerName" />
+      <Variable x:TypeArguments="x:String" Name="followUpNeeded" />
+      <Variable x:TypeArguments="x:String" Name="actionTaken" />
+      <Variable x:TypeArguments="x:String" Name="customerQuestion" />
+      <Variable x:TypeArguments="x:String" Name="category" />
+      <Variable x:TypeArguments="x:Int32" Name="saveStatus" />
+      <Variable x:TypeArguments="x:String" Name="saveBody" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:GetRobotCredential TimeoutMS="{x:Null}" Username="{x:Null}" AssetName="CLOVA_SECRET_KEY" CacheStrategy="None" DisplayName="Get Credential" FolderPath="Shared" sap:VirtualizedContainerService.HintSize="490,176" sap2010:WorkflowViewState.IdRef="GetRobotCredential_1" Password="[clovaPassword]" />
+    <Assign DisplayName="Assign: CLOVA 키" sap:VirtualizedContainerService.HintSize="490,175" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[clovaSecretKey]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[New System.Net.NetworkCredential("", clovaPassword).Password]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="CLOVA_INVOKE_URL" CacheStrategy="None" DisplayName="Get Asset: CLOVA_INVOKE_URL" FolderPath="Shared" sap:VirtualizedContainerService.HintSize="490,176" sap2010:WorkflowViewState.IdRef="GetRobotAsset_1">
+      <ui:GetRobotAsset.Value>
+        <OutArgument x:TypeArguments="x:String">[clovaInvokeUrl]</OutArgument>
+      </ui:GetRobotAsset.Value>
+    </ui:GetRobotAsset>
+    <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="BACKEND_BASE_URL" CacheStrategy="None" DisplayName="Get Asset: BACKEND_BASE_URL" FolderPath="Shared" sap:VirtualizedContainerService.HintSize="490,176" sap2010:WorkflowViewState.IdRef="GetRobotAsset_2">
+      <ui:GetRobotAsset.Value>
+        <OutArgument x:TypeArguments="x:String">[backendUrl]</OutArgument>
+      </ui:GetRobotAsset.Value>
+    </ui:GetRobotAsset>
+    <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="BACKEND_API_KEY" CacheStrategy="None" DisplayName="Get Asset: BACKEND_API_KEY" FolderPath="Shared" sap:VirtualizedContainerService.HintSize="490,176" sap2010:WorkflowViewState.IdRef="GetRobotAsset_3">
+      <ui:GetRobotAsset.Value>
+        <OutArgument x:TypeArguments="x:String">[apiKey]</OutArgument>
+      </ui:GetRobotAsset.Value>
+    </ui:GetRobotAsset>
+    <Assign DisplayName="Assign: 실패 사유 비우기" sap:VirtualizedContainerService.HintSize="490,175" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="07_Pickup" sap:VirtualizedContainerService.HintSize="490,177" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="07_Pickup.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="in_baseUrl">[backendUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_apiKey">[apiKey]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_tempFolder">[tempFolder]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_onlyCallId">[onlyCallId]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="out_callId">[callId]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="out_audioPath">[audioPath]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="out_message">[pickMsg]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:LogMessage DisplayName="Log PICKUP" sap:VirtualizedContainerService.HintSize="490,175" sap2010:WorkflowViewState.IdRef="LogMessage_1" Message="[&quot;PICKUP=&quot; + callId + &quot; &quot; + pickMsg]" />
+    <If Condition="[callId &lt;&gt; &quot;&quot;]" DisplayName="If: 가져온 통화가 있을 때" sap:VirtualizedContainerService.HintSize="490,2175" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <Sequence DisplayName="Then: 가져온 통화 처리" sap:VirtualizedContainerService.HintSize="488,2021" sap2010:WorkflowViewState.IdRef="Sequence_7">
+          <sap:WorkflowViewStateService.ViewState>
+            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            </scg:Dictionary>
+          </sap:WorkflowViewStateService.ViewState>
+          <If Condition="[audioPath = &quot;&quot;]" DisplayName="If: 음성 받기 성공 여부" sap:VirtualizedContainerService.HintSize="454,1569" sap2010:WorkflowViewState.IdRef="If_7">
+            <If.Then>
+              <Assign DisplayName="Assign: 음성 받기 실패" sap:VirtualizedContainerService.HintSize="452,143" sap2010:WorkflowViewState.IdRef="Assign_3">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["STT_FAILED: 음성 받기 실패 (" + pickMsg + ")"]</InArgument>
+                </Assign.Value>
+              </Assign>
+            </If.Then>
+            <If.Else>
+              <TryCatch DisplayName="Try Catch" sap:VirtualizedContainerService.HintSize="452,1211" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+                <TryCatch.Try>
+                  <Sequence DisplayName="Try: 실제 처리" sap:VirtualizedContainerService.HintSize="450,898" sap2010:WorkflowViewState.IdRef="Sequence_5">
+                    <sap:WorkflowViewStateService.ViewState>
+                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                      </scg:Dictionary>
+                    </sap:WorkflowViewStateService.ViewState>
+                    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="02_STT" sap:VirtualizedContainerService.HintSize="416,234" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="02_STT.xaml">
+                      <ui:InvokeWorkflowFile.Arguments>
+                        <OutArgument x:TypeArguments="x:String" x:Key="out_sttResponse">[sttResponse]</OutArgument>
+                        <OutArgument x:TypeArguments="x:Int32" x:Key="out_sttStatusCode">[sttStatusCode]</OutArgument>
+                        <InArgument x:TypeArguments="x:String" x:Key="in_secretKey">[clovaSecretKey]</InArgument>
+                        <InArgument x:TypeArguments="x:String" x:Key="in_invokeUrl">[clovaInvokeUrl]</InArgument>
+                        <InArgument x:TypeArguments="x:String" x:Key="in_filePath">[audioPath]</InArgument>
+                      </ui:InvokeWorkflowFile.Arguments>
+                    </ui:InvokeWorkflowFile>
+                    <ui:LogMessage DisplayName="Log STT" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="LogMessage_2" Message="[&quot;STT=&quot; + sttStatusCode.ToString() + &quot; &quot; + If(sttResponse Is Nothing, &quot;(없음)&quot;, If(sttResponse.Length &gt; 100, sttResponse.Substring(0, 100), sttResponse))]" />
+                    <ui:WriteTextFile FileName="{x:Null}" Output="{x:Null}" DisplayName="Write Text File: STT 원본 보관" Encoding="65001" File="[LocalResource.FromPath(&quot;C:\CallCenter\output\&quot; + callId + &quot;.stt.json&quot;)]" sap:VirtualizedContainerService.HintSize="416,176" sap2010:WorkflowViewState.IdRef="WriteTextFile_1" Text="[sttResponse]" />
+                    <If Condition="[sttStatusCode &lt;&gt; 200]" DisplayName="If: STT 응답 코드 확인" sap:VirtualizedContainerService.HintSize="416,233" sap2010:WorkflowViewState.IdRef="If_3">
+                      <If.Then>
+                        <Assign DisplayName="Assign: STT 실패 코드" sap2010:WorkflowViewState.IdRef="Assign_4">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">[If(sttStatusCode = 408 OrElse sttStatusCode = 504, "STT_TIMEOUT", "STT_FAILED") + ": HTTP " + sttStatusCode.ToString()]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence DisplayName="Else: 응답 본문의 result 확인" sap2010:WorkflowViewState.IdRef="Sequence_2">
+                          <Assign DisplayName="Assign: CLOVA result 꺼내기" sap2010:WorkflowViewState.IdRef="Assign_5">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[sttResult]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(sttResponse), "", If(Newtonsoft.Json.Linq.JObject.Parse(sttResponse)("result") Is Nothing, "", Newtonsoft.Json.Linq.JObject.Parse(sttResponse)("result").ToString()))]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <If Condition="[sttResult &lt;&gt; &quot;COMPLETED&quot;]" DisplayName="If: result가 COMPLETED가 아님" sap2010:WorkflowViewState.IdRef="If_2">
+                            <If.Then>
+                              <Assign DisplayName="Assign: CLOVA 거절 사유" sap2010:WorkflowViewState.IdRef="Assign_6">
+                                <Assign.To>
+                                  <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                </Assign.To>
+                                <Assign.Value>
+                                  <InArgument x:TypeArguments="x:String">["STT_FAILED: " + If(String.IsNullOrWhiteSpace(sttResponse), "응답 없음", If(Newtonsoft.Json.Linq.JObject.Parse(sttResponse)("message") Is Nothing, "result=" + sttResult, Newtonsoft.Json.Linq.JObject.Parse(sttResponse)("message").ToString()))]</InArgument>
+                                </Assign.Value>
+                              </Assign>
+                            </If.Then>
+                          </If>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                    <If Condition="[failMsg = &quot;&quot;]" DisplayName="If: STT 성공일 때만 이어서 처리" sap2010:WorkflowViewState.IdRef="If_6">
+                      <If.Then>
+                        <Sequence DisplayName="Then: 화자 정제 이후" sap2010:WorkflowViewState.IdRef="Sequence_4">
+                          <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="03_Speaker" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_3" UnSafe="False" WorkflowFileName="03_Speaker.xaml">
+                            <ui:InvokeWorkflowFile.Arguments>
+                              <OutArgument x:TypeArguments="x:Int32" x:Key="out_durationSec">[durationSec]</OutArgument>
+                              <OutArgument x:TypeArguments="x:Double" x:Key="out_confidence">[sttConfidence]</OutArgument>
+                              <OutArgument x:TypeArguments="x:String" x:Key="out_transcript">[transcript]</OutArgument>
+                              <InArgument x:TypeArguments="x:String" x:Key="in_agentName">["미확인"]</InArgument>
+                              <InArgument x:TypeArguments="x:String" x:Key="in_sttResponse">[sttResponse]</InArgument>
+                            </ui:InvokeWorkflowFile.Arguments>
+                          </ui:InvokeWorkflowFile>
+                          <If Condition="[String.IsNullOrWhiteSpace(transcript)]" DisplayName="If: 빈 대화" sap2010:WorkflowViewState.IdRef="If_5">
+                            <If.Then>
+                              <Assign DisplayName="Assign: EMPTY_TRANSCRIPT" sap2010:WorkflowViewState.IdRef="Assign_7">
+                                <Assign.To>
+                                  <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                </Assign.To>
+                                <Assign.Value>
+                                  <InArgument x:TypeArguments="x:String">["EMPTY_TRANSCRIPT: 인식된 발화 없음"]</InArgument>
+                                </Assign.Value>
+                              </Assign>
+                            </If.Then>
+                            <If.Else>
+                              <Sequence DisplayName="Else: 마스킹, 분류" sap2010:WorkflowViewState.IdRef="Sequence_3">
+                                <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="04_Mask" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_4" UnSafe="False" WorkflowFileName="04_Mask.xaml">
+                                  <ui:InvokeWorkflowFile.Arguments>
+                                    <OutArgument x:TypeArguments="x:String" x:Key="out_maskedTranscript">[maskedTranscript]</OutArgument>
+                                    <InArgument x:TypeArguments="x:String" x:Key="in_transcript">[transcript]</InArgument>
+                                  </ui:InvokeWorkflowFile.Arguments>
+                                </ui:InvokeWorkflowFile>
+                                <ui:LogMessage DisplayName="Log MASK" sap2010:WorkflowViewState.IdRef="LogMessage_3" Message="[&quot;MASKED_LINES=&quot; + If(maskedTranscript Is Nothing, &quot;0&quot;, maskedTranscript.Split(New Char() {Chr(10)}, StringSplitOptions.RemoveEmptyEntries).Length.ToString())]" />
+                                <TryCatch DisplayName="Try Catch: GenAI 호출" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+                                  <TryCatch.Try>
+                                    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="05_GenAI" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_5" UnSafe="False" WorkflowFileName="05_GenAI.xaml">
+                                      <ui:InvokeWorkflowFile.Arguments>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_aiRaw">[aiRaw]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_customerName">[customerName]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_followUpNeeded">[followUpNeeded]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_actionTaken">[actionTaken]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_customerQuestion">[customerQuestion]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_category">[category]</OutArgument>
+                                        <InArgument x:TypeArguments="x:String" x:Key="in_maskedTranscript">[maskedTranscript]</InArgument>
+                                      </ui:InvokeWorkflowFile.Arguments>
+                                    </ui:InvokeWorkflowFile>
+                                  </TryCatch.Try>
+                                  <TryCatch.Catches>
+                                    <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+                                      <ActivityAction x:TypeArguments="s:Exception">
+                                        <ActivityAction.Argument>
+                                          <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                        </ActivityAction.Argument>
+                                        <Assign DisplayName="Assign: LLM_FAILED" sap2010:WorkflowViewState.IdRef="Assign_8">
+                                          <Assign.To>
+                                            <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                          </Assign.To>
+                                          <Assign.Value>
+                                            <InArgument x:TypeArguments="x:String">["LLM_FAILED: " + If(String.IsNullOrEmpty(exception.Message), "사유 불명", exception.Message)]</InArgument>
+                                          </Assign.Value>
+                                        </Assign>
+                                      </ActivityAction>
+                                    </Catch>
+                                  </TryCatch.Catches>
+                                </TryCatch>
+                                <ui:LogMessage DisplayName="Log GEN" sap2010:WorkflowViewState.IdRef="LogMessage_4" Message="[&quot;GEN=&quot; + category + &quot; | FU=&quot; + followUpNeeded]" />
+                                <If Condition="[String.IsNullOrWhiteSpace(aiRaw)]" DisplayName="If: GenAI 응답 없음" sap2010:WorkflowViewState.IdRef="If_4">
+                                  <If.Then>
+                                    <Assign DisplayName="Assign: LLM_FAILED" sap2010:WorkflowViewState.IdRef="Assign_9">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:String">["LLM_FAILED: 응답 없음"]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                  </If.Then>
+                                </If>
+                              </Sequence>
+                            </If.Else>
+                          </If>
+                        </Sequence>
+                      </If.Then>
+                    </If>
+                  </Sequence>
+                </TryCatch.Try>
+                <TryCatch.Catches>
+                  <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+                    <ActivityAction x:TypeArguments="s:Exception">
+                      <ActivityAction.Argument>
+                        <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                      </ActivityAction.Argument>
+                      <Assign DisplayName="Assign: 예외를 실패 코드로" sap:VirtualizedContainerService.HintSize="450,143" sap2010:WorkflowViewState.IdRef="Assign_10">
+                        <Assign.To>
+                          <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                        </Assign.To>
+                        <Assign.Value>
+                          <InArgument x:TypeArguments="x:String">["UNKNOWN: " + If(String.IsNullOrEmpty(exception.Message), "사유 불명", exception.Message)]</InArgument>
+                        </Assign.Value>
+                      </Assign>
+                    </ActivityAction>
+                  </Catch>
+                </TryCatch.Catches>
+              </TryCatch>
+            </If.Else>
+          </If>
+          <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="08_SaveB" sap:VirtualizedContainerService.HintSize="454,177" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_6" UnSafe="False" WorkflowFileName="08_SaveB.xaml">
+            <ui:InvokeWorkflowFile.Arguments>
+              <InArgument x:TypeArguments="x:String" x:Key="in_baseUrl">[backendUrl]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_apiKey">[apiKey]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_callId">[callId]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_status">[If(failMsg = "", "DONE", "FAILED")]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_errorMessage">[failMsg]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_category">[category]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_question">[customerQuestion]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_action">[actionTaken]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_followUp">[followUpNeeded]</InArgument>
+              <InArgument x:TypeArguments="x:Double" x:Key="in_confidence">[sttConfidence]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_transcript">[maskedTranscript]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_aiRaw">[aiRaw]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_custName">[customerName]</InArgument>
+              <InArgument x:TypeArguments="x:Int32" x:Key="in_durationSec">[durationSec]</InArgument>
+              <OutArgument x:TypeArguments="x:Int32" x:Key="out_statusCode">[saveStatus]</OutArgument>
+              <OutArgument x:TypeArguments="x:String" x:Key="out_respBody">[saveBody]</OutArgument>
+            </ui:InvokeWorkflowFile.Arguments>
+          </ui:InvokeWorkflowFile>
+          <ui:LogMessage DisplayName="Log SAVE" sap:VirtualizedContainerService.HintSize="454,175" sap2010:WorkflowViewState.IdRef="LogMessage_5" Message="[&quot;SAVE=&quot; + saveStatus.ToString() + &quot; &quot; + If(saveBody Is Nothing, &quot;(없음)&quot;, If(saveBody.Length &gt; 150, saveBody.Substring(0, 150), saveBody))]" />
+          <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA;    If p &lt;&gt; &quot;&quot; AndAlso System.IO.File.Exists(p) Then System.IO.File.Delete(p)&#xA;Catch ex As Exception&#xA;End Try" DisplayName="Invoke Code: 임시 음성 삭제" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+            <ui:InvokeCode.Arguments>
+              <InArgument x:TypeArguments="x:String" x:Key="p">[audioPath]</InArgument>
+            </ui:InvokeCode.Arguments>
+          </ui:InvokeCode>
+        </Sequence>
+      </If.Then>
+    </If>
+  </Sequence>
+</Activity>
