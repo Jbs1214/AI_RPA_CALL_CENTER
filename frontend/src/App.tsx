@@ -13,7 +13,7 @@ import ChatWidget from './features/chat/ChatWidget'
 import type { CallFilters as Filters } from './types/Call'
 
 export default function App() {
-  const [filters, setFilters] = useState<Filters>({ page: 1, size: 20 })
+  const [filters, setFilters] = useState<Filters>({ page: 1, size: 10 }) // 처음 보이는 목록은 10건씩
   const [selected, setSelected] = useState<string | null>(null)
   const range = { from: filters.from, to: filters.to } // 필터의 기간은 통계에도 같이 보낸다
 
