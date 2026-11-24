@@ -45,13 +45,14 @@ def compute_stats(conn, f: dict) -> dict:
     cats = conn.execute(f"SELECT category, COUNT(*) AS n FROM calls {done_where} GROUP BY category", done_args).fetchall()
     agents = conn.execute(
         "SELECT agent_name, COUNT(*) AS n, COUNT(*) FILTER (WHERE follow_up_needed) AS fu "
-        f"FROM calls {done_where} GROUP BY agent_name ORDER BY n DESC, agent_name", done_args).fetchall()
+        f"FROM calls {done_where} GROUP BY agent_name ORDER BY n DESC, MIN(called_at), MIN(call_id)", done_args).fetchall()
     days = conn.execute(
         "SELECT (called_at AT TIME ZONE 'Asia/Seoul')::date AS d, category, COUNT(*) AS n "
         f"FROM calls {done_where} GROUP BY d, category ORDER BY d", done_args).fetchall()
     cw, ca = where_sql(f, extra=["status = 'DONE'", "customer_company IS NOT NULL"])
     companies = conn.execute(
         "SELECT customer_company, COUNT(*) AS n, COUNT(*) FILTER (WHERE category = '불만') AS complaints "
-        f"FROM calls {cw} GROUP BY customer_company ORDER BY complaints DESC, n DESC, customer_company LIMIT 10",
+        f"FROM calls {cw} GROUP BY customer_company "
+        "ORDER BY complaints DESC, n DESC, MIN(called_at), MIN(call_id) LIMIT 10",
         ca).fetchall()
     return build_stats(totals, cats, agents, days, companies)
