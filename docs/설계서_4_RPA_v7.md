@@ -35,7 +35,7 @@
 | 무인 실행 | 수 오전 할 일 | 11/24에 끝냈다(9장). |
 | 기준 문서 이름 | 통합본 v1.9 | 통합본 v2.0 |
 
-11/24 현재 Orchestrator에는 큐와 큐 트리거가 남아 있고 시간 트리거는 아직 만들지 않았다. 큐를 뺀 `Main.xaml`도 아직 올리지 않았다(9장).
+11/24 15:38에 Orchestrator에도 반영했다. 프로세스를 1.0.7로 올리고 큐 트리거를 지웠으며 시간 트리거를 만들었다. 큐 `CallCenter_Calls`만 ③이 큐 추가 단계를 뺄 때까지 남겨 둔다(9장).
 
 ## 1. 한눈에 보기
 
@@ -81,7 +81,7 @@
 | 엑셀 템플릿 | `콜센터_엑셀_템플릿_v3.xlsx`. 요약 시트의 목록을 수식이 만든다(7장). | 확정 |
 | 무인 실행 로봇 | 라이선스 2개 가운데 1개를 쓴다. 머신 `CallCenter_BotPC`(런타임 1개), 로봇 계정 `CallCenter_Robot`, `Shared` 폴더 | 완료(11/24). 사용자 방식 로봇이라 봇 PC가 켜져 있고 로그인된 상태에서만 Job이 돈다. |
 | 큐 | 쓰지 않는다. 강사 피드백(11/24)으로 뺐다. | Orchestrator에 남아 있는 큐 `CallCenter_Calls`와 큐 트리거는 ③이 큐 추가 단계를 뺀 뒤 지운다. |
-| 시작 방식 | Orchestrator 시간 트리거, 1분마다 | 정했다(11/24). 트리거는 아직 만들지 않았다. |
+| 시작 방식 | Orchestrator 시간 트리거, 1분마다 | 정했다(11/24). 트리거 `CallCenter_Report_Every1Min`을 만들었다. |
 | ④ 프로세스 이름 | `CallCenter_RPA_Report` | 확정. UiPath 프로젝트 이름도 같다. |
 | 엑셀을 저장할 폴더 | 설정 파일의 `OutputPath`. 봇 PC에서는 저장소 루트의 `output/` 폴더를 전체 경로로 적는다. | 확정. 프로젝트 폴더 안에 두면 결과 엑셀이 게시 패키지에 들어간다. |
 
@@ -107,7 +107,7 @@
 
 | 방식 | 내용 | 언제 |
 |---|---|---|
-| 시간 트리거 | Orchestrator가 1분마다 무인 실행으로 시작한다. 봇 PC가 켜져 있고 로그인되어 있어야 한다. | 기본 방식. 11/24에 정했고 트리거는 아직 만들지 않았다. |
+| 시간 트리거 | Orchestrator가 1분마다 무인 실행으로 시작한다. 봇 PC가 켜져 있고 로그인되어 있어야 한다. | 기본 방식. 11/24 15:38부터 돌고 있다. |
 | 직접 실행 | Studio, Assistant, Orchestrator의 Start Job으로 실행한다. | 바로 반영해야 할 때, 시간 트리거를 꺼 둔 때 |
 
 무인 실행 자리(런타임)가 1개다. ③의 Job 시작을 시험하거나 여러 건을 연달아 돌릴 때는 시간 트리거를 잠깐 끈다.
@@ -313,14 +313,14 @@ python tools/check_template.py 결과.xlsx out testdata/mock_calls_seed14_v1.jso
 
 | 할 일 | 내용 | 기한과 상태 |
 |---|---|---|
-| 큐 | 쓰지 않는다(v7). 11/24 오전에 만든 큐 `CallCenter_Calls`와 큐 트리거 `CallCenter_Calls_Trigger`는 ③이 큐 추가 단계를 뺀 뒤 지운다. | 아직 지우지 않았다. |
+| 큐 | 쓰지 않는다(v7). 11/24 오전에 만든 큐 트리거 `CallCenter_Calls_Trigger`는 지웠다. 큐 `CallCenter_Calls`는 ③이 큐 추가 단계를 뺀 뒤 지운다. | 큐 트리거 삭제(11/24). 큐는 아직 남아 있다. |
 | Asset 만들기(④) | `BACKEND_BASE_URL`(Text), `BACKEND_API_KEY`(Text, 비어 있지 않은 임시 값). `Shared` 폴더 | 완료(11/24) |
 | Asset 만들기(③) | `CLOVA_INVOKE_URL`(Text), `CLOVA_SECRET_KEY`(Secret). 민영이 만든다. ④는 값을 보거나 문서에 적지 않는다. | ③ 일정 |
 | ④ 프로세스 올리기 | `Shared` 폴더. 올리기 전에 `OutputPath`를 전체 경로로 바꾼다. | 1.0.5(큐를 쓰는 판)를 올려 실행을 확인했다(11/24). 큐를 뺀 판은 아직 올리지 않았다. |
 | 외부 앱 만들기 | 권한 `OR.Jobs OR.Execution OR.Folders OR.Machines`. Client ID와 Secret을 범수나 민철에게 직접 전달한다. 범수가 받으면 토큰 발급부터 확인한다. | 완료(11/24). 범수가 토큰 발급을 확인했다. |
 | 무인 실행 설정 | 봇 PC를 머신 `CallCenter_BotPC`로 등록하고 로봇 계정 `CallCenter_Robot`과 함께 `Shared` 폴더에 연결 | 완료(11/24). Orchestrator에서 시작한 Job이 Successful |
 | ③ 프로세스 키 전달 | 서버가 Job으로 시작하는 것은 ③의 `CallCenter_GenAI_STT`다. 게시되면 프로세스 키를 범수에게 알린다. 실행 인자는 `in_call_id`, `in_audio_url`, `in_result_url`(③ v0.8과 백엔드 설계서 v2가 같다). | 범수가 Orchestrator에서 직접 조회했다(11/24). |
-| 시간 트리거 | 프로세스 `CallCenter_RPA_Report`, 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul | 아직 만들지 않았다. |
+| 시간 트리거 | 프로세스 `CallCenter_RPA_Report`, 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul, 우선순위 High, 5분 뒤 Kill. 이름 `CallCenter_Report_Every1Min` | 완료(11/24 15:38) |
 
 ## 10. 구성
 
@@ -396,7 +396,7 @@ python tools/check_template.py 결과.xlsx out testdata/mock_calls_seed14_v1.jso
 
 스크립트만으로 확인한 경우: 쪽 나눠 받기, 500 뒤 재시도 성공, 422는 재시도 없이 실패, `MaxRows` 초과, 깨진 날짜. 실제 서버로 확인한 경우(11/24): 서버 주소가 틀릴 때 3회 재시도 뒤 종료 코드 1과 기존 파일 유지, 출력 파일이 열려 있을 때 다른 이름으로 저장, 완료 통화 0건일 때 머리글만 있는 엑셀 저장(지표 0, 오류 셀 0, 14:55).
 
-큐를 뺀 `Main.xaml`(v7)은 Studio 분석기(오류 0)와 게시(컴파일)로만 확인했다. Studio 실행, 올린 프로세스, 시간 트리거로는 아직 돌리지 않았다. 실패했을 때 Job이 Faulted로 끝나는지도 아직 보지 않았다.
+큐를 뺀 `Main.xaml`(v7)은 Studio에서 실행해 확인했고(주석 화면 포함), 1.0.7로 올려 시간 트리거로 돌렸다. 11/24 15:38부터 1분마다 Job이 저절로 시작되어 Successful이었고, 그때 만든 엑셀(16건)이 `GET /api/stats`와 같았다. 실패했을 때 Job이 Faulted로 끝나는지는 아직 보지 않았다.
 
 ## 12. 일정
 

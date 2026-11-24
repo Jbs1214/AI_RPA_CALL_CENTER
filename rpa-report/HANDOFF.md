@@ -1,6 +1,6 @@
 # ④ 이어서 할 일
 
-2026-11-24(화) 15시 기준. 한 일과 이어서 할 일을 적었다. 최종 발표(11/27 오전)가 끝나면 이 파일은 지운다.
+2026-11-24(화) 15:40 기준. 한 일과 이어서 할 일을 적었다. 최종 발표(11/27 오전)가 끝나면 이 파일은 지운다.
 
 구성과 명령의 자세한 설명은 `README.md`, 규칙은 `CLAUDE.md`에 있다. 여기에는 순서만 적는다.
 
@@ -11,7 +11,7 @@
 
 반영한 것: `Main.xaml`에서 큐 꺼내기와 상태 표시, 인자 `in_ForceRefresh`를 빼고, 시퀀스 3개(서버 주소 읽기, 엑셀 다시 만들기, 결과 확인)에 주석을 달았다. 큐가 없으므로 ④는 Orchestrator 시간 트리거(1분)로 시작한다. 통합본 v2.0, 설계서 v7에 적었다.
 
-**아직 Orchestrator에는 반영하지 않았다.** 지금 Orchestrator에서 도는 것은 큐를 쓰는 1.0.5와 큐 트리거다. 아래 "이어서 할 일"을 해야 바뀐다.
+Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리거는 지웠고, 시간 트리거 `CallCenter_Report_Every1Min`이 1분마다 시작한다. 큐 `CallCenter_Calls`는 ③ 봇이 큐 추가를 뺄 때까지 남겨 둔다.
 
 ## 지금 상태
 
@@ -23,7 +23,7 @@
 | 예외 (11/24, 실제 서버) | 서버 주소가 틀릴 때 3회 재시도 뒤 실패와 기존 파일 유지, 출력 파일이 열려 있을 때 다른 이름으로 저장, 완료 통화 0건일 때 머리글만 있는 엑셀(지표 0, 오류 셀 0) |
 | Orchestrator `Shared`: Asset 2개, 외부 앱, 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot` (11/24) | 무인 Job이 Successful. 외부 앱은 범수가 토큰 발급을 확인했다 |
 | 큐를 쓰던 판(1.0.5) (11/24 오전) | 큐 트리거로 ③ 봇의 통화(`CALL-20261124-060`)가 사람 손 없이 엑셀에 들어갔다. 이 방식은 강사 피드백으로 뺀다 |
-| 큐를 뺀 `Main.xaml` (11/24 오후) | Studio 분석기 오류 0, 임시 게시(컴파일) 성공. **Studio 실행, 올린 프로세스, 시간 트리거로는 아직 돌리지 않았다** |
+| 큐를 뺀 `Main.xaml` 1.0.7 (11/24 오후) | Studio 실행 성공, 주석 화면 확인. 시간 트리거로 15:38부터 1분마다 Job이 저절로 시작되어 Successful. 엑셀(16건)이 `GET /api/stats`와 같았다. 실패할 때 Job이 Faulted로 끝나는지는 아직 보지 않았다 |
 
 ## 다른 PC에서 먼저 할 일
 
@@ -43,9 +43,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 | 역할 정의서 항목 | 산출물 | 상태 |
 |---|---|---|
 | 엑셀 대시보드 자동 생성 | 엑셀 템플릿 v3, `build_report.ps1` | 끝 |
-| 메인 RPA 봇 | `project.json`, `Main.xaml` | 큐를 뺀 판을 Studio와 Orchestrator에서 확인하는 일이 남았다 |
+| 메인 RPA 봇 | `project.json`, `Main.xaml` | 끝. 큐를 뺀 1.0.7이 시간 트리거로 돈다 |
 | 큐/예외 처리 | 스크립트의 재시도, `Main.xaml`의 실패 표시 | 큐는 강사 피드백으로 뺐다. 예외 처리는 스크립트 쪽 확인이 끝났고, 실패한 Job이 Faulted로 보이는지는 아직 |
-| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 시간 트리거 만들기와 큐·큐 트리거 지우기가 남았다 |
+| Orchestrator 세팅 | Asset, 외부 앱, 무인 실행, 시간 트리거 | 끝. 큐 `CallCenter_Calls` 지우기만 남았다(③이 큐 추가를 뺀 뒤) |
 | 레거시(CRM/ERP) 입력, 정형 보고서 | 없음 | 만들지 않는다(통합본 FR-R09). 발표 때 확장 계획으로 설명한다 |
 
 ## 이어서 할 일
@@ -55,24 +55,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_report.ps1
 팀에 알리기
 
 - [ ] 민영: ③ 봇에서 큐에 추가하는 단계를 빼 달라고 한다. **민영이 뺐다고 할 때까지 큐를 지우지 않는다.** 먼저 지우면 ③ 봇이 그 단계에서 실패한다
-- [ ] 범수, 민철: 큐 트리거가 없어지고 1분 시간 트리거가 생긴다고 알린다. Job 시작 시험 때 끄는 대상이 시간 트리거로 바뀐다
-- [ ] PR(큐 제거, 통합본 v2.0, 설계서 v7)을 민영과 범수·민철이 확인한 뒤 합친다
+- [x] 범수, 민철: 큐 트리거가 없어지고 1분 시간 트리거가 생긴다고 알린다. Job 시작 시험 때 끄는 대상이 시간 트리거로 바뀐다
+- [ ] PR #21(큐 제거, 통합본 v2.0, 설계서 v7)을 합친다. 범수와 민철은 확인했다(v2.0 동의). 민영의 답은 아직 없다
 
 Studio
 
-- [ ] Studio에서 프로젝트를 닫았다가 `project.json`을 다시 연다. 주석이 시퀀스마다 화면에 보이는지 본다(강사님이 보는 화면)
-- [ ] Orchestrator 폴더를 `Shared`로 두고 실행한다. 로그에 `build_report.ps1 exit=0`과 `saved rows=…`가 나오는지
+- [x] Studio에서 프로젝트를 닫았다가 `project.json`을 다시 연다. 주석이 시퀀스마다 화면에 보이는지 본다(강사님이 보는 화면)
+- [x] Orchestrator 폴더를 `Shared`로 두고 실행한다. 로그에 `build_report.ps1 exit=0`과 `saved rows=…`가 나오는지
 - [ ] Asset의 서버 주소를 잠깐 틀리게 하고 실행한다. 예외가 나고 실행이 실패로 끝나는지 본 뒤 바로 되돌린다
 
 Orchestrator
 
-- [ ] 게시한다. 임시 게시로 `project.json`이 1.0.6이 되어 있으므로 새 버전은 1.0.7이 된다. `Shared`의 프로세스를 새 버전으로 올린다
-- [ ] 큐 트리거 `CallCenter_Calls_Trigger`를 지운다
-- [ ] 시간 트리거를 만든다: 프로세스 `CallCenter_RPA_Report`, 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul
-- [ ] Jobs에 1분마다 Job이 생기고 Successful인지, 결과 엑셀의 저장 시각이 바뀌는지 본다
+- [x] 1.0.7로 게시하고 `Shared`의 프로세스를 1.0.7로 올렸다
+- [x] 큐 트리거 `CallCenter_Calls_Trigger`를 지운다
+- [x] 시간 트리거 `CallCenter_Report_Every1Min`: 1분마다, `Production (Unattended)`, 계정 `CallCenter_Robot`, 머신 `CallCenter_BotPC`, 시간대 Seoul, 우선순위 High, 5분 뒤 Kill
+- [x] 1분마다 Job이 생기고 Successful인지, 결과 엑셀의 저장 시각이 바뀌는지. 15:38:49, 15:39:47에 이어서 돌았고 엑셀이 그때마다 새로 저장됐다
 - [ ] 민영이 큐 추가를 뺐다고 하면 큐 `CallCenter_Calls`를 지운다
 
-확인이 필요한 점: 앞 Job이 대기 중일 때 시간 트리거가 Job을 또 만드는지 모른다. Pending이 쌓이면 주기를 늘린다.
+확인이 필요한 점: 정상일 때는 Job이 쌓이지 않았다(한 번에 15초쯤). 앞 Job이 오래 걸릴 때 시간 트리거가 Job을 또 만드는지는 모른다. Pending이 쌓이면 주기를 늘린다.
 
 ### B. 연락이 오면 하는 일
 
@@ -104,7 +104,7 @@ Orchestrator
 | 통화 대장 정렬 | 통화일시 오름차순 |
 | 엑셀 저장 폴더 | 봇 PC에서는 저장소 루트의 `output\`(`config.json`의 `OutputPath`에 전체 경로). 프로젝트 폴더 안에 두면 결과 엑셀이 게시 패키지에 들어간다 |
 | 게시 패키지에서 빼는 파일 | `project.json`의 `ignoredFiles`에 파일을 하나씩 적는다. 폴더 이름과 와일드카드는 듣지 않는다 |
-| Orchestrator 이름 | 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot` |
+| Orchestrator 이름 | 머신 `CallCenter_BotPC`, 로봇 계정 `CallCenter_Robot`, 시간 트리거 `CallCenter_Report_Every1Min` |
 | 슬라이서 | 통화 대장 시트의 표 오른쪽. 대시보드 숫자는 바뀌지 않는 한계를 그대로 둔다 |
 | 구현 방식 | 엑셀 쓰기는 스크립트, UiPath는 Asset 읽기·스크립트 실행·결과 확인 |
 | 레거시 입력, 정형 보고서 | 만들지 않는다. 발표 때 확장 계획으로 설명한다 |
