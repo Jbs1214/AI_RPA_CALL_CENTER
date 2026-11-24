@@ -31,9 +31,9 @@ Orchestrator에도 반영했다(11/24 15:38). 프로세스는 1.0.7, 큐 트리�
 git pull
 cd rpa-report
 copy config.example.json config.json
-powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath 임시폴더nfig.json -BaseUrl http://서버주소:8000 -ApiKey 임시값
+powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -ConfigPath 임시폴더\config.json -BaseUrl http://서버주소:8000 -ApiKey 임시값
 ```
-- 로그에 `saved rows=N`이 나오고 종료 코드가 0이면 그 PC의 Excel로도 스크립트가 도는 것이다. `임시폴더nfig.json`은 `config.json`을 복사해 `OutputPath`만 임시 폴더로 바꾼 것이다(`README.md`의 "시험").
+- 로그에 `saved rows=N`이 나오고 종료 코드가 0이면 그 PC의 Excel로도 스크립트가 도는 것이다. `임시폴더\config.json`은 `config.json`을 복사해 `OutputPath`만 임시 폴더로 바꾼 것이다(`README.md`의 "시험").
 - `config.json`과 `output/`은 git에 올라가지 않는다. PC마다 새로 만든다.
 - 게시할 PC에서는 `config.json`의 `OutputPath`를 프로젝트 폴더 밖의 전체 경로로 바꾼다(`README.md`의 "다시 게시할 때").
 
