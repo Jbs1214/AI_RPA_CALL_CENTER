@@ -1,12 +1,13 @@
-import { Table, Tag, Alert, Button, Popconfirm, message } from 'antd'
+import { Table, Tag, Alert, Button, Grid, Popconfirm, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteCall, fetchCalls } from '../../api/calls'
+import { callSummary } from '../../lib/callSummary'
 import { formatKst } from '../../lib/date'
 import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
-import { parseErrorMessage } from '../../lib/errorLabel'
 import { POLL_INTERVAL_MS } from '../../lib/polling'
 import type { Call, CallFilters } from '../../types/Call'
+import CallCardList from './CallCardList'
 
 interface Props {
   filters: CallFilters
@@ -16,6 +17,7 @@ interface Props {
 
 export default function CallTable({ filters, onChange, onOpen }: Props) {
   const qc = useQueryClient()
+  const isMobile = Grid.useBreakpoint().md === false // md = 768px 이상
   const { data, error, isLoading } = useQuery({
     queryKey: ['calls', filters],
     queryFn: () => fetchCalls(filters),
@@ -42,12 +44,9 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       title: '질문 요지',
       dataIndex: 'customer_question',
       ellipsis: true,
-      render: (v: string | null, row) => {
-        if (row.status === 'FAILED') {
-          const e = parseErrorMessage(row.error_message)
-          return <span className="text-danger">{e ? `${e.label}${e.detail ? `: ${e.detail}` : ''}` : '실패'}</span>
-        }
-        return v ?? '—'
+      render: (_: string | null, row) => {
+        const s = callSummary(row)
+        return s.failed ? <span className="text-danger">{s.text}</span> : s.text
       },
     },
     {
@@ -81,6 +80,22 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
   ]
 
   if (error) return <Alert type="error" showIcon message={error.message} />
+
+  // 좁은 화면(768px 미만)에서는 표 대신 카드 목록으로 보여 준다
+  if (isMobile) {
+    return (
+      <CallCardList
+        items={data?.items ?? []}
+        loading={isLoading}
+        page={data?.page ?? filters.page ?? 1}
+        size={data?.size ?? filters.size ?? 20}
+        total={data?.total ?? 0}
+        onPage={(page, size) => onChange({ ...filters, page, size })}
+        onOpen={onOpen}
+        onDelete={(id) => del.mutate(id)}
+      />
+    )
+  }
 
   return (
     <Table<Call>

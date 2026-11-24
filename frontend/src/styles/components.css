@@ -110,6 +110,84 @@
   }
 }
 
+/* 4. 모바일 통화 카드 목록 (.call-card) -------------------------------------- */
+.call-cards {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.call-cards__loading {
+  display: block;
+  padding: 24px 0;
+  text-align: center;
+}
+.call-cards__pager {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+.call-card {
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-left: 4px solid var(--color-axis);
+  border-radius: var(--radius);
+  background: var(--glass-bg);
+}
+.call-card--review {
+  border-left-color: #e9a23b;
+  background: var(--row-review-bg);
+}
+.call-card--failed {
+  border-left-color: #d9534f;
+  background: var(--row-failed-bg);
+}
+.call-card__body {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.call-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.call-card__date {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.call-card__who {
+  margin-top: 2px;
+  font-weight: 600;
+}
+.call-card__summary {
+  margin-top: 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 길면 두 줄까지만 */
+  -webkit-box-orient: vertical;
+  color: var(--color-text-sub);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.call-card__tags {
+  min-height: 8px;
+  margin-top: 6px;
+}
+.call-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 6px 6px;
+}
+
 /* 3. 쪽 번호는 가운데 정렬 ---------------------------------------------------- */
 .ant-table-wrapper .ant-pagination {
   justify-content: center;
