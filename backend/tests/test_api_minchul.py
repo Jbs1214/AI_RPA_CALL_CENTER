@@ -6,7 +6,10 @@ smoke 점검(tests/smoke_check.py)은 pytest 시험이 아니다. 서버를 띄�
     python tests/smoke_check.py http://localhost:8000
 """
 import hashlib
+import io
+import os
 import uuid
+import wave
 from pathlib import Path
 
 import pytest
@@ -15,6 +18,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.db import connect
 from app.services.calls_repo import compute_stats
+from app.services import reconciler
 
 client = TestClient(app)
 
@@ -117,3 +121,58 @@ def test_인수3_FAILED_다시_저장하면_같은_관리번호(created):
 def test_인수6_하루_조회():
     s = _seed_stats({"from": "2026-11-23", "to": "2026-11-23"})
     assert (s["total_calls"], s["failed"], s["analyzed"]) == (6, 1, 5)
+
+
+# ---------- 흐름 B: 올리기 → 가져가기 → 음성 받기 → 결과 (API 9·12·10·11) ----------
+def _upload(created, minute: str) -> str:
+    b = io.BytesIO()
+    with wave.open(b, "wb") as w:                  # 1초 잡음(자체 제작, 매번 해시가 다름)
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(8000); w.writeframes(os.urandom(16000))
+    r = client.post("/api/recordings",
+                    files={"file": (f"20261124_11{minute}_시험담당_시험고객사.wav", b.getvalue(), "audio/wav")})
+    assert r.status_code == 201 and r.json()["status"] == "RECEIVED"
+    created.append(r.json()["call_id"])
+    return r.json()["call_id"]
+
+
+def test_흐름B_가져가기부터_결과까지(created):
+    cid = _upload(created, "00")
+    r = client.post(f"/api/calls/{cid}/process")
+    assert r.json() == {"call_id": cid, "status": "PROCESSING", "job_key": None}   # 가져가기(ORCH_ENABLED=false)
+    assert client.post(f"/api/calls/{cid}/process").status_code == 409             # 두 봇이 같은 건을 못 가져간다
+    assert client.get(f"/api/calls/{cid}/audio").status_code == 200
+    r = client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "불만", "follow_up_needed": True,
+                                                      "needs_review": False, "confidence": 0.95})
+    assert r.json() == {"call_id": cid, "status": "DONE", "needs_review": False}
+    assert client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "질의"}).status_code == 409
+
+
+def test_흐름B_실패_후_다시_가져가기(created):
+    cid = _upload(created, "01")
+    client.post(f"/api/calls/{cid}/process")
+    r = client.put(f"/api/calls/{cid}/result", json={"status": "FAILED"})   # API 11은 사유가 없어도 기본 사유로 저장
+    assert r.json()["status"] == "FAILED"
+    assert client.post(f"/api/calls/{cid}/process").status_code == 200
+    d = client.get(f"/api/calls/{cid}").json()
+    assert (d["status"], d["retry_count"], d["error_message"]) == ("PROCESSING", 1, None)
+
+
+# ---------- 인수 15: 처리 중 30분 넘으면 FAILED(TIMEOUT) ----------
+def test_인수15_처리중_시간초과_정리(monkeypatch):
+    """updated_at을 과거로 넣은 통화로 확인하고 되돌린다(INSERT에는 updated_at 자동 갱신이 걸리지 않는다)."""
+    monkeypatch.setattr(reconciler, "_last_expire", 0.0)          # 1분에 한 번 제한을 푼다
+    rows = {"old": ("PROCESSING", "40 minutes"), "new": ("PROCESSING", "5 minutes"), "recv": ("RECEIVED", "40 minutes")}
+    with connect() as conn:
+        ids = {}
+        for k, (st, ago) in rows.items():
+            ids[k] = conn.execute(
+                "INSERT INTO calls (called_at, agent_name, source_filename, file_hash, status, audio_path, updated_at) "
+                "VALUES (now(), '시험담당', 'x.wav', %s, %s, 'test/x.wav', now() - %s::interval) RETURNING call_id",
+                (hashlib.sha256(uuid.uuid4().bytes).hexdigest(), st, ago)).fetchone()["call_id"]
+        reconciler.expire_stuck(conn)
+        got = {k: conn.execute("SELECT status, error_message FROM calls WHERE call_id = %s", (v,)).fetchone()
+               for k, v in ids.items()}
+        conn.rollback()
+    assert got["old"]["status"] == "FAILED" and got["old"]["error_message"].startswith("TIMEOUT:")
+    assert got["new"]["status"] == "PROCESSING"      # 30분 안 된 건은 그대로
+    assert got["recv"]["status"] == "RECEIVED"       # 처리 중이 아닌 건은 건드리지 않는다
