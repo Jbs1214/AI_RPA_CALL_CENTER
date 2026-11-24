@@ -1,4 +1,5 @@
 import { Table, Tag, Alert, Button, Popconfirm, message } from 'antd'
+import { ClockCircleOutlined, SyncOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteCall, fetchCalls } from '../../api/calls'
@@ -7,6 +8,7 @@ import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
 import { parseErrorMessage } from '../../lib/errorLabel'
 import { POLL_INTERVAL_MS } from '../../lib/polling'
 import type { Call, CallFilters } from '../../types/Call'
+import ProcessButton from './ProcessButton'
 
 interface Props {
   filters: CallFilters
@@ -57,13 +59,27 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       render: (v: boolean | null) => (v === null ? '—' : v ? <span style={{ color: '#a32d2d' }}>Y</span> : 'N'),
     },
     { title: '검토', dataIndex: 'needs_review', width: 70, render: (v: boolean | null) => (v ? <Tag color="gold">검토</Tag> : null) },
-    { title: '상태', dataIndex: 'status', width: 90, render: (v: Call['status']) => <Tag color={STATUS_COLOR[v]}>{STATUS_LABEL[v]}</Tag> },
+    {
+      title: '상태',
+      dataIndex: 'status',
+      width: 100,
+      render: (v: Call['status']) => (
+        // 대기·처리 중은 아이콘을 붙여 눈에 띄게 한다(처리 중은 빙글빙글)
+        <Tag
+          color={STATUS_COLOR[v]}
+          icon={v === 'PROCESSING' ? <SyncOutlined spin /> : v === 'RECEIVED' ? <ClockCircleOutlined /> : undefined}
+        >
+          {STATUS_LABEL[v]}
+        </Tag>
+      ),
+    },
     {
       title: '',
       key: 'actions',
-      width: 120,
+      width: 220,
       render: (_: unknown, row) => (
         <span onClick={(e) => e.stopPropagation()}>
+          <ProcessButton call={row} />
           <Button size="small" type="link" onClick={() => onOpen(row.call_id)}>보기</Button>
           <Popconfirm
             title="삭제할까요?"

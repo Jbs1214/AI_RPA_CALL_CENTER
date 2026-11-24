@@ -125,5 +125,15 @@ export const handlers = [
       suggested_actions: action ? items.map((it) => ({ label: `확인 완료 처리: ${it.call_id}`, method: 'PATCH', path: `/api/calls/${it.call_id}`, body: { needs_review: false } })) : [],
     })
   }),
+  http.post('*/api/calls/:id/process', ({ params }) => {
+    const i = calls.findIndex((x) => x.call_id === params.id)
+    if (i < 0) return HttpResponse.json({ error: 'NOT_FOUND', message: '없는 관리번호입니다.' }, { status: 404 })
+    if (calls[i].status !== 'RECEIVED' && calls[i].status !== 'FAILED') {
+      return HttpResponse.json({ error: 'INVALID_STATE', message: '지금 상태에서는 처리를 시작할 수 없습니다.' }, { status: 409 })
+    }
+    calls[i] = { ...calls[i], status: 'PROCESSING', error_message: null }
+    return HttpResponse.json({ call_id: calls[i].call_id, status: 'PROCESSING', job_key: null })
+  }),
+  // 처리 시작 버튼을 시험하려면 enabled 를 true 로 바꾼다
   http.get('*/health', () => HttpResponse.json({ status: 'ok', orchestrator: { enabled: false } })),
 ]

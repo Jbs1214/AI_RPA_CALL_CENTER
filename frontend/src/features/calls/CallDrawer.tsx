@@ -5,6 +5,7 @@ import { CATEGORIES, type CallDetail, type CallPatch } from '../../types/Call'
 import { formatKst } from '../../lib/date'
 import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
 import { parseErrorMessage } from '../../lib/errorLabel'
+import ProcessButton from './ProcessButton'
 import TranscriptBubbles from './TranscriptBubbles'
 
 interface FormValues {
@@ -144,6 +145,9 @@ export default function CallDrawer({ callId, onClose }: Props) {
             <Descriptions.Item label="상태">
               <Tag color={STATUS_COLOR[call.status]}>{STATUS_LABEL[call.status]}</Tag>
               {call.retry_count > 0 && <span style={{ color: '#888' }}>재처리 {call.retry_count}회</span>}
+              <span style={{ marginLeft: 8 }}>
+                <ProcessButton call={call} showWhenDisabled />
+              </span>
             </Descriptions.Item>
             {call.analysis_json?.customer_name && <Descriptions.Item label="고객명">{call.analysis_json.customer_name}</Descriptions.Item>}
             {call.analysis_json?.duration_sec !== undefined && <Descriptions.Item label="통화 길이">{call.analysis_json.duration_sec}초</Descriptions.Item>}
