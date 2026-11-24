@@ -147,9 +147,26 @@ def test_흐름B_가져가기부터_결과까지(created):
     assert client.post(f"/api/calls/{cid}/process").status_code == 409             # 두 봇이 같은 건을 못 가져간다
     assert client.get(f"/api/calls/{cid}/audio").status_code == 200
     r = client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "불만", "follow_up_needed": True,
+                                                      "customer_question": "시험", "action_taken": "시험",
+                                                      "customer_phone": "010-1234-5678",
                                                       "needs_review": False, "confidence": 0.95})
     assert r.json() == {"call_id": cid, "status": "DONE", "needs_review": False}
+    assert client.get(f"/api/calls/{cid}").json()["customer_phone"] == "010-****-5678"   # 흐름 B 연락처도 마스킹해 저장
     assert client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "질의"}).status_code == 409
+
+
+def test_API11_담당자_고객사_미확인이면_검토필요(created):
+    """파일 이름이 규칙과 달라 서버가 '미확인'으로 저장한 통화는 결과가 정상이어도 검토 필요다(API 11은 DB 값으로 판정)."""
+    r = client.post("/api/recordings", files={"file": ("규칙과다른이름.wav", _wav(), "audio/wav")})
+    assert r.status_code == 201
+    cid = r.json()["call_id"]
+    created.append(cid)
+    client.post(f"/api/calls/{cid}/process")
+    r = client.put(f"/api/calls/{cid}/result", json={"status": "DONE", "category": "질의", "follow_up_needed": False,
+                                                      "customer_question": "시험", "action_taken": "시험",
+                                                      "needs_review": False, "confidence": 0.95})
+    assert r.json()["needs_review"] is True
+    assert client.put("/api/calls/CALL-20000101-999/result", json={"status": "DONE"}).status_code == 404
 
 
 def test_Job시작방식_실패_후_다시_시작(created):

@@ -17,6 +17,7 @@ class AnalysisIn(BaseModel):
     transcript: Optional[str] = None
     analysis_json: Optional[Any] = None
     error_message: Optional[str] = None
+    customer_phone: Optional[str] = None
 
 
 class CallIn(AnalysisIn):
@@ -25,7 +26,6 @@ class CallIn(AnalysisIn):
     source_filename: str
     file_hash: str
     customer_company: Optional[str] = None
-    customer_phone: Optional[str] = None
 
 
 class CallPatch(BaseModel):

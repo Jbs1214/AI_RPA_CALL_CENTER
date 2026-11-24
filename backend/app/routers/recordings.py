@@ -178,13 +178,19 @@ def get_audio(call_id: str, request: Request):
 @router.put("/api/calls/{call_id}/result", tags=["처리"], summary="처리 결과 받기(봇)")
 def put_result(call_id: str, body: AnalysisIn, request: Request):
     check_key(request)
-    a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD)
-    a["analysis_json"] = Jsonb(a["analysis_json"]) if a["analysis_json"] is not None else None
     with connect() as conn:
+        # 검토 필요 판정에 서버에 저장된 담당자·고객사를 쓴다(흐름 B의 봇은 이 값을 모른다)
+        cur = conn.execute("SELECT agent_name, customer_company FROM calls WHERE call_id = %s", (call_id,)).fetchone()
+        if not cur:
+            raise ApiError(404, "NOT_FOUND", "없는 관리번호입니다.")
+        a = prepare_analysis(body.model_dump(), config.CONFIDENCE_THRESHOLD,
+                             agent_name=cur["agent_name"], customer_company=cur["customer_company"])
+        a["analysis_json"] = Jsonb(a["analysis_json"]) if a["analysis_json"] is not None else None
         r = conn.execute(
             "UPDATE calls SET status=%(status)s, category=%(category)s, customer_question=%(customer_question)s, "
             "action_taken=%(action_taken)s, follow_up_needed=%(follow_up_needed)s, needs_review=%(needs_review)s, "
             "confidence=%(confidence)s, transcript=COALESCE(%(transcript)s::text, transcript), "
+            "customer_phone=COALESCE(%(customer_phone)s, customer_phone), "
             "analysis_json=COALESCE(%(analysis_json)s::jsonb, analysis_json), error_message=%(error_message)s "
             "WHERE call_id=%(call_id)s AND status IN ('RECEIVED','PROCESSING','FAILED') "
             "RETURNING call_id, status, needs_review", {**a, "call_id": call_id}).fetchone()
