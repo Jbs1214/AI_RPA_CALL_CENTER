@@ -27,7 +27,7 @@
 | 마스킹 형태 | 전화번호 `010-****-1234`, 이메일 `k***@도메인`, 이름 `김○○` |
 | 실패 사유 | `error_message`는 `코드: 설명` 형식 |
 
-실패 코드: ③은 `STT_FAILED`, `STT_TIMEOUT`, `EMPTY_TRANSCRIPT`, `LLM_FAILED`, `INVALID_OUTPUT`. ①은 `JOB_FAULTED`, `JOB_STOPPED`, `NO_RESULT`, `TIMEOUT`.
+실패 코드: ③은 `STT_FAILED`, `STT_TIMEOUT`, `EMPTY_TRANSCRIPT`, `LLM_FAILED`, `INVALID_OUTPUT`. ①은 `TIMEOUT`.
 
 ## 3. 서버 API
 
@@ -47,7 +47,7 @@
 | 12 | `POST /api/calls/{call_id}/process` | 가져가기(P1) / Job 시작(P2) | P1·P2 | ② ③ |
 | — | `GET /health` | 서버·DB·저장소 상태 | P0 | 운영, ② |
 
-요청·응답 예시는 `docs/설계서_1_백엔드_v2.pdf` 5장이 원본이다. Webhook 수신(API 13)은 뺐다(통합본 2장). PDF의 API 13은 보지 않는다.
+요청·응답 예시는 `docs/설계서_1_백엔드_v2.pdf` 5장이 원본이다. Webhook 수신(API 13)과 Job 상태 조회(6.3)는 뺐다(통합본 2장). PDF와 `docs/PRD_1_백엔드_v3.md`가 다르면 PRD가 맞다.
 
 **API 12를 부르는 쪽**: 가져가기(`ORCH_ENABLED=false`)에서는 ③ 봇만 부른다. Job 시작(`true`)에서는 웹의 "처리 시작" 버튼만 부르고, ③ 봇은 Job 인자(`in_call_id`, `in_audio_url`, `in_result_url`)로 음성 주소를 받는다. 웹은 `GET /health`의 `orchestrator.enabled`가 `true`일 때만 버튼을 보여 준다.
 
@@ -138,4 +138,4 @@ seed 데이터 기준 기대값: 서버 통계는 전체 15, 분석 14, 후속�
 
 ## 9. 아직 정해지지 않은 것
 
-통합본 11.1에 8개가 남아 있다. 화 12:00까지 답이 필요한 것: 15번(챗봇 담당과 우선순위, AI 키), 27번(CLOVA 응답의 신뢰도 값), 33번(고객사별 차트의 동률 순서).
+통합본 11.1에 8개가 남아 있다. 화 12:00까지 답이 필요한 것: 15번(챗봇 화면 담당), 27번(CLOVA 응답의 신뢰도 값), 33번(고객사별 차트의 동률 순서).

@@ -33,7 +33,7 @@ backend/
       storage.py       저장·삭제·경로·해시
       masking.py       전화번호·주민번호·이메일
       orch_client.py   토큰, StartJobs, Jobs 조회
-      reconciler.py    1분 점검
+      reconciler.py    시간 초과 정리
       chat_parser.py   챗봇 규칙 해석기
       chat_ai.py       챗봇 AI 방식 + 검증
       export_xlsx.py   12열 엑셀 생성
