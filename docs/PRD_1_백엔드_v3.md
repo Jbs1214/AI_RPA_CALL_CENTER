@@ -1,9 +1,16 @@
 # PRD — 백엔드 / DB / 서버 인프라
 
 생성형 AI ChatGPT와 RPA를 활용한 인공지능 비서 제작 프로젝트 중 **① 백엔드 / DB / 서버 인프라** 역할의 제품요구사항정의서.
-작성일 2026-11-23 · MVP 마감 화 11/24 18:00 · 시연 수 11/25 · 상태: 초안 v1(검토 대기)
+작성일 2026-11-23 · MVP 마감 화 11/24 18:00 · 시연 수 11/25 · 상태: v3(11/24, 담당 확정과 구현 상태 반영)
 
 - 함께 보는 문서: `설계서_백엔드.pdf`(구조·API 상세), `schema.sql`(DB 원본), `seed.sql`(시연 데이터 15건), `test_schema.sql`(DB 검증)
+- **v3에서 바뀐 것(11/24)**
+  - Webhook 수신(API 13, FR-B14)과 Orchestrator Job 상태 조회(설계서 6.3)를 뺐다. 서버가 내부망이라 Webhook이 닿지 않으며, 멈춘 통화는 시간 초과로만 정리한다(FR-B13).
+  - `ORCH_AUTO_START`를 없앴고 `PUBLIC_BASE_URL`, `CHAT_AI_BASE_URL`을 넣었다. 챗봇 AI는 Groq로 정했다.
+  - 담당을 확정했다(10-1). 범수 = API 3·4·5·7·8·9·10과 DB·서버 PC, 민철 = 뼈대, API 1·2·6·11·12, Orchestrator.
+  - 백엔드 기능 동결은 화 18시다. 전체 일정은 통합본을 따른다.
+  - API 1은 `FAILED`에 실패 사유가 없으면 422다.
+  - 번호(API 13, FR-B14, 인수 테스트 16번)는 다시 매기지 않고 비워 둔다. `설계서_1_백엔드_v2.pdf`와 다르면 이 문서가 맞다(Webhook, 6.3절, `ORCH_AUTO_START` 등).
 - **이 문서의 범위는 ① 역할 하나다(담당: 범수, 민철).** ② 프론트·챗봇 화면(수창, 성진), ③ GenAI·STT(민영), ④ RPA 코어·보고서(주영)에 대한 요구사항은 쓰지 않았고, 이 서버가 그들에게 "무엇을 제공하는지"만 적었다. **엑셀 다운로드 API(7번)와 챗봇 API(8번)는 이 서버의 일이므로 범위에 포함한다.** 다른 역할에 요구할 내용은 이 문서가 확정된 뒤 따로 정리한다.
 
 ## 1. 개요
@@ -18,7 +25,7 @@
 | API 서버 구축 | 웹 대시보드와 UiPath 봇이 부르는 REST API(통계, 목록·상세·수정·삭제, 엑셀 다운로드, 챗봇) | FR-B01~B07, B16~B18 |
 | DB 설계 | 상담 원문, 분석 JSON, 처리 상태, 파일 경로 | 5절, FR-B11 |
 | 음성 파일 스토리지 | 녹음 파일 업로드·보관·내려받기·삭제 | FR-B08~B10 |
-| UiPath Orchestrator API 연동 | Job 실행, Webhook 수신 | FR-B12~B14 |
+| UiPath Orchestrator API 연동 | Job 시작 | FR-B12 |
 | 서버 환경 | 실행·배포·설정·백업 | FR-B15 |
 
 산출물(역할 정의서): **DB 스키마, REST API, 서버 환경, UiPath 연동 모듈**.
@@ -27,7 +34,7 @@
 | 구분 | 내용 |
 |---|---|
 | 다른 역할의 일 | 웹 화면과 챗봇 **화면**(②), STT 호출·화자 구분·마스킹 워크플로우·AI 요약/분류 프롬프트(③), RPA 봇·4시트 엑셀 대시보드 파일·큐 처리(④) |
-| 이번 MVP에서 하지 않는 것 | 봇이 만든 4시트 대시보드 엑셀을 서버가 보관·다운로드시키는 기능(웹의 엑셀 다운로드는 12열 통화 목록 — FR-B16), 대화 저장형 챗봇 |
+| 이번 MVP에서 하지 않는 것 | 봇이 만든 4시트 대시보드 엑셀을 서버가 보관·다운로드시키는 기능(웹의 엑셀 다운로드는 12열 통화 목록 — FR-B16), 대화 저장형 챗봇, Orchestrator Webhook 수신(API 13, FR-B14. 서버가 내부망이라 클라우드에서 닿지 않는다) |
 | 프로젝트 제외 사항 | 사용자 로그인(문서2 요구) |
 
 ### 1.4 서버가 하는 일 한 장 요약
@@ -37,7 +44,7 @@
                               │  ▲                ▲
               (Job 시작)      ▼  │ (음성 내려받기)  │ (결과 저장)
         [Orchestrator] ◀── 서버 ──▶ UiPath 봇 ──────┘
-              └──(Webhook·상태 조회)──▶ 서버가 처리 상태를 갱신
+              └──(서버가 Job 시작, API 12)
 ```
 
 ## 2. 이용 주체 (이 서버를 부르는 쪽)
@@ -46,7 +53,7 @@
 |---|---|---|
 | 웹 대시보드 (②) | 통계, 목록·검색, 상세, 수정, 삭제, 엑셀 다운로드, 챗봇 질문, 음성 재생, 파일 올리기, 처리 시작 | 1~12 |
 | UiPath 봇 (③④) | 음성 받기, 결과 저장 | 1, 2, 10, 11 |
-| UiPath Orchestrator | 작업 상태 알림 | 13 (+ 서버가 먼저 Orchestrator를 호출) |
+| UiPath Orchestrator | 없음(이 서버를 부르지 않는다. 서버가 먼저 Orchestrator를 호출한다) | — |
 | 운영자(팀원) | 서버 상태 확인 | `/health` |
 
 ## 3. 우선순위
@@ -54,10 +61,10 @@
 | 등급 | 뜻 | 기한 | 포함 |
 |---|---|---|---|
 | **P0** | 이것 없으면 시연 불가 | 화 12시(1·2번은 월 18시) | FR-B01~B07, B15 |
-| **P1** | 엑셀 다운로드, 음성 스토리지와 처리 상태, **가져가기(API 12, `ORCH_ENABLED=false`)** | 화 18시 | FR-B16, B08~B11, B12(가져가기만) |
-| **P2** | 챗봇(규칙 방식 → **AI 방식**), Orchestrator 연동 | 수 12시. 화요일 오후는 P1(엑셀·음성)에 쓰므로 챗봇은 **수요일 오전**에 **규칙 방식을 먼저** 붙이고 **이어서 AI 방식(ChatGPT)을 얹는다**. AI가 안 되면 규칙 방식으로 시연한다(Orchestrator는 시간이 모자라면 "확장 계획"으로 설명) | FR-B17, B18, B12~B14 |
+| **P1** | 엑셀 다운로드, 음성 스토리지와 처리 상태, 가져가기(API 12, `ORCH_ENABLED=false`), **챗봇(규칙 방식)** | 화 18시 | FR-B16, B08~B11, B12(가져가기만), B17 |
+| **P2** | 챗봇 AI 방식(Groq 무료 API), Orchestrator 연동(Job 시작) | **화 18시(P1과 같은 마감).** 만드는 순서상 마지막이라 시간이 모자라면 뒤에서부터 접는다: Orchestrator("확장 계획"으로 설명, 가져가기로 시연) → AI 방식(규칙 방식으로 시연) | FR-B18, B12(Job 시작), B13 |
 
-P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(기존 계약 유지). P1은 문서2의 요구(엑셀 다운로드)와 음성 스토리지이며 화 18시 MVP에 들어간다. 챗봇은 문서2의 요구이고 프로젝트 주제(생성형 AI)와 직결되므로 AI 방식까지 MVP 목표이며, 일정상 수요일 오전에 규칙 방식 → AI 방식 순서로 붙인다. 시간이 모자라면 **7번(엑셀) → 9~11번(음성) → 8번(챗봇 규칙) → 8번(AI)** 순서로 먼저 만든다.
+P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(기존 계약 유지). P1은 문서2의 요구(엑셀 다운로드)와 음성 스토리지이며 화 18시 MVP에 들어간다. 챗봇은 문서2의 요구이고 프로젝트 주제(생성형 AI)와 직결되므로 AI 방식까지 목표다. **P0~P2 모두 화 18시까지 끝내고, 수요일은 버그 수정·시연 데이터·리허설만 한다(기능 추가 금지).** 만드는 순서는 **API 1~6 → 7(엑셀) → 9~12(음성·가져가기) → 8(챗봇 규칙) → 8(AI) → 12(Job 시작)** 이고, 시간이 모자라면 뒤에서부터 접는다.
 
 ## 4. 기능 요구사항
 
@@ -67,33 +74,33 @@ P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(
 
 | ID | 요구사항 | 확인 방법 |
 |---|---|---|
-| FR-B01 | **통화 저장 `POST /api/calls`** (API 1). 분석 결과가 담긴 JSON을 받아 저장한다. `called_at`, `agent_name`, `source_filename`, `file_hash`는 필수(`agent_name`은 파일명에서 담당자를 못 읽은 경우 `미확인`도 허용하며, 담당자별 통계에 `미확인`으로 집계된다). `called_at`에 시간대(`+09:00`)가 없으면 422. 같은 `file_hash`가 DONE이거나 처리 중이면 409(`DUPLICATE_FILE`, `existing_call_id`), FAILED면 같은 관리번호로 덮어쓴다(201, `retry_count`+1). 유형이 5개 값에 없으면 `기타 문의`로 바꾸고 `needs_review=true`. `confidence`가 없거나 0.7 미만이면 `needs_review=true`. DONE인데 `follow_up_needed`, `needs_review`가 없으면 `false`로 채운다. `customer_phone`·`transcript`는 마스킹(전화번호·주민등록번호 형태·이메일)해서 저장한다. | 같은 요청 2번 → 201, 409 |
+| FR-B01 | **통화 저장 `POST /api/calls`** (API 1). 분석 결과가 담긴 JSON을 받아 저장한다. `called_at`, `agent_name`, `source_filename`, `file_hash`는 필수(`agent_name`은 파일명에서 담당자를 못 읽은 경우 `미확인`도 허용하며, 담당자별 통계에 `미확인`으로 집계된다). `called_at`에 시간대(`+09:00`)가 없으면 422. 같은 `file_hash`가 DONE이거나 처리 중이면 409(`DUPLICATE_FILE`, `existing_call_id`), FAILED면 같은 관리번호로 덮어쓴다(201, `retry_count`+1). `status=FAILED`인데 `error_message`가 없으면 422. 유형이 5개 값에 없으면 `기타 문의`로 바꾸고 `needs_review=true`. `confidence`가 없거나 0.7 미만이면 `needs_review=true`. DONE인데 `follow_up_needed`, `needs_review`가 없으면 `false`로 채운다. `customer_phone`·`transcript`는 마스킹(전화번호·주민등록번호 형태·이메일)해서 저장한다. | 같은 요청 2번 → 201, 409 |
 | FR-B02 | **목록 `GET /api/calls`** (API 2). 최신순. 조건: `q`(담당자·고객사·질문 요지·조치 내역 부분 일치), `category`, `agent`, `company`, `status`, `follow_up`, `needs_review`, `from`, `to`(한국 시간 날짜, `to` 당일 포함), `page`, `size`(기본 20, 최대 200), `include_transcript`(기본 false). | seed 기준 `from=to=2026-11-23` → 6건 |
 | FR-B03 | **상세 `GET /api/calls/{call_id}`** (API 3). 모든 항목 + 대화 전체 + 신뢰도(`confidence`) + `analysis_json` + `audio_available`(음성이 있으면 true). | 없는 번호 → 404 |
 | FR-B04 | **수정 `PATCH /api/calls/{call_id}`** (API 4). 보낸 항목만 바꾼다. 수정 가능: `category`, `customer_question`, `action_taken`, `follow_up_needed`, `needs_review`, `customer_company`, `customer_phone`. `category`가 5개 값 밖이거나 두 불리언에 `null`이면 422. | `{"needs_review": null}` → 422 |
 | FR-B05 | **삭제 `DELETE /api/calls/{call_id}`** (API 5). 통화 행과 **음성 파일을 함께** 지운다. 204. | 삭제 후 파일도 없다 |
 | FR-B06 | **통계 `GET /api/stats`** (API 6). 합계(`total_calls`, `analyzed`, `follow_up_needed`, `needs_review`, `failed`, `in_progress`)와 유형별·담당자별·일자별(유형 포함)·고객사별(불만 상위 10). 집계는 완료(DONE)된 통화만. 유형(`by_category`)은 0건이어도 5개를 항상, **고정 순서(질의, 불만, 건의, 교육 내용, 기타 문의)**로 돌려준다(건수 순이 아니다). | seed → 15 / 14 / 6 / 2 / 1 / 0 |
-| FR-B07 | **공통.** 오류는 `{"error": 코드, "message": 한글}`로 통일(FastAPI 기본 422 포함). 모든 시각은 `+09:00`, DB 시간대는 `Asia/Seoul`. CORS 허용(허용 헤더에 `X-API-Key` 포함, 이 헤더가 필요 없는 API에 붙어 와도 무시한다). `GET /health`로 DB·저장소 상태 확인. | 필수값 없이 호출 → 422 + 형식 |
+| FR-B07 | **공통.** 오류는 `{"error": 코드, "message": 한글}`로 통일(FastAPI 기본 422 포함). 모든 시각은 `+09:00`, DB 시간대는 `Asia/Seoul`. CORS 허용(허용 헤더에 `X-API-Key` 포함, 이 헤더가 필요 없는 API에 붙어 와도 무시한다). `GET /health`로 DB·저장소 상태 확인. 서버는 변경을 화면으로 밀어 보내지(push) 않는다. **"실시간"은 웹이 `GET /api/stats`·`GET /api/calls`를 주기적으로 다시 불러 구현한다(권장: 10초, 화면이 숨겨지면 멈춤).** 서버는 이 호출을 감당하도록 통계·목록 쿼리를 가볍게 유지한다(인덱스, seed 15건 기준 100ms 이내가 목표). | 필수값 없이 호출 → 422 + 형식 |
 
-### 4.2 P1 — 엑셀 다운로드, 음성 스토리지와 처리 상태 (챗봇 FR-B17은 수 오전)
+### 4.2 P1 — 엑셀 다운로드, 음성 스토리지와 처리 상태, 챗봇(규칙 방식)
 
 | ID | 요구사항 | 확인 방법 |
 |---|---|---|
 | FR-B16 | **엑셀 다운로드 `GET /api/calls/export`** (API 7). 2번과 같은 조건(`q`, `category`, `agent`, `company`, `follow_up`, `needs_review`, `from`, `to`)에 맞는 **분석 완료(`DONE`) 통화 전체**를 엑셀(.xlsx) 한 시트로 내려준다(`page`·`size` 없음, 없으면 헤더만). 열은 엑셀 통화 대장과 같은 12개(관리번호, 통화일시, 담당자, 고객사, 연락처, 유형, 고객 질문 요지, 담당자 조치 내역, 후속조치, AI 결과 검토 필요, 녹취 파일명, 통화 내용(숨김)). 통화일시는 **엑셀 날짜(한국 시간)**, 후속조치·검토 필요는 `Y`/`N`, 통화 내용은 32,000자에서 자르고 L열은 숨김. 파일 이름 `콜센터_통화목록_YYYYMMDD.xlsx`. 서버는 파일을 저장하지 않고 요청 때마다 만든다. **이 경로는 `/api/calls/{call_id}`보다 먼저 등록한다**(순서가 반대면 `export`가 관리번호로 읽혀 404). | 2번과 같은 조건으로 건수가 같다(seed 전체 → 14행) |
-| FR-B17 | **챗봇 `POST /api/chat`** (API 8, 규칙 방식, **수요일 오전 구현**). 질문을 **조회 조건**으로 바꿔 2번·6번과 같은 조회를 하고 답한다. 질문으로 SQL을 만들지 않고, 통화를 직접 수정·삭제하지 않으며(처리 제안은 `suggested_actions` 버튼으로만 돌려주고 사용자가 누르면 화면이 4번을 부른다), 대화를 저장하지 않는다. 응답은 `reply`, `intent`(`list`·`stats`·`detail`·`action`·`help`), `mode`, `query`(실제 적용한 조건), `total`, `items`(최대 5건), `stats`, `suggested_actions`. 기본은 분석 완료(`DONE`)만 조회하고 "실패"라는 말이 있을 때만 `FAILED`를 본다. 담당자·고객사 이름은 요청 때마다 DB의 이름 목록과 대조한다. 기간 말(오늘, 어제, 이번 주=월~오늘, 최근 N일, 최근 일주일, 이번 달, `11월 20일`, `2026-11-21`)은 한국 시간 기준. 이해하지 못한 질문은 `help`로 질문 예시를 돌려준다. 해석기는 `reference/chat/chat_parser.py`(시험 20개 통과)를 그대로 쓴다. | 시연 질문 5개(설계서 5장)가 기대대로 답한다 |
+| FR-B17 | **챗봇 `POST /api/chat`** (API 8, 규칙 방식, **화요일 구현**). 질문을 **조회 조건**으로 바꿔 2번·6번과 같은 조회를 하고 답한다. 질문으로 SQL을 만들지 않고, 통화를 직접 수정·삭제하지 않으며(처리 제안은 `suggested_actions` 버튼으로만 돌려주고 사용자가 누르면 화면이 4번을 부른다), 대화를 저장하지 않는다. 응답은 `reply`, `intent`(`list`·`stats`·`detail`·`action`·`help`), `mode`, `query`(실제 적용한 조건), `total`, `items`(최대 5건), `stats`, `suggested_actions`. 기본은 분석 완료(`DONE`)만 조회하고 "실패"라는 말이 있을 때만 `FAILED`를 본다. 담당자·고객사 이름은 요청 때마다 DB의 이름 목록과 대조한다. 기간 말(오늘, 어제, 이번 주=월~오늘, 최근 N일, 최근 일주일, 이번 달, `11월 20일`, `2026-11-21`)은 한국 시간 기준. 이해하지 못한 질문은 `help`로 질문 예시를 돌려준다. 해석기는 `reference/chat/chat_parser.py`(시험 20개 통과)를 그대로 쓴다. | 시연 질문 5개(설계서 5장)가 기대대로 답한다 |
 | FR-B08 | **음성 올리기 `POST /api/recordings`** (API 9, multipart). 확장자 `wav`, `mp3`, `m4a`만, 최대 100MB(설정값). 서버가 SHA-256을 계산하고, 파일을 `STORAGE_DIR/YYYY/MM/<call_id>.<확장자>`에 저장한 뒤 `RECEIVED` 상태의 통화 행을 만든다. 통화일시·담당자·고객사는 입력값이 있으면 그것을, 없으면 파일명 `YYYYMMDD_HHmm_담당자_고객사.wav`에서 읽는다. 읽지 못하면 올린 시각, `미확인`. 같은 해시가 이미 있으면 DONE·RECEIVED·PROCESSING은 409, FAILED는 새 행을 만들지 않고 그 행을 `RECEIVED`로 되돌린다. 저장 경로에 **사용자가 보낸 파일 이름을 쓰지 않는다**(경로 조작 방지). | 같은 파일 2번 → 201, 409 / 이름에 `../` 포함해도 저장 위치 동일 |
 | FR-B09 | **음성 내려받기 `GET /api/calls/{call_id}/audio`** (API 10). 파일을 스트리밍하고 `Range` 요청(되감기·재생)을 지원한다. 음성이 없으면 404. 정적 파일로 공개하지 않는다. | 웹의 `<audio>`가 재생 |
 | FR-B10 | **결과 받기 `PUT /api/calls/{call_id}/result`** (API 11). 업로드로 들어온 통화에 분석 결과(또는 실패 사유)를 넣고 `DONE`/`FAILED`로 바꾼다. FR-B01의 값 규칙(유형 보정, 신뢰도 판정, 마스킹, 기본값)을 그대로 쓴다. `analysis_json`에 AI 응답 원본을 저장한다. 이미 DONE이면 409(`INVALID_STATE`). | 두 번 호출 → 200, 409 |
 | FR-B11 | **처리 상태 관리.** 상태는 `RECEIVED → PROCESSING → DONE / FAILED`(4절 6항). 허용되지 않은 전이는 DB 조건(`WHERE status IN (...)`)이 막고 서버는 409(`INVALID_STATE`)로 응답한다. 실패한 통화는 다시 시작할 수 있다(`retry_count`+1). | 11절 인수 테스트 |
 
-### 4.3 P2 — 챗봇 AI 방식(수 오전, 규칙 방식 다음)과 UiPath Orchestrator 연동
+### 4.3 P2 — 챗봇 AI 방식과 UiPath Orchestrator 연동 (화 18시, 순서상 마지막)
 
 | ID | 요구사항 | 확인 방법 |
 |---|---|---|
-| FR-B18 | **챗봇 AI 방식** — API 8의 `mode=ai`. 생성형 AI가 질문을 조회 조건 JSON으로 바꾼다. AI에는 **질문 글과 한국 시간 오늘 날짜만** 보내고 통화 데이터는 보내지 않는다. AI가 돌려준 조건은 `validate_llm_query`(허용 키·값만 통과)로 검사한다. AI 키가 없거나 `CHAT_AI_TIMEOUT_SEC`(8초) 안에 답이 없거나 검사에 걸리면 **자동으로 규칙 방식으로 바꾼다**. `history`(최근 6개)는 AI 방식에서만 쓴다. 키는 환경변수로만 둔다. **시연은 규칙 방식만으로도 성립해야 한다.** | AI 키를 지워도 FR-B17의 시연 질문이 모두 동작한다 |
-| FR-B12 | **Job 시작 `POST /api/calls/{call_id}/process`** (API 12). `RECEIVED`·`FAILED` 통화에 대해 Orchestrator의 `StartJobs`를 호출하고, 받은 Job Key를 `job_key`에 저장하며 상태를 `PROCESSING`으로 바꾼다. 인증 토큰은 받아서 만료 전까지 재사용한다. 설정 `ORCH_AUTO_START=true`이면 음성 업로드 직후 자동으로 시작한다. Orchestrator 호출이 실패하면 통화는 `RECEIVED`로 두고 502(`ORCHESTRATOR_ERROR`)를 돌려준다. **`ORCH_ENABLED=false`이면 Job을 만들지 않고 상태만 `PROCESSING`으로 바꾼다**(봇이 직접 가져가는 방식의 "가져가기" 표시. 이미 가져갔으면 409라서 두 봇이 같은 통화를 잡지 않는다). Job에 넘기는 값(통화 번호, 음성 주소 등)의 인자 이름은 ③④와 정한 뒤 설정한다. | Orchestrator에 Job이 생긴다 |
-| FR-B13 | **작업 상태 점검(주기).** Webhook은 재전송되지 않고 놓치면 사라지며, 서버가 인터넷에서 접근 불가일 수 있으므로 **기본 수단은 서버가 먼저 묻는 방식**이다. 1분마다 `PROCESSING`인 통화 중 `ORCH_TIMEOUT_MIN`(30분) 넘게 결과가 없는 것의 Job 상태를 Orchestrator에 조회해 `job_state`를 갱신하고, 실패·중지·종료됐는데 결과가 없으면 `FAILED`(`JOB_FAULTED` / `JOB_STOPPED` / `NO_RESULT`)로 바꾼다. Orchestrator를 쓰지 않는 경우(`job_key` 없음)에는 시간만 넘으면 `FAILED`(`TIMEOUT`)로 바꾼다. | 일부러 멈춘 Job이 FAILED가 된다 |
-| FR-B14 | **Webhook 수신 `POST /api/webhooks/orchestrator`** (API 13). 헤더 `X-UiPath-Signature`를 원문 본문과 비밀키(`ORCH_WEBHOOK_SECRET`)로 HMAC-SHA256 검증하고 맞지 않으면 401. `EventId`로 중복을 막고(`job_events`) `job_key`로 통화를 찾아 `job_state`와 상태를 갱신한다. 서버에 외부에서 접근할 수 없으면 이 기능은 쓰지 않고 FR-B13만으로 운영한다. | 서명이 틀리면 401, 같은 이벤트 2번이면 한 번만 반영 |
+| FR-B18 | **챗봇 AI 방식** — API 8의 `mode=ai`. 생성형 AI(**Groq 무료 API**, OpenAI 호환: `POST {CHAT_AI_BASE_URL}/chat/completions`, `Authorization: Bearer <키>`, `response_format={"type":"json_object"}`)가 질문을 조회 조건 JSON으로 바꾼다. AI에는 **질문 글과 한국 시간 오늘 날짜만** 보내고 통화 데이터는 보내지 않는다. AI가 돌려준 조건은 `validate_llm_query`(허용 키·값만 통과)로 검사한다. AI 키가 없거나, `CHAT_AI_TIMEOUT_SEC`(8초) 안에 답이 없거나, 호출 한도 초과(429)·서버 오류가 나거나, 검사에 걸리면 **자동으로 규칙 방식으로 바꾼다**. `history`(최근 6개)는 AI 방식에서만 쓴다. 키는 환경변수로만 둔다. **시연은 규칙 방식만으로도 성립해야 한다.** | AI 키를 지워도 FR-B17의 시연 질문이 모두 동작한다 |
+| FR-B12 | **Job 시작 `POST /api/calls/{call_id}/process`** (API 12). `RECEIVED`·`FAILED` 통화에 대해 Orchestrator의 `StartJobs`를 호출하고, 받은 Job Key를 `job_key`에 저장하며 상태를 `PROCESSING`으로 바꾼다. 인증 토큰은 받아서 만료 전까지 재사용한다. Orchestrator 호출이 실패하면 통화는 `RECEIVED`로 두고 502(`ORCHESTRATOR_ERROR`)를 돌려준다. **`ORCH_ENABLED=false`이면 Job을 만들지 않고 상태만 `PROCESSING`으로 바꾼다**(봇이 직접 가져가는 방식의 "가져가기" 표시. 이미 가져갔으면 409라서 두 봇이 같은 통화를 잡지 않는다). Job에 넘기는 값(통화 번호, 음성 주소 등)의 인자 이름은 ③④와 정한 뒤 설정한다. | Orchestrator에 Job이 생긴다 |
+| FR-B13 | **시간 초과 정리.** `PROCESSING`인 통화가 `ORCH_TIMEOUT_MIN`(30분) 넘게 결과가 없으면 `FAILED`(`TIMEOUT`)로 바꾼다(목록·통계를 조회할 때, 1분에 한 번만 검사). Orchestrator에 Job 상태를 묻지는 않는다. | 30분 지난 PROCESSING 통화가 FAILED가 된다 |
+| FR-B14 | **(삭제)** Webhook 수신 API는 만들지 않는다. 클라우드 Orchestrator가 내부 PC(범수 PC)에 접근할 수 없어 쓸 수 없다. | — |
 
 ### 4.4 서버 환경
 
@@ -120,14 +127,14 @@ P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(
 
 DB가 직접 지키는 규칙: 유형은 5개 값만 / `DONE`이면 유형·후속조치·검토필요가 반드시 있다 / `FAILED`면 실패 사유가 있다 / `RECEIVED`·`PROCESSING`이면 음성 경로가 있다 / 해시는 소문자 16진수 64자.
 
-**`job_events`** — Orchestrator Webhook 수신 기록(`event_id` 기본키로 중복 방지, 통화가 삭제되어도 기록은 남는다).
+**`job_events`** — Orchestrator Webhook 수신 기록용 표. Webhook을 뺐으므로 이번 MVP에서는 쓰지 않는다(`schema.sql`에는 그대로 둔다).
 
 ## 6. 처리 상태
 
 ```
 RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSING ──(결과 도착)──▶ DONE
    ▲                                          │
-   │                                          └─(실패·시간 초과·Job 오류)─▶ FAILED
+   │                                          └─(실패·시간 초과)─────────▶ FAILED
    └──────────────(다시 시작)──────────────────────────────────────────────┘
 ```
 
@@ -135,7 +142,7 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 - 결과 포함 저장(API 1)으로 들어온 통화는 곧바로 `DONE`/`FAILED`로 저장된다(처리 중 단계를 거치지 않는다).
 - 화면의 "분석 완료" 숫자와 통계는 `DONE`만 센다.
 
-## 7. API 요약 (13개 + 운영 1개)
+## 7. API 요약 (12개 + 운영 1개)
 
 | 번호 | 경로 | 하는 일 | 우선 | 쓰는 곳 |
 |---|---|---|---|---|
@@ -146,19 +153,17 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | 5 | `DELETE /api/calls/{call_id}` | 삭제(음성 포함) | P0 | 웹 |
 | 6 | `GET /api/stats` | 통계 | P0 | 웹 |
 | 7 | `GET /api/calls/export` | 엑셀(.xlsx) 다운로드, 12열 통화 목록 | P1 | 웹 |
-| 8 | `POST /api/chat` | 챗봇 질문(규칙 방식 + AI 방식) | P2(수 오전) | 웹 |
+| 8 | `POST /api/chat` | 챗봇 질문(규칙 방식 + AI 방식) | 규칙 P1, AI P2 (모두 화 18시) | 웹 |
 | 9 | `POST /api/recordings` | 음성 올리기 | P1 | 웹, 봇 |
 | 10 | `GET /api/calls/{call_id}/audio` | 음성 내려받기·재생 | P1 | 웹, 봇 |
 | 11 | `PUT /api/calls/{call_id}/result` | 처리 결과 받기 | P1 | 봇 |
 | 12 | `POST /api/calls/{call_id}/process` | 가져가기(P1, 상태만 `PROCESSING`) / Orchestrator Job 시작(P2) | P1·P2 | 웹, ③ 봇 |
-| 13 | `POST /api/webhooks/orchestrator` | Webhook 수신 | P2 | Orchestrator |
 | — | `GET /health` | 서버·DB·저장소 상태 | P0 | 운영 |
 
 공통 규칙: 로그인 없음, JSON(UTF-8, 업로드만 multipart), 키 이름 = 컬럼 이름(snake_case), 시각은 `+09:00`, 기간 `from`·`to`는 한국 시간 날짜이고 `to` 당일 포함. 오류 코드:
 
 | 상태 | `error` | 언제 |
 |---|---|---|
-| 401 | `INVALID_SIGNATURE` | Webhook 서명 불일치 |
 | 401 | `INVALID_API_KEY` | `API_KEY`가 켜져 있는데 `X-API-Key` 헤더가 없거나 틀림 |
 | 404 | `NOT_FOUND` | 없는 관리번호, 음성 없음 |
 | 409 | `DUPLICATE_FILE` | 같은 파일이 이미 있다(`existing_call_id`, `existing_status` 포함) |
@@ -176,7 +181,7 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | 응답 속도 | 목록·통계·상세 1초 이내(1,000건 기준), 음성 100MB 업로드 60초 이내(같은 내부망) | 구현 후 실측해서 갱신 |
 | 저장 용량 | 음성은 대략 분당 1~2MB(wav, 8~16kHz 16bit 모노 가정) → 100건×5분 ≈ 0.5~1GB. 디스크 여유 5GB 이상 | 실제 녹음 샘플로 다시 계산 |
 | 보안 | 음성에는 **마스킹 전 개인정보**(목소리, 말한 번호)가 있다. 저장 폴더 권한은 서버 계정만, API 외 경로로 공개하지 않는다. 서버는 내부 네트워크에서만 접근시킨다. 비밀키는 환경변수. 로그에 개인정보를 쓰지 않는다. | 사용자 로그인은 문서2에 따라 만들지 않는다 |
-| 시스템 호출 보호 | 음성 올리기·내려받기·결과 저장에 공용 키 헤더(`X-API-Key`)를 선택적으로 켤 수 있다(`API_KEY` 비워 두면 꺼짐). Webhook은 HMAC 서명으로 보호. | **시연까지 끈다**(내부망 한정, 음성은 시연 후 삭제). 켜는 것은 버퍼 과제 |
+| 시스템 호출 보호 | 음성 올리기·내려받기·결과 저장에 공용 키 헤더(`X-API-Key`)를 선택적으로 켤 수 있다(`API_KEY` 비워 두면 꺼짐). | **시연까지 끈다**(내부망 한정, 음성은 시연 후 삭제). 켜는 것은 버퍼 과제 |
 | 가용성·복구 | 서버 재시작 후 `PROCESSING`인 통화는 FR-B13이 정리한다. DB 덤프 일 1회, 음성 폴더 복사 | |
 | 시간대 | DB `Asia/Seoul`, 서버 컨테이너 `TZ=Asia/Seoul` | |
 | 문서화 | Swagger(`/docs`)가 항상 최신 | 월 18시 1차 공유 |
@@ -193,18 +198,19 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | `API_KEY` | 비움 | 값이 있으면 음성 관련 3개 API에 `X-API-Key` 요구 |
 | `CORS_ORIGINS` | `*` | 시연 후 웹 주소로 좁힌다 |
 | `CHAT_AI_ENABLED` | false | 챗봇 AI 방식 켜기(키 확인 후 true. 꺼 두면 규칙 방식만) |
-| `CHAT_AI_API_KEY`, `CHAT_AI_MODEL` | — | 챗봇 AI 방식에 쓸 생성형 AI 키·모델(키는 코드·문서에 쓰지 않는다) |
+| `CHAT_AI_API_KEY` | — | Groq API 키(**키는 서버의 `.env`에만 두고 코드·문서·채팅·Git에 쓰지 않는다**) |
+| `CHAT_AI_BASE_URL` | `https://api.groq.com/openai/v1` | OpenAI 호환 주소 |
+| `CHAT_AI_MODEL` | `openai/gpt-oss-20b` | 사용할 모델. 무료 제공 모델은 바뀔 수 있어 Groq 콘솔에서 확인하고 필요하면 바꾼다 |
 | `CHAT_AI_TIMEOUT_SEC` | 8 | 이 시간 안에 답이 없으면 규칙 방식으로 대체 |
 | `ORCH_ENABLED` | false | Orchestrator 연동 켜기 |
-| `ORCH_AUTO_START` | false | 업로드 직후 Job 자동 시작 |
 | `ORCH_BASE_URL` | — | Orchestrator 주소 |
 | `ORCH_IDENTITY_URL` | — | 토큰 발급 주소 |
 | `ORCH_CLIENT_ID`, `ORCH_CLIENT_SECRET`, `ORCH_SCOPE` | — | 외부 앱 인증 정보 |
 | `ORCH_FOLDER_ID` | — | 폴더 ID |
 | `ORCH_RELEASE_KEY` | — | 시작할 프로세스 키 |
 | `ORCH_START_STRATEGY` | `ModernJobsCount` | 폴더 종류에 따라 다름(확인 필요) |
-| `ORCH_WEBHOOK_SECRET` | — | Webhook 서명 비밀키 |
-| `ORCH_TIMEOUT_MIN` | 30 | 이 시간 넘게 결과 없으면 점검 대상 |
+| `PUBLIC_BASE_URL` | 비움 | Orchestrator Job에 넘기는 음성·결과 주소의 서버 주소(봇 PC가 접속하는 주소, 예 `http://192.168.0.10:8000`) |
+| `ORCH_TIMEOUT_MIN` | 30 | 이 시간 넘게 결과 없으면 `FAILED(TIMEOUT)` |
 
 docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_HOST_DIR`(음성을 둘 호스트 폴더). `DATABASE_URL`과 `STORAGE_DIR`은 compose 파일이 컨테이너에 넣어 준다(`deploy/docker-compose.yml`). 직접 설치할 때는 이 두 값을 환경변수로 직접 지정한다.
 
@@ -212,24 +218,33 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 
 | 시각 | 해야 할 일 | 나오는 것 |
 |---|---|---|
-| 11/23(월) 오후 | 서버 뼈대, DB 연결, `schema.sql`·`seed.sql` 적용, 오류 형식·시간대, FR-B01·B02, `/health`, 서버 실행 환경 | 18시 Swagger 공유 |
-| 11/24(화) 오전 | FR-B03~B06 | 12시 P0 완료 |
-| 11/24(화) 오후 | FR-B16 엑셀, FR-B08~B11 음성·결과·상태, **FR-B12 가져가기(③이 화 오후 흐름 B에서 사용)** | 18시 MVP(P0+P1) 완료 |
-| 11/25(수) 오전 | **FR-B17 챗봇(규칙) → FR-B18 챗봇 AI 방식**, FR-B12(Job 시작)·B13·B14 Orchestrator, 실측·버그 수정 | 12시 기능 동결, 시연 데이터 적재 |
+| 11/23(월) 오후~저녁 | 서버 뼈대, DB 연결, `schema.sql`·`seed.sql` 적용, 오류 형식·시간대, FR-B01·B02, `/health`, 서버 실행 환경. 저녁에 FR-B03·B06까지 가능하면 먼저 | 18시 Swagger 공유 |
+| 11/24(화) 오전 | FR-B03~B06 마무리, 챗봇 규칙 방식 시작(범수, 해석기는 이미 있음) | 12시 P0 완료 |
+| 11/24(화) 오후 | FR-B16 엑셀, FR-B08~B11 음성·결과·상태, FR-B12 가져가기(③ 흐름 B용), **FR-B17 챗봇(규칙) → FR-B18 챗봇 AI 방식 → FR-B12(Job 시작)·B13 Orchestrator(환경은 확인됨. 외부 앱 Client ID·Secret과 `ORCH_RELEASE_KEY`가 오면)** | **18시 모든 기능 완료·동결(P0+P1+P2)** |
+| 11/25(수) 오전 | **Orchestrator Job 시작 실행 시험(머신 설정 후, 코드는 화 18시에 완료)**, 실측·버그 수정만(기능 추가 금지), 시연 데이터 적재, 시연 노트북으로 이전 | 12시 시연 준비 완료. 시험이 안 되면 `ORCH_ENABLED=false`(가져가기)로 시연 |
 
-## 10-1. 담당 분담 (제안)
+## 10-0. 구현 현황 (11/24)
 
-역할 ①은 1~2명이 맡는다. 아래는 민철·범수 2명으로 나눈 **제안**이며, 팀이 정하면 바꾼다. "공동"은 둘이 함께 확인한다.
+서버 코드는 `backend/app/`에 있다(API 1~12와 `/health` 전부, 챗봇 AI는 Groq 호출 + 규칙 대체, Job 시작은 `ORCH_ENABLED=true`일 때만 동작). 실행 방법은 `backend/README_실행.md`.
+
+- **확인한 것**: HTTP 점검 `smoke_check.py` 26개, 로직 시험 17개, 민철 담당 API 시험 5개, `test_schema.sql` ALL PASS, Groq 실제 호출(11/23).
+- **아직 확인하지 못한 것**: Orchestrator Job 시작(외부 앱 Client ID·Secret과 `ORCH_RELEASE_KEY`가 와야 한다), ③ 봇과의 흐름 B 연동, 인수 테스트 전체 수행. 안 되면 가져가기로 시연한다.
+
+## 10-1. 담당 분담 (확정)
+
+역할 ①은 1~2명이 맡는다. 아래는 민철·범수 2명으로 나눈 분담이다(백엔드 문서 작성자가 **확정**, 팀 확인 불필요). "공동"은 둘이 함께 확인한다.
 
 | 담당 | 맡는 것 | 요구사항 |
 |---|---|---|
-| **민철** (서버·연동) | 서버 뼈대(FastAPI, 설정, 오류 형식, 시간대, CORS), 통화 저장·목록·통계, **챗봇(API 8, 수 오전)**, 서버 실행 환경과 봇 PC 접속 확인(서버는 범수 PC, 민철은 자기 PC에서 개발하고 코드를 합친다), Orchestrator 연동 | FR-B01, B02, B06, B07, B15, B17, B18, B12, B13, B14 |
-| **범수** (DB·데이터) | DB 설계와 적용·관리(`schema.sql`, `seed.sql`, `test_schema.sql`), 상세·수정·삭제, **엑셀 다운로드(API 7)**, 음성 스토리지와 처리 상태·결과 받기, 백업 | FR-B03, B04, B05, B16, B08, B09, B10, B11 (+ 5절 데이터) |
-| **공동** | Swagger 공유와 최신 유지, 인수 테스트 27개 수행, 코드 리뷰, Q1·Q2 확인 결과 반영 | 11절 |
+| **민철** (서버 뼈대·상태·연동) | 서버 뼈대(FastAPI, 설정, 오류 형식, 시간대, CORS), 통화 저장·목록·통계, **결과 받기(API 11)**, **가져가기·Job 시작(API 12)**, **Orchestrator 연동(토큰, Job 시작, 시간 초과 정리)**, 서버 환경 구성 | FR-B01, B02, B06, B07, B10, B12, B13 |
+| **범수** (DB·데이터·파일·챗봇) | DB 설계와 적용·관리(`schema.sql`, `seed.sql`, `test_schema.sql`), 상세·수정·삭제, **엑셀 다운로드(API 7)**, **음성 올리기·내려받기(API 9·10)와 파일 저장소**, **챗봇(API 8, 규칙 → Groq AI)**, 서버 PC 운영(범수 PC)과 백업 | FR-B03, B04, B05, B16, B08, B09, B17, B18, FR-B15 (+ 5절 데이터) |
+| **공동** | Swagger 공유와 최신 유지, 인수 테스트 26개 수행(1~27번 중 16번 제외), 코드 리뷰, Q1·Q2 확인 결과 반영 | 11절 |
 
-- 공통 코드(DB 연결, `calls` 모델, 오류 형식)는 민철이 월요일 오전 뼈대에 먼저 넣고, 범수는 그 위에 `routers/calls.py`의 3~5번과 `routers/recordings.py`를 붙인다.
+- 공통 코드(DB 연결, `calls` 모델, 오류 형식)는 민철이 월요일 오전 뼈대에 먼저 넣고, 범수는 그 위에 `routers/calls.py`의 3~5번, `routers/recordings.py`(9·10), `routers/chat.py`(8)를 붙인다. 민철은 `routers/calls.py`의 1·2·6, 결과·상태(11·12)와 Orchestrator를 맡는다.
+- 나눈 이유: 상태 전이와 Orchestrator는 서로 맞물리고 까다로워 백엔드 경험이 있는 민철이 맡고, 범수의 몫(3·4·5·7·9·10·8)은 이미 시험을 통과한 참고 코드(파일 처리, 엑셀 생성, 챗봇 해석기)가 있어 연결 작업이 중심이다. 음성 파일은 5번(삭제)·9번·10번이 같은 저장소를 쓰므로 한 사람(범수)이 맡는다. 챗봇은 다른 API와 의존이 적어 병행하기 쉽고, 시간이 모자랄 때 접는 순서의 뒤쪽이라 위험이 한쪽에 몰리지 않는다.
+- 챗봇이 쓰는 목록·통계 조회는 민철의 2·6번과 같은 조건이다. 조회 함수는 `services/calls_repo.py`에 있다.
 - 항목 이름(컬럼·JSON 키)을 바꾸는 일은 `schema.sql`과 설계서를 **함께** 고칠 때만 한다.
-- 이 서버를 쓰는 다른 역할(②·③·④)과의 협의는 이 표의 담당자가 아니라 **API 번호의 담당자**가 맡는다(예: 음성 내려받기는 범수, Job 시작은 민철).
+- 이 서버를 쓰는 다른 역할(②·③·④)과의 협의는 이 표의 담당자가 아니라 **API 번호의 담당자**가 맡는다(예: 음성 내려받기·챗봇은 범수, Job 시작은 민철).
 
 ## 11. 완료 기준 (인수 테스트)
 
@@ -249,8 +264,8 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 | 12 | 허용하지 않는 확장자, 한도 초과 | 415, 413 |
 | 13 | `GET .../audio` (Range 포함) | 200/206, 재생 가능 |
 | 14 | `PUT .../result` 2번 | 200, 409(`INVALID_STATE`) |
-| 15 | 처리 시작 후 결과 없이 `ORCH_TIMEOUT_MIN` 초과(P2) | 점검이 Job 상태를 조회해 `FAILED`로 정리 |
-| 16 | Webhook 서명 틀림 / 같은 EventId 2번(P2) | 401 / 한 번만 반영 |
+| 15 | 처리 시작 후 결과 없이 `ORCH_TIMEOUT_MIN` 초과(P2) | `FAILED(TIMEOUT)`로 정리 |
+| 16 | 제외(Webhook) | — |
 | 17 | 새 PC에서 서버 기동(docker compose 또는 직접 실행) | `/health` 정상, `/docs` 열림 |
 | 18 | DB 재시작 | 데이터 유지 |
 | 19 | `psql -f test_schema.sql` | `ALL PASS` (이미 통과) |
@@ -267,30 +282,30 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 
 | 리스크 | 영향 | 대응 |
 |---|---|---|
-| Orchestrator가 클라우드(Automation Cloud)인데 서버가 내부 PC다 | Webhook이 서버에 도달하지 못함 | 서버가 먼저 묻는 점검(FR-B13)을 기본으로 한다. 서버→Orchestrator는 바깥으로 나가는 호출이라 가능. Webhook은 터널(공개 주소)이 될 때만 |
-| Orchestrator 종류(클라우드/온프레미스), 폴더 종류, 외부 앱 권한 미확인 | Job 시작 호출이 막힘 | 월 18시까지 확인. 안 되면 P2를 시연에서 빼고 P0·P1으로 시연 |
+| Orchestrator가 클라우드(Automation Cloud)인데 서버가 내부 PC다 | Webhook이 서버에 도달하지 못함 | Webhook은 만들지 않는다. 서버→Orchestrator 호출(Job 시작)은 바깥으로 나가는 호출이라 가능 |
+| 외부 앱 Client ID·Secret, `ORCH_RELEASE_KEY`, 봇 PC 머신 등록이 늦음 | Job 시작이 실제로 실행되지 않음 | 환경은 확인됨(클라우드, 모던, `Shared`). 화요일까지는 가져가기로 진행하고, Job 시작은 코드를 화 18시까지 끝낸 뒤 **수 오전에 머신 설정 후 실행 시험**한다. 안 되면 가져가기로 시연 |
 | 음성 파일에 개인정보 원본 | 유출 시 피해 | 폴더 권한, 비공개 경로, 내부망 한정, 선택적 API 키, 시연 후 삭제 |
 | 시간 부족 | 마감 전 미완 | P0 → P1 → P2 순서로 자르고 P2는 포기 가능. P1 안에서는 7번 → 8번(규칙) → 9~11번 순 |
 | 챗봇이 질문을 잘못 해석 | 엉뚱한 답 | 적용한 조건(`query`)을 화면에 항상 보여 주어 사용자가 확인한다. 시연 질문 5개는 미리 고정. 이해 못 하면 `help` |
-| 챗봇을 만들 시간이 모자람 | AI 없는 챗봇 또는 챗봇 없이 시연 | 수 오전에 규칙 방식을 먼저 붙이고 AI 방식을 얹는다. 민철이 화요일에 규칙 방식을 먼저 시작해도 된다(엑셀·음성은 범수 담당). AI가 안 되면 규칙 방식으로 시연 |
+| 챗봇을 만들 시간이 모자람 | AI 없는 챗봇 또는 챗봇 없이 시연 | 화요일 오전에 규칙 방식을 시작하고(범수), 오후에 AI 방식을 얹는다. 화 18시에 안 끝난 것은 접는다: Orchestrator → AI 방식 → 규칙 방식 순. 수요일은 기능 동결 |
 | 챗봇 AI 키 없음·지연 | AI 방식 불가 | AI 키는 화 12시까지 확인하고, 응답이 8초 안에 없으면 자동으로 규칙 방식으로 대체 |
-| 서버 PC가 꺼지거나 네트워크가 바뀜 | 시연 중단 | 시연 노트북에 같은 구성을 미리 올려 두고 백업 덤프로 복원 |
+| 서버 PC가 꺼지거나 네트워크가 바뀜 | 시연 중단 | 시연 노트북에 같은 구성을 미리 올려 두고 미리 받은 `pg_dump`로 복원 |
 | 다른 역할이 기존 API 계약(1~8번)을 이미 사용 중 | 변경 시 연쇄 수정 | 1~8번의 요청·응답 형식은 유지하고 항목만 추가(`analysis_json`, `audio_available`, `in_progress`, `existing_status`) |
 
 ## 13. 확인이 필요한 것과 제안
 
 | # | 확인할 것 | 제안 | 기한 |
 |---|---|---|---|
-| Q1 | Orchestrator 환경(Automation Cloud / 온프레미스), 폴더 종류, 외부 앱(Client ID·Secret, 권한 범위) 발급 | 이 확인 결과로 `ORCH_*` 값과 토큰 주소를 정한다 | 월 18시 |
+| Q1 | Orchestrator 환경 | **확인됨(주영, 11/23 14:57)**: Automation Cloud, 모던 폴더 `Shared`, 외부 앱 발급 가능, 프로세스 `CallCenter_GenAI_STT`. 남은 것: 외부 앱 생성(Client ID·Secret은 문서·단체방 말고 범수·민철에게 직접), `ORCH_RELEASE_KEY`(③ 프로세스를 `Shared`에 올린 뒤), 무인 로봇 라이선스는 2개 있음(주영 확인). 봇 PC를 머신으로 등록해 `Shared`에 연결하는 설정은 아직 안 함 → 주영이 수 오전 시험 전에 끝냄 | 화 12시 |
 | Q2 | 서버를 어디서 띄우나 | **범수 PC 한 대(서버+DB)** — 민철 PC는 C 드라이브 여유가 약 9.7GB라 개발만 한다. 수요일은 시연 노트북으로 이동 | 월 18시 |
 | Q3 | 봇이 음성을 어떻게 받나: 서버에서 내려받기(API 10) vs 폴더에서 직접 읽기 | 서버 내려받기가 기본. 폴더 방식도 API 1로 계속 동작 | ③④와 협의 (다음 단계) |
 | Q4 | `X-API-Key`를 켤지 | **시연까지 끈다**(켜는 것은 버퍼 과제) | 확정 |
 | Q5 | 음성 보관 기간 | **시연 후 삭제(확정)**. 운영이면 30일 보관 후 삭제 배치를 추가 | 확정 |
-| Q6 | 챗봇 AI 방식에 쓸 ChatGPT API 키가 있고 테스트 호출이 되는지 | 안 되면 AI 방식은 하지 않고 규칙 방식으로 시연. 확인은 민영(③) | 화 12시 |
-| Q7 | 웹의 엑셀 다운로드가 12열 통화 목록이면 충분한지(봇의 4시트 대시보드 파일 내려주기는 이번에 하지 않음) | 12열 통화 목록으로 진행 | 화 12시 |
+| Q6 | 챗봇 AI 방식에 쓸 AI | **Groq 무료 API로 확정.** 실제 키로 호출을 확인했다(11/23 범수). 무료 한도(분당·일일 호출)에 걸리면 규칙 방식으로 자동 대체 | 확정 |
+| Q7 | 웹의 엑셀 다운로드 | **확정**: 12열 통화 목록. 4시트 대시보드 엑셀은 ④가 직접 전달. 프론트(②)는 이 서버 문서를 기준으로 만든다 | 확정 |
+| Q8 | 백엔드 내부 역할 분담 | **확정**(10-1): 민철=뼈대·API 1·2·6·11·12·Orchestrator, 범수=DB·API 3·4·5·7·9·10·챗봇 8 | 확정 |
 
 ## 14. 참고
 
 - UiPath Orchestrator API: `POST .../odata/Jobs/UiPath.Server.Configuration.OData.StartJobs`(본문 `startInfo`에 `ReleaseKey`, `InputArguments`(JSON 문자열) 등), 폴더는 `X-UIPATH-OrganizationUnitId` 헤더, 토큰은 client_credentials 방식. 출처: UiPath 문서(Orchestrator API Guide, Jobs requests)와 UiPath 커뮤니티 예시.
-- UiPath Webhooks: 서명은 비밀키와 본문의 HMAC-SHA256, 헤더 `X-UiPath-Signature`(Base64). 이벤트에는 `Type`(예 `job.created`)과 `EventId`가 있다. **Webhook 이벤트는 저장·재전송되지 않아 호출이 실패하면 사라진다**(UiPath 문서).
 - 위 외부 사양은 문서·예시 기준이다. 실제 환경의 값과 페이로드 항목은 Q1 확인 후 샘플 1건으로 대조한다.
