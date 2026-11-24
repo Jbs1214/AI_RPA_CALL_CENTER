@@ -1,8 +1,9 @@
 import { Button, Empty, Pagination, Popconfirm, Spin, Tag } from 'antd'
 import { callSummary } from '../../lib/callSummary'
 import { formatKst } from '../../lib/date'
-import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
 import type { Call } from '../../types/Call'
+import ProcessButton from './ProcessButton'
+import StatusTag from './StatusTag'
 
 interface Props {
   items: Call[]
@@ -38,7 +39,7 @@ export default function CallCardList({ items, loading, page, size, total, onPage
               >
                 <div className="call-card__top">
                   <span className="call-card__date">{formatKst(row.called_at)}</span>
-                  <Tag color={STATUS_COLOR[row.status]}>{STATUS_LABEL[row.status]}</Tag>
+                  <StatusTag status={row.status} />
                 </div>
                 <div className="call-card__who">
                   {row.agent_name} · {row.customer_company ?? '-'}
@@ -51,6 +52,7 @@ export default function CallCardList({ items, loading, page, size, total, onPage
                 </div>
               </div>
               <div className="call-card__actions">
+                <ProcessButton call={row} />
                 <Button size="small" type="link" onClick={() => onOpen(row.call_id)}>
                   보기
                 </Button>

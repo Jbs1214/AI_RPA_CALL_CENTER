@@ -1,5 +1,5 @@
 import { client, API_BASE_URL } from './client'
-import type { CallDetail, CallFilters, CallList, CallPatch, Call } from '../types/Call'
+import type { CallDetail, CallFilters, CallList, CallPatch, Call, ProcessResult } from '../types/Call'
 
 /** 값이 없는 조건은 보내지 않는다 */
 function clean(filters: CallFilters): Record<string, string | number | boolean> {
@@ -23,6 +23,12 @@ export async function fetchCall(callId: string): Promise<CallDetail> {
 /** 바꾼 항목만 보낸다 */
 export async function patchCall(callId: string, patch: CallPatch): Promise<CallDetail> {
   const { data } = await client.patch<CallDetail>(`/api/calls/${callId}`, patch)
+  return data
+}
+
+/** 처리 시작(대기) / 재처리(실패). 사용자가 버튼을 눌렀을 때만 부른다. 업로드 직후 자동으로 부르지 않는다. */
+export async function startProcess(callId: string): Promise<ProcessResult> {
+  const { data } = await client.post<ProcessResult>(`/api/calls/${callId}/process`)
   return data
 }
 

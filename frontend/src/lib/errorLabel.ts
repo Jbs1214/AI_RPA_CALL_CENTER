@@ -11,6 +11,17 @@ const CODE_LABEL: Record<string, string> = {
   TIMEOUT: '처리 시간 초과',
 }
 
+// 서버 API 가 돌려주는 오류 코드(처리 시작 API 12) → 한글 문구
+const API_ERROR_LABEL: Record<string, string> = {
+  INVALID_STATE: '지금 상태에서는 처리할 수 없습니다. 이미 처리 중이거나 음성 파일이 없는 통화입니다.',
+  ORCHESTRATOR_ERROR: '작업을 시작하지 못했습니다. 잠시 후 다시 시도하세요.',
+}
+
+/** 화면에 보여 줄 오류 문구. 모르는 코드는 서버가 보낸 문구를 그대로 보여 준다. */
+export function apiErrorLabel(e: Error & { code?: string }): string {
+  return (e.code && API_ERROR_LABEL[e.code]) || e.message
+}
+
 /** error_message 는 "코드: 설명" 형식이다. 첫 ':' 에서 나눈다. */
 export function parseErrorMessage(message: string | null): { code: string; label: string; detail: string } | null {
   if (!message) return null

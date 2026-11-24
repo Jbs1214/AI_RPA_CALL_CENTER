@@ -4,10 +4,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteCall, fetchCalls } from '../../api/calls'
 import { callSummary } from '../../lib/callSummary'
 import { formatKst } from '../../lib/date'
-import { STATUS_COLOR, STATUS_LABEL } from '../../lib/statusLabel'
 import { POLL_INTERVAL_MS } from '../../lib/polling'
 import type { Call, CallFilters } from '../../types/Call'
 import CallCardList from './CallCardList'
+import ProcessButton from './ProcessButton'
+import StatusTag from './StatusTag'
 
 interface Props {
   filters: CallFilters
@@ -56,13 +57,19 @@ export default function CallTable({ filters, onChange, onOpen }: Props) {
       render: (v: boolean | null) => (v === null ? '—' : v ? <span className="text-danger">Y</span> : 'N'),
     },
     { title: '검토', dataIndex: 'needs_review', width: 70, render: (v: boolean | null) => (v ? <Tag color="gold">검토</Tag> : null) },
-    { title: '상태', dataIndex: 'status', width: 90, render: (v: Call['status']) => <Tag color={STATUS_COLOR[v]}>{STATUS_LABEL[v]}</Tag> },
+    {
+      title: '상태',
+      dataIndex: 'status',
+      width: 100,
+      render: (v: Call['status']) => <StatusTag status={v} />,
+    },
     {
       title: '',
       key: 'actions',
-      width: 120,
+      width: 220,
       render: (_: unknown, row) => (
         <span onClick={(e) => e.stopPropagation()}>
+          <ProcessButton call={row} />
           <Button size="small" type="link" onClick={() => onOpen(row.call_id)}>보기</Button>
           <Popconfirm
             title="삭제할까요?"
