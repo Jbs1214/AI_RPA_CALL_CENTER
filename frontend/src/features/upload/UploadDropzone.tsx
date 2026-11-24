@@ -19,7 +19,7 @@ export default function UploadDropzone() {
   const [dup, setDup] = useState<string | null>(null)
 
   return (
-    <div>
+    <div className="upload">
       <Upload.Dragger
         multiple
         showUploadList={{ showRemoveIcon: false }}
@@ -58,8 +58,10 @@ export default function UploadDropzone() {
         }}
       >
         <p className="ant-upload-drag-icon"><InboxOutlined /></p>
-        <p className="ant-upload-text">음성 파일을 끌어다 놓거나 눌러서 선택</p>
-        <p className="ant-upload-hint">wav · mp3 · m4a, 100MB 이하. 파일명 형식: YYYYMMDD_HHmm_담당자_고객사.wav</p>
+        <div className="upload__copy">
+          <p className="ant-upload-text">음성 파일을 끌어다 놓거나 눌러서 선택</p>
+          <p className="ant-upload-hint">wav · mp3 · m4a, 100MB 이하. 파일명 형식: YYYYMMDD_HHmm_담당자_고객사.wav</p>
+        </div>
       </Upload.Dragger>
       {dup && <Alert style={{ marginTop: 8 }} type="warning" showIcon message={dup} closable onClose={() => setDup(null)} />}
       <Collapse

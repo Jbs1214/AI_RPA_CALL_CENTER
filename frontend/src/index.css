@@ -1,12 +1,17 @@
+@import './styles/tokens.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+@import './styles/theme.css';
+
 body {
   margin: 0;
 }
 
 /* 검토 필요는 노란 배경, 실패는 붉은 배경 */
 .row-review > td {
-  background: #fff8d6 !important;
+  background: var(--row-review-bg) !important;
 }
 .row-failed > td {
-  background: #fdecec !important;
-  color: #a32d2d;
+  background: var(--row-failed-bg) !important;
+  color: var(--row-failed-text);
 }
