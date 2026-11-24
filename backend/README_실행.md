@@ -23,7 +23,7 @@ docker compose up -d --build
 
 ## 확인 (둘 다 공통)
 - 브라우저: `http://localhost:8000/docs` (Swagger), `http://localhost:8000/health`
-- **`python tests/smoke_test.py http://localhost:8000`** — 핵심 API 26개 항목을 순서대로 호출해 OK/FAIL을 보여 준다(만든 시험 데이터는 지운다). **서버를 처음 띄운 직후 한 번 돌려 본다.**
+- **`python tests/smoke_check.py http://localhost:8000`** — 핵심 API 26개 항목을 순서대로 호출해 OK/FAIL을 보여 준다(만든 시험 데이터는 지운다). **서버를 처음 띄운 직후 한 번 돌려 본다.**
 - 팀원 접속 주소: `http://<이 PC의 IP>:8000` (Windows 방화벽에서 8000 포트 허용). IP는 `ipconfig`로 확인.
 
 ## 설정 (.env)
@@ -38,7 +38,7 @@ app/            서버 코드 (설계서 7.3 구조)
   routers/      API (calls 1~6, export 7, chat 8, recordings 9~11, orchestrator 12, health)
   services/     규칙(logic), SQL(calls_repo), 저장소(storage), 마스킹, 챗봇, 엑셀, Orchestrator, 점검
   deps.py models.py   공통 조회 조건·키 확인, 요청 모델
-tests/          test_logic.py(로직 시험), smoke_test.py(HTTP 점검)
+tests/          test_logic.py(로직 시험), smoke_check.py(HTTP 점검)
 schema.sql  seed.sql  test_schema.sql   DB
 deploy/         docker-compose.yml, Dockerfile, .env.example, backup.sh
 requirements.txt
