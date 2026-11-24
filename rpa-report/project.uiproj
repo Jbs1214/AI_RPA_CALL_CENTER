@@ -1,6 +1,6 @@
 {
   "Name": "CallCenter_RPA_Report",
   "ProjectType": "Process",
-  "Description": "큐 신호를 받아 서버의 완료 통화 목록으로 4시트 엑셀을 다시 만든다",
+  "Description": "서버의 완료 통화 목록으로 4시트 엑셀 대시보드를 다시 만든다",
   "MainFile": "Main.xaml"
 }

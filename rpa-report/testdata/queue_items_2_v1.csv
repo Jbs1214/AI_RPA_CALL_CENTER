@@ -1,3 +1,0 @@
-Reference,called_at,agent_name,customer_company,customer_phone,source_filename,file_hash,category,customer_question,action_taken,follow_up_needed,confidence,status,error_message
-CALL-20261123-016,2026-11-23T16:20:00+09:00,김민수,(주)한국상사,010-****-0000,20261123_162000_김민수_한국상사.wav,0000000000000000000000000000000000000000000000000000000000000016,질의,배송 일정 문의,일정 안내,false,0.95,DONE,
-CALL-20261123-017,2026-11-23T16:40:00+09:00,이서연,대한유통,010-****-0000,20261123_164000_이서연_대한유통.wav,0000000000000000000000000000000000000000000000000000000000000017,,,,false,,FAILED,STT_FAILED
