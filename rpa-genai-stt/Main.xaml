@@ -93,8 +93,8 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ui:LogMessage DisplayName="Log Message: 시작" Level="Info" Message="[&quot;MAIN 시작: 서버 음성 처리(Main_B)&quot;]" sap2010:WorkflowViewState.IdRef="LogMessage_1" />
-    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="Main_B: 서버 음성 처리" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Main_B.xaml" />
+    <ui:LogMessage DisplayName="Log Message: 시작" Level="Info" Message="[&quot;MAIN 시작: &quot; + If(in_call_id IsNot Nothing AndAlso in_call_id &lt;&gt; &quot;&quot;, &quot;Job &quot; + in_call_id, &quot;가져가기(Main_B)&quot;)]" sap2010:WorkflowViewState.IdRef="LogMessage_1" />
+    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="Main_B: 서버 음성 처리" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Main_B.xaml"><ui:InvokeWorkflowFile.Arguments><InArgument x:TypeArguments="x:String" x:Key="in_callId">[in_call_id]</InArgument></ui:InvokeWorkflowFile.Arguments></ui:InvokeWorkflowFile>
     <ui:LogMessage DisplayName="Log Message: 종료" Level="Info" Message="[&quot;MAIN 종료&quot;]" sap2010:WorkflowViewState.IdRef="LogMessage_2" />
   </Sequence>
 </Activity>
