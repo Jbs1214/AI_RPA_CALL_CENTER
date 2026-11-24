@@ -1,9 +1,10 @@
 # PRD — 백엔드 / DB / 서버 인프라
 
 생성형 AI ChatGPT와 RPA를 활용한 인공지능 비서 제작 프로젝트 중 **① 백엔드 / DB / 서버 인프라** 역할의 제품요구사항정의서.
-작성일 2026-11-23 · MVP 마감 화 11/24 18:00 · 시연 수 11/25 · 상태: 초안 v1(검토 대기)
+작성일 2026-11-23 · MVP 마감 화 11/24 18:00 · 시연 수 11/25 · 상태: v3(11/24, Webhook 제외)
 
 - 함께 보는 문서: `설계서_백엔드.pdf`(구조·API 상세), `schema.sql`(DB 원본), `seed.sql`(시연 데이터 15건), `test_schema.sql`(DB 검증)
+- **v3에서 바뀐 것(11/24):** Orchestrator Webhook 수신(API 13, FR-B14)을 이번 MVP에서 뺐다. 서버가 내부망에 있어 클라우드 Orchestrator의 호출이 닿지 않는다. 작업 상태는 서버가 먼저 묻는 점검(FR-B13)으로만 확인한다. 번호(API 13, FR-B14, 인수 테스트 16번)는 다시 매기지 않고 비워 둔다. `설계서_1_백엔드_v2.pdf`의 Webhook 내용(API 13, 6.4절, `ORCH_WEBHOOK_SECRET` 등)은 이 문서가 대체한다.
 - **이 문서의 범위는 ① 역할 하나다(담당: 범수, 민철).** ② 프론트·챗봇 화면(수창, 성진), ③ GenAI·STT(민영), ④ RPA 코어·보고서(주영)에 대한 요구사항은 쓰지 않았고, 이 서버가 그들에게 "무엇을 제공하는지"만 적었다. **엑셀 다운로드 API(7번)와 챗봇 API(8번)는 이 서버의 일이므로 범위에 포함한다.** 다른 역할에 요구할 내용은 이 문서가 확정된 뒤 따로 정리한다.
 
 ## 1. 개요
@@ -18,7 +19,7 @@
 | API 서버 구축 | 웹 대시보드와 UiPath 봇이 부르는 REST API(통계, 목록·상세·수정·삭제, 엑셀 다운로드, 챗봇) | FR-B01~B07, B16~B18 |
 | DB 설계 | 상담 원문, 분석 JSON, 처리 상태, 파일 경로 | 5절, FR-B11 |
 | 음성 파일 스토리지 | 녹음 파일 업로드·보관·내려받기·삭제 | FR-B08~B10 |
-| UiPath Orchestrator API 연동 | Job 실행, Webhook 수신 | FR-B12~B14 |
+| UiPath Orchestrator API 연동 | Job 실행, 작업 상태 조회 (Webhook 수신은 제외) | FR-B12, B13 |
 | 서버 환경 | 실행·배포·설정·백업 | FR-B15 |
 
 산출물(역할 정의서): **DB 스키마, REST API, 서버 환경, UiPath 연동 모듈**.
@@ -27,7 +28,7 @@
 | 구분 | 내용 |
 |---|---|
 | 다른 역할의 일 | 웹 화면과 챗봇 **화면**(②), STT 호출·화자 구분·마스킹 워크플로우·AI 요약/분류 프롬프트(③), RPA 봇·4시트 엑셀 대시보드 파일·큐 처리(④) |
-| 이번 MVP에서 하지 않는 것 | 봇이 만든 4시트 대시보드 엑셀을 서버가 보관·다운로드시키는 기능(웹의 엑셀 다운로드는 12열 통화 목록 — FR-B16), 대화 저장형 챗봇 |
+| 이번 MVP에서 하지 않는 것 | 봇이 만든 4시트 대시보드 엑셀을 서버가 보관·다운로드시키는 기능(웹의 엑셀 다운로드는 12열 통화 목록 — FR-B16), 대화 저장형 챗봇, Orchestrator Webhook 수신(API 13, FR-B14. 서버가 내부망이라 클라우드에서 닿지 않는다) |
 | 프로젝트 제외 사항 | 사용자 로그인(문서2 요구) |
 
 ### 1.4 서버가 하는 일 한 장 요약
@@ -37,7 +38,7 @@
                               │  ▲                ▲
               (Job 시작)      ▼  │ (음성 내려받기)  │ (결과 저장)
         [Orchestrator] ◀── 서버 ──▶ UiPath 봇 ──────┘
-              └──(Webhook·상태 조회)──▶ 서버가 처리 상태를 갱신
+              └──(서버가 상태 조회)──▶ 서버가 처리 상태를 갱신
 ```
 
 ## 2. 이용 주체 (이 서버를 부르는 쪽)
@@ -46,7 +47,7 @@
 |---|---|---|
 | 웹 대시보드 (②) | 통계, 목록·검색, 상세, 수정, 삭제, 엑셀 다운로드, 챗봇 질문, 음성 재생, 파일 올리기, 처리 시작 | 1~12 |
 | UiPath 봇 (③④) | 음성 받기, 결과 저장 | 1, 2, 10, 11 |
-| UiPath Orchestrator | 작업 상태 알림 | 13 (+ 서버가 먼저 Orchestrator를 호출) |
+| UiPath Orchestrator | 없음(이 서버를 부르지 않는다. 서버가 먼저 Orchestrator를 호출한다) | — |
 | 운영자(팀원) | 서버 상태 확인 | `/health` |
 
 ## 3. 우선순위
@@ -55,7 +56,7 @@
 |---|---|---|---|
 | **P0** | 이것 없으면 시연 불가 | 화 12시(1·2번은 월 18시) | FR-B01~B07, B15 |
 | **P1** | 엑셀 다운로드, 음성 스토리지와 처리 상태, **가져가기(API 12, `ORCH_ENABLED=false`)** | 화 18시 | FR-B16, B08~B11, B12(가져가기만) |
-| **P2** | 챗봇(규칙 방식 → **AI 방식**), Orchestrator 연동 | 수 12시. 화요일 오후는 P1(엑셀·음성)에 쓰므로 챗봇은 **수요일 오전**에 **규칙 방식을 먼저** 붙이고 **이어서 AI 방식(ChatGPT)을 얹는다**. AI가 안 되면 규칙 방식으로 시연한다(Orchestrator는 시간이 모자라면 "확장 계획"으로 설명) | FR-B17, B18, B12~B14 |
+| **P2** | 챗봇(규칙 방식 → **AI 방식**), Orchestrator 연동 | 수 12시. 화요일 오후는 P1(엑셀·음성)에 쓰므로 챗봇은 **수요일 오전**에 **규칙 방식을 먼저** 붙이고 **이어서 AI 방식(ChatGPT)을 얹는다**. AI가 안 되면 규칙 방식으로 시연한다(Orchestrator는 시간이 모자라면 "확장 계획"으로 설명) | FR-B17, B18, B12(Job 시작), B13 |
 
 P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(기존 계약 유지). P1은 문서2의 요구(엑셀 다운로드)와 음성 스토리지이며 화 18시 MVP에 들어간다. 챗봇은 문서2의 요구이고 프로젝트 주제(생성형 AI)와 직결되므로 AI 방식까지 MVP 목표이며, 일정상 수요일 오전에 규칙 방식 → AI 방식 순서로 붙인다. 시간이 모자라면 **7번(엑셀) → 9~11번(음성) → 8번(챗봇 규칙) → 8번(AI)** 순서로 먼저 만든다.
 
@@ -92,8 +93,8 @@ P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(
 |---|---|---|
 | FR-B18 | **챗봇 AI 방식** — API 8의 `mode=ai`. 생성형 AI가 질문을 조회 조건 JSON으로 바꾼다. AI에는 **질문 글과 한국 시간 오늘 날짜만** 보내고 통화 데이터는 보내지 않는다. AI가 돌려준 조건은 `validate_llm_query`(허용 키·값만 통과)로 검사한다. AI 키가 없거나 `CHAT_AI_TIMEOUT_SEC`(8초) 안에 답이 없거나 검사에 걸리면 **자동으로 규칙 방식으로 바꾼다**. `history`(최근 6개)는 AI 방식에서만 쓴다. 키는 환경변수로만 둔다. **시연은 규칙 방식만으로도 성립해야 한다.** | AI 키를 지워도 FR-B17의 시연 질문이 모두 동작한다 |
 | FR-B12 | **Job 시작 `POST /api/calls/{call_id}/process`** (API 12). `RECEIVED`·`FAILED` 통화에 대해 Orchestrator의 `StartJobs`를 호출하고, 받은 Job Key를 `job_key`에 저장하며 상태를 `PROCESSING`으로 바꾼다. 인증 토큰은 받아서 만료 전까지 재사용한다. 설정 `ORCH_AUTO_START=true`이면 음성 업로드 직후 자동으로 시작한다. Orchestrator 호출이 실패하면 통화는 `RECEIVED`로 두고 502(`ORCHESTRATOR_ERROR`)를 돌려준다. **`ORCH_ENABLED=false`이면 Job을 만들지 않고 상태만 `PROCESSING`으로 바꾼다**(봇이 직접 가져가는 방식의 "가져가기" 표시. 이미 가져갔으면 409라서 두 봇이 같은 통화를 잡지 않는다). Job에 넘기는 값(통화 번호, 음성 주소 등)의 인자 이름은 ③④와 정한 뒤 설정한다. | Orchestrator에 Job이 생긴다 |
-| FR-B13 | **작업 상태 점검(주기).** Webhook은 재전송되지 않고 놓치면 사라지며, 서버가 인터넷에서 접근 불가일 수 있으므로 **기본 수단은 서버가 먼저 묻는 방식**이다. 1분마다 `PROCESSING`인 통화 중 `ORCH_TIMEOUT_MIN`(30분) 넘게 결과가 없는 것의 Job 상태를 Orchestrator에 조회해 `job_state`를 갱신하고, 실패·중지·종료됐는데 결과가 없으면 `FAILED`(`JOB_FAULTED` / `JOB_STOPPED` / `NO_RESULT`)로 바꾼다. Orchestrator를 쓰지 않는 경우(`job_key` 없음)에는 시간만 넘으면 `FAILED`(`TIMEOUT`)로 바꾼다. | 일부러 멈춘 Job이 FAILED가 된다 |
-| FR-B14 | **Webhook 수신 `POST /api/webhooks/orchestrator`** (API 13). 헤더 `X-UiPath-Signature`를 원문 본문과 비밀키(`ORCH_WEBHOOK_SECRET`)로 HMAC-SHA256 검증하고 맞지 않으면 401. `EventId`로 중복을 막고(`job_events`) `job_key`로 통화를 찾아 `job_state`와 상태를 갱신한다. 서버에 외부에서 접근할 수 없으면 이 기능은 쓰지 않고 FR-B13만으로 운영한다. | 서명이 틀리면 401, 같은 이벤트 2번이면 한 번만 반영 |
+| FR-B13 | **작업 상태 점검(주기).** 서버가 내부망에 있어 Webhook을 받을 수 없으므로 **서버가 먼저 묻는 방식만 쓴다**. 1분마다 `PROCESSING`인 통화 중 `ORCH_TIMEOUT_MIN`(30분) 넘게 결과가 없는 것의 Job 상태를 Orchestrator에 조회해 `job_state`를 갱신하고, 실패·중지·종료됐는데 결과가 없으면 `FAILED`(`JOB_FAULTED` / `JOB_STOPPED` / `NO_RESULT`)로 바꾼다. Orchestrator를 쓰지 않는 경우(`job_key` 없음)에는 시간만 넘으면 `FAILED`(`TIMEOUT`)로 바꾼다. | 일부러 멈춘 Job이 FAILED가 된다 |
+| FR-B14 | **제외(11/24).** Webhook 수신(API 13). 서버가 내부망이라 클라우드 Orchestrator에서 닿지 않아 만들지 않는다. FR-B13만으로 운영한다. | — |
 
 ### 4.4 서버 환경
 
@@ -120,7 +121,7 @@ P0만으로도 "결과를 저장하고 웹에서 보는" 시연은 성립한다(
 
 DB가 직접 지키는 규칙: 유형은 5개 값만 / `DONE`이면 유형·후속조치·검토필요가 반드시 있다 / `FAILED`면 실패 사유가 있다 / `RECEIVED`·`PROCESSING`이면 음성 경로가 있다 / 해시는 소문자 16진수 64자.
 
-**`job_events`** — Orchestrator Webhook 수신 기록(`event_id` 기본키로 중복 방지, 통화가 삭제되어도 기록은 남는다).
+**`job_events`** — Orchestrator Webhook 수신 기록용 표. Webhook을 뺐으므로 이번 MVP에서는 쓰지 않는다(`schema.sql`에는 그대로 둔다).
 
 ## 6. 처리 상태
 
@@ -135,7 +136,7 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 - 결과 포함 저장(API 1)으로 들어온 통화는 곧바로 `DONE`/`FAILED`로 저장된다(처리 중 단계를 거치지 않는다).
 - 화면의 "분석 완료" 숫자와 통계는 `DONE`만 센다.
 
-## 7. API 요약 (13개 + 운영 1개)
+## 7. API 요약 (12개 + 운영 1개)
 
 | 번호 | 경로 | 하는 일 | 우선 | 쓰는 곳 |
 |---|---|---|---|---|
@@ -151,14 +152,12 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | 10 | `GET /api/calls/{call_id}/audio` | 음성 내려받기·재생 | P1 | 웹, 봇 |
 | 11 | `PUT /api/calls/{call_id}/result` | 처리 결과 받기 | P1 | 봇 |
 | 12 | `POST /api/calls/{call_id}/process` | 가져가기(P1, 상태만 `PROCESSING`) / Orchestrator Job 시작(P2) | P1·P2 | 웹, ③ 봇 |
-| 13 | `POST /api/webhooks/orchestrator` | Webhook 수신 | P2 | Orchestrator |
 | — | `GET /health` | 서버·DB·저장소 상태 | P0 | 운영 |
 
 공통 규칙: 로그인 없음, JSON(UTF-8, 업로드만 multipart), 키 이름 = 컬럼 이름(snake_case), 시각은 `+09:00`, 기간 `from`·`to`는 한국 시간 날짜이고 `to` 당일 포함. 오류 코드:
 
 | 상태 | `error` | 언제 |
 |---|---|---|
-| 401 | `INVALID_SIGNATURE` | Webhook 서명 불일치 |
 | 401 | `INVALID_API_KEY` | `API_KEY`가 켜져 있는데 `X-API-Key` 헤더가 없거나 틀림 |
 | 404 | `NOT_FOUND` | 없는 관리번호, 음성 없음 |
 | 409 | `DUPLICATE_FILE` | 같은 파일이 이미 있다(`existing_call_id`, `existing_status` 포함) |
@@ -176,7 +175,7 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | 응답 속도 | 목록·통계·상세 1초 이내(1,000건 기준), 음성 100MB 업로드 60초 이내(같은 내부망) | 구현 후 실측해서 갱신 |
 | 저장 용량 | 음성은 대략 분당 1~2MB(wav, 8~16kHz 16bit 모노 가정) → 100건×5분 ≈ 0.5~1GB. 디스크 여유 5GB 이상 | 실제 녹음 샘플로 다시 계산 |
 | 보안 | 음성에는 **마스킹 전 개인정보**(목소리, 말한 번호)가 있다. 저장 폴더 권한은 서버 계정만, API 외 경로로 공개하지 않는다. 서버는 내부 네트워크에서만 접근시킨다. 비밀키는 환경변수. 로그에 개인정보를 쓰지 않는다. | 사용자 로그인은 문서2에 따라 만들지 않는다 |
-| 시스템 호출 보호 | 음성 올리기·내려받기·결과 저장에 공용 키 헤더(`X-API-Key`)를 선택적으로 켤 수 있다(`API_KEY` 비워 두면 꺼짐). Webhook은 HMAC 서명으로 보호. | **시연까지 끈다**(내부망 한정, 음성은 시연 후 삭제). 켜는 것은 버퍼 과제 |
+| 시스템 호출 보호 | 음성 올리기·내려받기·결과 저장에 공용 키 헤더(`X-API-Key`)를 선택적으로 켤 수 있다(`API_KEY` 비워 두면 꺼짐). | **시연까지 끈다**(내부망 한정, 음성은 시연 후 삭제). 켜는 것은 버퍼 과제 |
 | 가용성·복구 | 서버 재시작 후 `PROCESSING`인 통화는 FR-B13이 정리한다. DB 덤프 일 1회, 음성 폴더 복사 | |
 | 시간대 | DB `Asia/Seoul`, 서버 컨테이너 `TZ=Asia/Seoul` | |
 | 문서화 | Swagger(`/docs`)가 항상 최신 | 월 18시 1차 공유 |
@@ -203,7 +202,6 @@ RECEIVED ──(API 12: Job 시작 또는 봇의 가져가기)──▶ PROCESSI
 | `ORCH_FOLDER_ID` | — | 폴더 ID |
 | `ORCH_RELEASE_KEY` | — | 시작할 프로세스 키 |
 | `ORCH_START_STRATEGY` | `ModernJobsCount` | 폴더 종류에 따라 다름(확인 필요) |
-| `ORCH_WEBHOOK_SECRET` | — | Webhook 서명 비밀키 |
 | `ORCH_TIMEOUT_MIN` | 30 | 이 시간 넘게 결과 없으면 점검 대상 |
 
 docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_HOST_DIR`(음성을 둘 호스트 폴더). `DATABASE_URL`과 `STORAGE_DIR`은 compose 파일이 컨테이너에 넣어 준다(`deploy/docker-compose.yml`). 직접 설치할 때는 이 두 값을 환경변수로 직접 지정한다.
@@ -215,7 +213,7 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 | 11/23(월) 오후 | 서버 뼈대, DB 연결, `schema.sql`·`seed.sql` 적용, 오류 형식·시간대, FR-B01·B02, `/health`, 서버 실행 환경 | 18시 Swagger 공유 |
 | 11/24(화) 오전 | FR-B03~B06 | 12시 P0 완료 |
 | 11/24(화) 오후 | FR-B16 엑셀, FR-B08~B11 음성·결과·상태, **FR-B12 가져가기(③이 화 오후 흐름 B에서 사용)** | 18시 MVP(P0+P1) 완료 |
-| 11/25(수) 오전 | **FR-B17 챗봇(규칙) → FR-B18 챗봇 AI 방식**, FR-B12(Job 시작)·B13·B14 Orchestrator, 실측·버그 수정 | 12시 기능 동결, 시연 데이터 적재 |
+| 11/25(수) 오전 | **FR-B17 챗봇(규칙) → FR-B18 챗봇 AI 방식**, FR-B12(Job 시작)·B13 Orchestrator, 실측·버그 수정 | 12시 기능 동결, 시연 데이터 적재 |
 
 ## 10-1. 담당 분담 (제안)
 
@@ -223,9 +221,9 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 
 | 담당 | 맡는 것 | 요구사항 |
 |---|---|---|
-| **민철** (서버·연동) | 서버 뼈대(FastAPI, 설정, 오류 형식, 시간대, CORS), 통화 저장·목록·통계, **챗봇(API 8, 수 오전)**, 서버 실행 환경과 봇 PC 접속 확인(서버는 범수 PC, 민철은 자기 PC에서 개발하고 코드를 합친다), Orchestrator 연동 | FR-B01, B02, B06, B07, B15, B17, B18, B12, B13, B14 |
+| **민철** (서버·연동) | 서버 뼈대(FastAPI, 설정, 오류 형식, 시간대, CORS), 통화 저장·목록·통계, **챗봇(API 8, 수 오전)**, 서버 실행 환경과 봇 PC 접속 확인(서버는 범수 PC, 민철은 자기 PC에서 개발하고 코드를 합친다), Orchestrator 연동 | FR-B01, B02, B06, B07, B15, B17, B18, B12, B13 |
 | **범수** (DB·데이터) | DB 설계와 적용·관리(`schema.sql`, `seed.sql`, `test_schema.sql`), 상세·수정·삭제, **엑셀 다운로드(API 7)**, 음성 스토리지와 처리 상태·결과 받기, 백업 | FR-B03, B04, B05, B16, B08, B09, B10, B11 (+ 5절 데이터) |
-| **공동** | Swagger 공유와 최신 유지, 인수 테스트 27개 수행, 코드 리뷰, Q1·Q2 확인 결과 반영 | 11절 |
+| **공동** | Swagger 공유와 최신 유지, 인수 테스트 26개 수행(1~27번 중 16번 제외), 코드 리뷰, Q1·Q2 확인 결과 반영 | 11절 |
 
 - 공통 코드(DB 연결, `calls` 모델, 오류 형식)는 민철이 월요일 오전 뼈대에 먼저 넣고, 범수는 그 위에 `routers/calls.py`의 3~5번과 `routers/recordings.py`를 붙인다.
 - 항목 이름(컬럼·JSON 키)을 바꾸는 일은 `schema.sql`과 설계서를 **함께** 고칠 때만 한다.
@@ -250,7 +248,7 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 | 13 | `GET .../audio` (Range 포함) | 200/206, 재생 가능 |
 | 14 | `PUT .../result` 2번 | 200, 409(`INVALID_STATE`) |
 | 15 | 처리 시작 후 결과 없이 `ORCH_TIMEOUT_MIN` 초과(P2) | 점검이 Job 상태를 조회해 `FAILED`로 정리 |
-| 16 | Webhook 서명 틀림 / 같은 EventId 2번(P2) | 401 / 한 번만 반영 |
+| 16 | 제외(Webhook) | — |
 | 17 | 새 PC에서 서버 기동(docker compose 또는 직접 실행) | `/health` 정상, `/docs` 열림 |
 | 18 | DB 재시작 | 데이터 유지 |
 | 19 | `psql -f test_schema.sql` | `ALL PASS` (이미 통과) |
@@ -267,7 +265,7 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 
 | 리스크 | 영향 | 대응 |
 |---|---|---|
-| Orchestrator가 클라우드(Automation Cloud)인데 서버가 내부 PC다 | Webhook이 서버에 도달하지 못함 | 서버가 먼저 묻는 점검(FR-B13)을 기본으로 한다. 서버→Orchestrator는 바깥으로 나가는 호출이라 가능. Webhook은 터널(공개 주소)이 될 때만 |
+| Orchestrator가 클라우드(Automation Cloud)인데 서버가 내부 PC다 | Webhook이 서버에 도달하지 못함 | Webhook은 만들지 않는다(11/24). 서버가 먼저 묻는 점검(FR-B13)만 쓴다. 서버→Orchestrator는 바깥으로 나가는 호출이라 가능 |
 | Orchestrator 종류(클라우드/온프레미스), 폴더 종류, 외부 앱 권한 미확인 | Job 시작 호출이 막힘 | 월 18시까지 확인. 안 되면 P2를 시연에서 빼고 P0·P1으로 시연 |
 | 음성 파일에 개인정보 원본 | 유출 시 피해 | 폴더 권한, 비공개 경로, 내부망 한정, 선택적 API 키, 시연 후 삭제 |
 | 시간 부족 | 마감 전 미완 | P0 → P1 → P2 순서로 자르고 P2는 포기 가능. P1 안에서는 7번 → 8번(규칙) → 9~11번 순 |
@@ -292,5 +290,4 @@ docker를 쓸 때만 필요한 값: `DB_PASSWORD`(DB 비밀번호), `RECORDINGS_
 ## 14. 참고
 
 - UiPath Orchestrator API: `POST .../odata/Jobs/UiPath.Server.Configuration.OData.StartJobs`(본문 `startInfo`에 `ReleaseKey`, `InputArguments`(JSON 문자열) 등), 폴더는 `X-UIPATH-OrganizationUnitId` 헤더, 토큰은 client_credentials 방식. 출처: UiPath 문서(Orchestrator API Guide, Jobs requests)와 UiPath 커뮤니티 예시.
-- UiPath Webhooks: 서명은 비밀키와 본문의 HMAC-SHA256, 헤더 `X-UiPath-Signature`(Base64). 이벤트에는 `Type`(예 `job.created`)과 `EventId`가 있다. **Webhook 이벤트는 저장·재전송되지 않아 호출이 실패하면 사라진다**(UiPath 문서).
 - 위 외부 사양은 문서·예시 기준이다. 실제 환경의 값과 페이로드 항목은 Q1 확인 후 샘플 1건으로 대조한다.

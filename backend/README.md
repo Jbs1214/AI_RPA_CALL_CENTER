@@ -6,9 +6,9 @@
 
 ## 기준 문서
 
-- `docs/PRD_1_백엔드_v2.md`: 요구사항(FR-B01~B18), API 13개, 환경변수, 인수 테스트 27개
+- `docs/PRD_1_백엔드_v3.md`: 요구사항(FR-B01~B18), API 12개, 환경변수, 인수 테스트 26개
 - `docs/설계서_1_백엔드_v2.pdf`: DB, API 요청·응답 예시, 실행 방식, 폴더 구조
-- `docs/제품요구사항정의서_v1.8.md` 7장: 다른 파트와의 데이터 계약
+- `docs/제품요구사항정의서_v1.9.md` 7장: 다른 파트와의 데이터 계약
 
 ## 폴더 구조 (설계서 7.3의 제안)
 
@@ -26,7 +26,7 @@ backend/
       export.py        API 7 (calls.py의 {call_id}보다 먼저 등록)
       chat.py          API 8
       recordings.py    API 9~11
-      orchestrator.py  API 12·13
+      orchestrator.py  API 12
       health.py        /health
     services/
       calls_repo.py    SQL (업서트, 상태 전이, 통계)

@@ -1,6 +1,6 @@
 # 파트 사이 계약 요약
 
-네 파트가 서로 맞춰야 하는 것만 한곳에 모았다. 원본은 `docs/제품요구사항정의서_v1.8.md` 7장과 8장이고, 이 파일과 다르면 통합본이 맞다. 계약을 바꾸려면 통합본을 먼저 고친 뒤 이 파일을 맞춘다.
+네 파트가 서로 맞춰야 하는 것만 한곳에 모았다. 원본은 `docs/제품요구사항정의서_v1.9.md` 7장과 8장이고, 이 파일과 다르면 통합본이 맞다. 계약을 바꾸려면 통합본을 먼저 고친 뒤 이 파일을 맞춘다.
 
 ## 1. 누가 누구에게 무엇을
 
@@ -45,10 +45,9 @@
 | 10 | `GET /api/calls/{call_id}/audio` | 음성 내려받기·재생 | P1 | ② ③ |
 | 11 | `PUT /api/calls/{call_id}/result` | 처리 결과 받기 | P1 | ③ |
 | 12 | `POST /api/calls/{call_id}/process` | 가져가기(P1) / Job 시작(P2) | P1·P2 | ② ③ |
-| 13 | `POST /api/webhooks/orchestrator` | Webhook 수신 | P2 | Orchestrator |
 | — | `GET /health` | 서버·DB·저장소 상태 | P0 | 운영, ② |
 
-요청·응답 예시는 `docs/설계서_1_백엔드_v2.pdf` 5장이 원본이다.
+요청·응답 예시는 `docs/설계서_1_백엔드_v2.pdf` 5장이 원본이다. Webhook 수신(API 13)은 뺐다(통합본 2장). PDF의 API 13은 보지 않는다.
 
 **API 12를 부르는 쪽**: 가져가기(`ORCH_ENABLED=false`)에서는 ③ 봇만 부른다. Job 시작(`true`)에서는 웹의 "처리 시작" 버튼만 부르고, ③ 봇은 Job 인자(`in_call_id`, `in_audio_url`, `in_result_url`)로 음성 주소를 받는다. 웹은 `GET /health`의 `orchestrator.enabled`가 `true`일 때만 버튼을 보여 준다.
 
