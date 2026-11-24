@@ -16,7 +16,7 @@
 - 웹과 엑셀이 같이 쓰는 지표 정의: 통합본 8장
 - 서버 API와 DB: `docs/PRD_1_백엔드_v3.md`, `docs/설계서_1_백엔드_v2.pdf`
 - 웹 화면: `docs/설계서_2_프론트엔드_v3.pdf`
-- STT·분석 봇: `docs/설계서_3_GenAI_STT_v0.8.pdf`
+- STT·분석 봇: `docs/설계서_3_GenAI_STT_v0.9.pdf`
 - 엑셀 봇과 템플릿: `docs/설계서_4_RPA_v7.md`
 - 문서 목록과 버전: `docs/README.md`
 
