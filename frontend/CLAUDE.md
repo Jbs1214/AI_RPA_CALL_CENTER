@@ -22,6 +22,6 @@
 - 실패 코드는 한글 문구로 바꿔 보여 주고, 모르는 코드는 그대로 보여 준다.
 - 챗봇의 수정 제안은 사용자가 버튼을 눌렀을 때만 수정 API를 부른다. 적용된 조건(`query`)을 항상 보여 준다.
 - 화면은 웹과 모바일 폭 모두에서 보이게 만든다. 폭 기준은 1200px, 768px이고, 간격과 폭 값은 `src/styles/tokens.css`, 배치는 `src/styles/layout.css`에 둔다. 화면의 인라인 `style`보다 클래스와 props(`PageContainer`, `Section`, `ChartCard`)를 쓴다.
-- 화면 디자인은 `frontend/DESIGN.md`를 따른다. 테마는 다크 단색 하나이고(`src/theme/`), 그라데이션·그림자·네온·이모지를 쓰지 않는다. 색과 간격은 `tokens.css`의 변수로만 정하고, 화면 코드에 색 코드를 직접 쓰지 않는다. 챗봇(`features/chat/`)은 자기 변수(`--cb-*`)를 쓰고, `html`의 `data-theme="dark"`일 때 `chat.css`의 `[data-theme='dark'] .cb-root` 값이 적용된다.
+- 화면 디자인은 `frontend/DESIGN.md`를 따른다. 라이트와 다크 두 가지 테마를 지원한다. 기본은 라이트이고 헤더의 버튼으로 바꾼다(`src/theme/`). 그라데이션·패널 그림자·네온·이모지를 쓰지 않는다. 색과 간격은 `tokens.css`의 변수로만 정하고, 화면 코드에 색 코드를 직접 쓰지 않는다. 챗봇(`features/chat/`)은 자기 변수(`--cb-*`)를 쓰고, `html`의 `data-theme="dark"`일 때 `chat.css`의 `[data-theme='dark'] .cb-root` 값이 적용된다.
 - 화면 틀은 왼쪽 사이드바(`AppSidebar`), 위 헤더(`AppHeader`, 서버 상태는 `GET /health`), 본문 두 칸(`.workspace`)이다. 서버에 없는 값(대기 호, 봇 토글 등)은 화면에 만들어 넣지 않는다.
 - 만들지 않는 것: 로그인, 실시간 푸시(SSE·WebSocket).

@@ -30,8 +30,8 @@
   margin: 0;
   color: var(--color-text);
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  letter-spacing: -0.1px;
 }
 .panel__body {
   padding: var(--pad);
@@ -84,6 +84,39 @@
   color: var(--err-text);
 }
 
+/* 아이콘 버튼(Ghost): 투명 배경, 올리면 8% 오버레이, 포커스는 2px 바깥선 */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-sub);
+  cursor: pointer;
+}
+.icon-btn:hover {
+  background: var(--hover-bg);
+  color: var(--color-text);
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* 현재 쪽 번호는 채운 원색이 아니라 옅은 파랑 면 */
+.ant-pagination .ant-pagination-item-active {
+  border-color: transparent;
+  background: var(--accent-weak);
+}
+.ant-pagination .ant-pagination-item-active a {
+  color: var(--accent-strong);
+}
+
 /* 빈 상태: 빈 박스 대신 선 아이콘과 한 줄 안내 */
 .empty {
   display: flex;
@@ -130,17 +163,17 @@
   font-family: var(--font-num);
   font-size: 24px;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 /* 수치 색은 의미가 있을 때만(주의, 오류) */
 .kpi-card--warn .kpi-card__value {
-  color: var(--wait-text);
+  color: var(--wait-fg);
 }
 .kpi-card--danger .kpi-card__value {
-  color: var(--err-text);
+  color: var(--err-fg);
 }
 .kpi-tags {
   display: flex;
@@ -286,7 +319,7 @@
 }
 .call-card__who {
   margin-top: 2px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .call-card__summary {
   margin-top: 4px;

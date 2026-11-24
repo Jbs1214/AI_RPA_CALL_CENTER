@@ -20,9 +20,9 @@ import { useStats, type DateRange } from './useStats'
 
 const FONT = 11 // 차트가 작아서 글자도 조금 작게
 const TOP_RADIUS: [number, number, number, number] = [3, 3, 0, 0] // 막대 위쪽 모서리는 작게만 둥글린다
-const AGENT_COLORS = ['#60a5fa', '#fbbf24'] // 통화 건수, 후속조치
+const AGENT_COLORS = ['#4198f2', '#fbbd05'] // 통화 건수, 후속조치
 /** 막대 위로 올렸을 때 보이는 배경 강조(둥근 모서리) */
-const TOOLTIP_CURSOR = { fill: 'rgba(255, 255, 255, 0.04)', radius: 4 }
+const TOOLTIP_CURSOR = { fill: 'var(--hover-bg)', radius: 4 }
 const GRID = { vertical: false } as const
 
 /** 0은 숫자를 적지 않는다 */
@@ -145,7 +145,7 @@ export default function Charts({ range }: { range: DateRange }) {
               fill={CATEGORY_COLOR['불만']}
               radius={[0, 3, 3, 0]}
               maxBarSize={14}
-              background={{ fill: 'rgba(255, 255, 255, 0.05)', radius: 3 }}
+              background={{ fill: 'var(--hover-bg)', radius: 3 }}
             >
               <LabelList dataKey="complaint_count" position="right" fontSize={FONT} fontWeight={600} />
             </Bar>

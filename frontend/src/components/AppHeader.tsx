@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchHealth } from '../api/calls'
+import ThemeToggle from './ThemeToggle'
 
 /** 위쪽 얇은 헤더: 현재 위치와 서버 상태. 상태는 GET /health 의 실제 응답이다. */
 export default function AppHeader() {
@@ -21,10 +22,13 @@ export default function AppHeader() {
         <span className="topbar__sep">/</span>
         <b>통화 분석</b>
       </div>
-      <span className={`topbar__status topbar__status--${tone}`}>
-        <i className="dot" />
-        {text}
-      </span>
+      <div className="topbar__tools">
+        <span className={`topbar__status topbar__status--${tone}`}>
+          <i className="dot" />
+          {text}
+        </span>
+        <ThemeToggle />
+      </div>
     </header>
   )
 }
