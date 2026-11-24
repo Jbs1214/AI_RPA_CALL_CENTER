@@ -30,9 +30,10 @@ interface Props {
   acting: boolean
   onAction: (a: SuggestedAction) => void
   onPick: (text: string) => void // 질문 예시 칩을 눌렀을 때
+  onOpenCall: (callId: string) => void // 통화 카드를 눌렀을 때(상세 화면 열기)
 }
 
-export default function ChatResult({ response, done, actionKey, acting, onAction, onPick }: Props) {
+export default function ChatResult({ response, done, actionKey, acting, onAction, onPick, onOpenCall }: Props) {
   const { query, items, stats, suggested_actions: actions, mode, intent } = response
   const conditions = Object.entries(query)
 
@@ -77,7 +78,17 @@ export default function ChatResult({ response, done, actionKey, acting, onAction
       {items.map((c) => (
         <div
           key={c.call_id}
-          className="cb-card"
+          className="cb-card clickable"
+          role="button"
+          tabIndex={0}
+          title="눌러서 상세 보기"
+          onClick={() => onOpenCall(c.call_id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onOpenCall(c.call_id)
+            }
+          }}
           style={{ '--cb-accent': c.category ? CATEGORY_COLOR[c.category] : undefined } as CSSProperties}
         >
           <div className="cb-card-top">
@@ -95,7 +106,7 @@ export default function ChatResult({ response, done, actionKey, acting, onAction
             {formatKst(c.called_at)} · {c.agent_name}
             {c.customer_company ? ` · ${c.customer_company}` : ''}
           </div>
-          {c.customer_question && <div className="cb-card-text">{c.customer_question}</div>}
+          <div className="cb-card-link">상세 보기 ›</div>
         </div>
       ))}
       {intent !== 'detail' && response.total > items.length && items.length > 0 && (
