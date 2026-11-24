@@ -87,7 +87,7 @@ def upload_recording(request: Request, file: UploadFile = File(...), called_at: 
                     # 입력값 → 파일명 → 기존 행의 값 (못 읽었다고 기존 값을 '미확인'으로 덮지 않는다)
                     when = given_time or (parsed[0] if parsed else ex["called_at"])
                     agent = clean(agent_name) or (parsed[1] if parsed else ex["agent_name"])
-                    company = clean(customer_company) or (parsed[2] if parsed else ex["customer_company"])
+                    company = clean(customer_company) or (parsed[2] if parsed else ex["customer_company"] or "미확인")
                     call_id, old_rel = ex["call_id"], ex["audio_path"]
                     rel = audio_rel_path(call_id, original, datetime.now(KST))
                     retry_count = conn.execute(
@@ -99,7 +99,7 @@ def upload_recording(request: Request, file: UploadFile = File(...), called_at: 
                 else:
                     when = given_time or (parsed[0] if parsed else datetime.now(KST))
                     agent = clean(agent_name) or (parsed[1] if parsed else "미확인")
-                    company = clean(customer_company) or (parsed[2] if parsed else None)
+                    company = clean(customer_company) or (parsed[2] if parsed else "미확인")
                     call_id = conn.execute(NEXT_ID_SQL).fetchone()["call_id"]
                     rel = audio_rel_path(call_id, original, datetime.now(KST))
                     conn.execute(
