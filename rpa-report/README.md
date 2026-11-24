@@ -2,18 +2,18 @@
 
 담당: 주영
 
-Orchestrator 큐에서 "새 통화가 저장됐다"는 신호를 받아, 서버의 완료 통화 목록으로 4시트 엑셀(`콜센터_엑셀_최신.xlsx`)을 다시 만드는 UiPath 봇이다. 서버에 저장하지 않고 읽기만 한다.
+서버의 완료 통화 목록으로 4시트 엑셀(`콜센터_엑셀_최신.xlsx`)을 다시 만드는 UiPath 봇이다. Orchestrator 시간 트리거가 1분마다 시작한다. 서버에 저장하지 않고 읽기만 한다.
 
-- Orchestrator 프로세스 이름: `CallCenter_RPA_Report` (제안, 폴더 `Shared`)
-- 큐 이름: `CallCenter_Calls` (제안. 정해지면 ③에 알린다)
+- Orchestrator 프로세스 이름: `CallCenter_RPA_Report` (폴더 `Shared`)
+- 시작: 시간 트리거 1분. 직접 실행해도 된다. 큐는 쓰지 않는다(강사 피드백으로 뺐다, 11/24).
 
 ## 맡은 범위
 
 | 역할 정의서의 항목 | 이번 MVP |
 |---|---|
 | 엑셀 대시보드 자동 생성 | 한다. 4시트 엑셀 `콜센터_엑셀_최신.xlsx` |
-| 큐(Queue)와 예외 처리 | 한다. 큐 신호 처리, 재시도, 실패 시 기존 파일 유지 |
-| Orchestrator 세팅 | 한다. 큐, Asset, 외부 앱, 무인 실행 |
+| 큐(Queue)와 예외 처리 | 예외 처리를 한다: 재시도, 실패 시 기존 파일 유지, 실패한 Job 표시. 큐는 강사 피드백(11/24)으로 뺐다. |
+| Orchestrator 세팅 | 한다. Asset, 외부 앱, 무인 실행, 시간 트리거 |
 | 레거시 시스템(CRM/ERP) 입력 자동화 | 하지 않는다. 대상 시스템과 형식이 정해지지 않아 확장 계획으로 설명한다(통합본 6.4의 FR-R09). |
 | 정형 보고서 자동 생성 | 하지 않는다. 위와 같다. |
 
@@ -21,8 +21,8 @@ Orchestrator 큐에서 "새 통화가 저장됐다"는 신호를 받아, 서버�
 
 ## 기준 문서
 
-- `docs/설계서_4_RPA_v6.md`: 처리 흐름, 엑셀 템플릿 구조, 통화 대장 쓰기 규칙, 예외 처리, 시험
-- `docs/제품요구사항정의서_v1.9.md`: 6.4(요구사항), 7.3(큐 항목), 7.5(엑셀 12열), 8장(지표 정의)
+- `docs/설계서_4_RPA_v7.md`: 처리 흐름, 엑셀 템플릿 구조, 통화 대장 쓰기 규칙, 예외 처리, 시험
+- `docs/제품요구사항정의서_v2.0.md`: 6.4(요구사항), 7.5(엑셀 12열), 8장(지표 정의)
 
 ## 폴더
 
@@ -34,13 +34,12 @@ rpa-report/
   testdata/
     mock_calls_seed14_v1.json     서버 목록 응답 모양의 가짜 데이터 14건
     mock_calls_edge_v1.json       경계 사례 6건
-    queue_items_2_v1.csv          큐 화면의 Upload Items로 올리는 시험용 큐 항목 2건
   tools/
     check_report.ps1              가짜 JSON으로 build_report.ps1을 돌리고 결과 엑셀을 기대값과 비교하는 스크립트
     check_template.py             봇처럼 통화 대장만 다시 쓰고 요약 시트의 값을 확인하는 스크립트
     build_template.py             원본에서 템플릿을 다시 만드는 스크립트
     make_mock.py                  원본의 14건으로 가짜 JSON을 만드는 스크립트
-  project.json, Main.xaml         UiPath 프로젝트. 큐, Asset, 스크립트 실행을 맡는다.
+  project.json, Main.xaml         UiPath 프로젝트. Asset 읽기, 스크립트 실행, 결과 확인을 맡는다.
   build_report.ps1                서버 목록을 받아 통화 대장을 다시 쓰고 엑셀을 저장하는 스크립트
   config.example.json             설정값 예시. config.json으로 복사해서 쓴다.
 ```
@@ -49,7 +48,7 @@ rpa-report/
 
 | 부분 | 하는 일 |
 |---|---|
-| `Main.xaml` (UiPath) | 큐의 새 항목을 모두 꺼내고, Asset을 읽어 `build_report.ps1`을 실행한 뒤, 결과에 따라 큐 항목을 성공이나 실패로 표시한다. |
+| `Main.xaml` (UiPath) | Asset에서 서버 주소와 API 키를 읽어 `build_report.ps1`을 실행하고, 스크립트가 실패하면 예외를 던져 Job을 실패(Faulted)로 끝낸다. |
 | `build_report.ps1` | 서버 목록을 끝까지 받아(재시도 포함) 통화일시 순으로 정렬하고, 템플릿 복사본의 통화 대장을 다시 써서 저장한다. |
 
 엑셀을 쓰는 일을 스크립트로 둔 것은 UiPath Studio가 없는 PC에서도 가짜 JSON으로 끝까지 시험할 수 있어서다. 스크립트도 Excel 프로그램으로 템플릿을 열어 쓰므로 차트와 슬라이서가 남는다. Windows PowerShell 5.1과 Excel만 있으면 된다.
@@ -65,15 +64,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File build_report.ps1 -BaseUrl ht
 - 출력 파일이 열려 있어 못 쓰면 `콜센터_엑셀_최신_날짜시각.xlsx`로 저장하고 경고를 남긴다.
 - 로그에는 건수, 관리번호, 경고만 나온다. 한글이 깨지지 않게 스크립트 본문과 로그 문구는 영문이다.
 
-## Main.xaml 만드는 순서
+## Main.xaml의 구성
 
-UiPath 프로젝트(`project.json`, `Main.xaml`)는 이 폴더에 있다. Studio에서 `project.json`을 열면 된다. `Main.xaml`은 아래 순서로 되어 있다.
+UiPath 프로젝트(`project.json`, `Main.xaml`)는 이 폴더에 있다. Studio에서 `project.json`을 열면 된다. 인자는 없다. 시퀀스 3개로 되어 있고, 시퀀스마다 쓰는 파일과 하는 일을 주석으로 달았다.
 
-1. 인자 `in_ForceRefresh`(Boolean, 기본값 False)를 만든다.
-2. Get Asset으로 `BACKEND_BASE_URL`, `BACKEND_API_KEY`를 읽는다. `config.json`을 Read Text File로 읽어 `Newtonsoft.Json.Linq.JObject.Parse(내용)("QueueName").ToString`으로 큐 이름을 얻는다.
-3. Get Transaction Item을 결과가 `Nothing`이 될 때까지 되풀이한다. 항목마다 `Reference`와 `SpecificContent("status")`를 로그에 남기고 목록(`List(Of QueueItem)`)에 담는다.
-4. 목록이 비었고 `in_ForceRefresh`가 False면 "할 일 없음"을 로그에 남기고 끝낸다.
-5. Invoke Code(VB)로 스크립트를 실행한다. 인자는 `in_ScriptPath`(In, String), `in_Args`(In, String), `out_ExitCode`(Out, Int32), `out_Output`(Out, String)이고 `in_ScriptPath`는 프로젝트 폴더의 `build_report.ps1` 전체 경로이고, `in_Args`는 `"-BaseUrl ""서버주소"" -ApiKey ""키"""`다. 스크립트를 실행하지 못해도 종료 코드 1로 돌려 꺼낸 큐 항목이 실패로 표시되게 한다.
+| 시퀀스 | 활동 | 하는 일 |
+|---|---|---|
+| 1. 서버 주소 읽기 | Get Asset 2개 | `BACKEND_BASE_URL`, `BACKEND_API_KEY`를 읽는다. |
+| 2. 엑셀 다시 만들기 | Invoke Code(VB) | 프로젝트 폴더의 `build_report.ps1`을 실행하고 끝날 때까지 기다린다. |
+| 3. 결과 확인 | Log Message, If, Throw | 스크립트의 로그를 남긴다. 종료 코드가 0이 아니면 예외를 던진다. |
+
+Invoke Code의 인자는 `in_ScriptPath`(In, String), `in_Args`(In, String), `out_ExitCode`(Out, Int32), `out_Output`(Out, String)이다. `in_ScriptPath`는 프로젝트 폴더의 `build_report.ps1` 전체 경로이고, `in_Args`는 `"-BaseUrl ""서버주소"" -ApiKey ""키"""`다. 스크립트를 시작하지 못해도 종료 코드 1로 돌려준다.
 
    ```vb
    Try
@@ -92,9 +93,23 @@ UiPath 프로젝트(`project.json`, `Main.xaml`)는 이 폴더에 있다. Studio
    End Try
    ```
 
-6. `out_Output`을 로그에 남긴다. `out_ExitCode`가 0이면 담아 둔 항목을 모두 Set Transaction Status로 Successful, 아니면 모두 Failed(Application)로 표시한다.
+확인한 것과 아직 하지 않은 것:
 
-5번의 VB 코드는 Studio 밖에서 컴파일해 가짜 JSON으로 성공(종료 코드 0)을, 없는 스크립트 경로로 실패(0이 아닌 값)를 받는 것까지 확인했다. `Main.xaml`은 Studio의 분석기(`UiPath.Studio.CommandLine.exe analyze -p project.json`)에서 오류 없이 읽힌다. Asset과 큐를 쓰는 실제 실행은 Studio에서 확인해야 한다. Studio에서 실행할 때는 Orchestrator 폴더를 `Shared`로 고른다.
+- Invoke Code의 VB 코드는 Studio 밖에서 컴파일해 가짜 JSON으로 성공(종료 코드 0)을, 없는 스크립트 경로로 실패(0이 아닌 값)를 받았다.
+- 큐를 뺀 `Main.xaml`은 Studio의 분석기(`UiPath.Studio.CommandLine.exe analyze -p project.json`)에서 오류 0이고, 게시(컴파일)가 된다.
+- Studio 실행, 올린 프로세스, 시간 트리거로는 아직 돌리지 않았다(11/24). Studio에서 실행할 때는 Orchestrator 폴더를 `Shared`로 고른다.
+
+## 다시 게시할 때
+
+게시하면 프로젝트 폴더의 파일이 패키지에 담겨 Orchestrator로 올라간다. 아래를 지킨다.
+
+- `config.json`의 `OutputPath`는 프로젝트 폴더 밖의 전체 경로로 적는다. 상대 경로로 두면 엑셀이 패키지 설치 폴더 안에 저장되어 찾을 수 없다. 프로젝트 폴더 안에 두면 결과 엑셀이 패키지에 들어간다.
+- 패키지에서 뺄 파일은 `project.json`의 `ignoredFiles`에 하나씩 적는다. 폴더 이름과 와일드카드는 듣지 않는다. `testdata`나 `tools`에 파일을 더하면 여기에도 적는다.
+- Studio가 프로젝트를 열어 둔 채로 `project.json`이 밖에서 바뀌었으면, 프로젝트를 닫았다가 다시 연 뒤 게시한다. 게시 창의 현재 버전이 `project.json`과 같은지 본다.
+- 게시한 뒤 Orchestrator `Shared`의 프로세스를 새 버전으로 올린다.
+- 봇 PC는 켜고 로그인해 둔다. 사용자 방식 로봇이라 로그인되어 있어야 Job이 돈다.
+- 무인 실행 자리가 1개다. ③의 Job 시작을 시험할 때는 ④의 시간 트리거를 잠깐 끈다.
+- 결과 엑셀을 열어 두면 봇이 덮어쓰지 못해 1분마다 날짜시각이 붙은 파일이 생긴다. 볼 때는 복사본을 연다.
 
 ## 서버 없이 시험하기
 
