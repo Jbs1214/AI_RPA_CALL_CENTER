@@ -11,9 +11,10 @@ export const EXAMPLES = [
 export const WELCOME =
   '안녕하세요! 콜센터 AI 비서입니다.\n통화 기록을 조회하고 통계를 알려 드려요. 아래 질문을 눌러 보거나 직접 물어보세요.'
 
-/** 인사·감사 같은 잡담은 서버에 보내지 않고 화면에서 바로 답한다 */
-export const GREETING_PATTERN = /^\s*(안녕|하이|헬로|hello|hi)\S{0,8}\s*$/i
-export const THANKS_PATTERN = /^\s*(고마워|고맙|감사|땡큐|수고)\S{0,8}\s*$/i
+/** 인사·감사 같은 잡담은 서버에 보내지 않고 화면에서 바로 답한다.
+ *  "하이닉스", "감사보고서" 같은 검색어가 인사로 오해되지 않도록 정해진 표현만 인사로 본다. */
+export const GREETING_PATTERN = /^\s*(안녕|안녕하세요|안녕하십니까|안뇽|하이|헬로|hello|hi|hey)\s*[!.~?ㅎㅋ]*\s*$/i
+export const THANKS_PATTERN = /^\s*(고마워|고마워요|고맙습니다|감사해|감사해요|감사합니다|감사드립니다|땡큐|수고하셨어요|수고하셨습니다|수고했어|수고했어요)\s*[!.~ㅎㅋ]*\s*$/i
 export const GREETING_REPLY = '안녕하세요! 궁금한 통화 기록이 있으면 편하게 물어보세요.'
 export const THANKS_REPLY = '도움이 되었다니 기뻐요! 더 궁금한 게 있으면 물어보세요.'
 
