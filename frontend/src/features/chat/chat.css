@@ -34,6 +34,16 @@
   --cb-success-line: #b7e3c7;
   --cb-success-text: #1f7a45;
 
+  /* 다크에서 값이 달라지는 색 */
+  --cb-header-bg: linear-gradient(135deg, var(--cb-blue) 0%, var(--cb-blue-light) 100%);
+  --cb-accent-text: #1428a0; /* 칩, 태그, 제안 버튼의 글자·테두리 색 */
+  --cb-bubble-bot: #fff;
+  --cb-date-bg: #e9ebef;
+  --cb-bar-bg: #eef0f4;
+  --cb-disabled-bg: #f3f4f6;
+  --cb-ai-bg: #f1e8fb;
+  --cb-ai-text: #7a3fc0;
+
   /* 모양 */
   --cb-radius-panel: 20px;
   --cb-radius-card: 10px;
@@ -44,6 +54,38 @@
   --cb-ease: 0.15s;
 
   font-family: inherit;
+}
+
+/* 다크: html 의 data-theme="dark" 일 때 변수만 바꾼다(스위치는 src/theme/) */
+[data-theme='dark'] .cb-root {
+  color-scheme: dark; /* 스크롤바, 입력창 기본색도 어둡게 */
+
+  --cb-blue: #4a5be0;
+  --cb-blue-dark: #3a49c0;
+  --cb-blue-soft: rgba(108, 123, 255, 0.22);
+  --cb-bg: #0b1030;
+  --cb-surface: #121842;
+  --cb-line: rgba(140, 170, 255, 0.22);
+  --cb-text: #e8ecff;
+  --cb-sub: #aab3d6;
+  --cb-disabled: rgba(255, 255, 255, 0.2);
+  --cb-error-bg: rgba(217, 83, 79, 0.2);
+  --cb-error-text: #ff9a98;
+  --cb-success-bg: rgba(90, 161, 127, 0.2);
+  --cb-success-line: rgba(90, 161, 127, 0.5);
+  --cb-success-text: #7be0a8;
+
+  --cb-header-bg: linear-gradient(135deg, #060a3a 0%, #1428a0 55%, #5a3bd6 100%);
+  --cb-accent-text: #9aa6ff;
+  --cb-bubble-bot: #1c2455;
+  --cb-date-bg: rgba(255, 255, 255, 0.1);
+  --cb-bar-bg: rgba(255, 255, 255, 0.12);
+  --cb-disabled-bg: rgba(255, 255, 255, 0.06);
+  --cb-ai-bg: rgba(130, 70, 255, 0.28);
+  --cb-ai-text: #cbb0ff;
+}
+[data-theme='dark'] .cb-panel {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--cb-line);
 }
 
 /* 2. 열기 버튼 --------------------------------------------------------- */
@@ -89,6 +131,7 @@
   overflow: hidden;
   border-radius: var(--cb-radius-panel);
   background: var(--cb-surface);
+  color: var(--cb-text);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
   transform-origin: bottom right;
   animation: cb-pop 0.2s ease-out;
@@ -125,7 +168,7 @@
   align-items: center;
   gap: 12px;
   padding: 16px 14px 16px 18px;
-  background: linear-gradient(135deg, var(--cb-blue) 0%, var(--cb-blue-light) 100%);
+  background: var(--cb-header-bg);
   color: #fff;
   cursor: grab; /* 잡아서 옮긴다 */
   touch-action: none;
@@ -217,7 +260,7 @@
   align-self: center;
   padding: 2px 10px;
   border-radius: 10px;
-  background: #e9ebef;
+  background: var(--cb-date-bg);
   color: var(--cb-sub);
   font-size: 11px;
 }
@@ -245,7 +288,7 @@
 .cb-bubble {
   padding: 10px 14px;
   border-radius: 4px var(--cb-radius-bubble) var(--cb-radius-bubble) var(--cb-radius-bubble);
-  background: var(--cb-surface);
+  background: var(--cb-bubble-bot);
   color: var(--cb-text);
   font-size: 14px;
   line-height: 1.55;
@@ -303,10 +346,10 @@
 /* 6. 빠른 질문 칩 ------------------------------------------------------ */
 .cb-chip {
   padding: 6px 12px;
-  border: 1px solid var(--cb-blue);
+  border: 1px solid var(--cb-accent-text);
   border-radius: 16px;
   background: var(--cb-surface);
-  color: var(--cb-blue);
+  color: var(--cb-accent-text);
   font-size: 13px;
   line-height: 1.3;
   text-align: left;
@@ -429,12 +472,12 @@
   padding: 1px 8px;
   border-radius: 10px;
   background: var(--cb-blue-soft);
-  color: var(--cb-blue);
+  color: var(--cb-accent-text);
   font-size: 12px;
 }
 .cb-tag.ai {
-  background: #f1e8fb;
-  color: #7a3fc0;
+  background: var(--cb-ai-bg);
+  color: var(--cb-ai-text);
 }
 
 /* 통화 카드: 왼쪽 띠 색은 통화 유형 색(--cb-accent, 코드에서 지정) */
@@ -511,7 +554,7 @@
   height: 8px;
   overflow: hidden;
   border-radius: 4px;
-  background: #eef0f4;
+  background: var(--cb-bar-bg);
 }
 .cb-bar i {
   display: block;
@@ -524,10 +567,10 @@
 .cb-action {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--cb-blue);
+  border: 1px solid var(--cb-accent-text);
   border-radius: var(--cb-radius-card);
   background: var(--cb-surface);
-  color: var(--cb-blue);
+  color: var(--cb-accent-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -539,7 +582,7 @@
 }
 .cb-action:disabled {
   border-color: var(--cb-line);
-  background: #f3f4f6;
+  background: var(--cb-disabled-bg);
   color: var(--cb-sub);
   cursor: default;
 }
