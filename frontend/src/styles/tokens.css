@@ -1,6 +1,6 @@
 /* ==========================================================================
    디자인 값 (변수) — 규칙은 frontend/DESIGN.md
-   - 값은 Vapor 디자인 시스템의 공개 배포 토큰(라이트·다크)을 옮긴 것이다.
+   - 값은 Ridi 디자인 토큰(라이트·다크)에서 가져왔다. 무채색 위에 하늘색 파랑 한 가지만 쓴다.
    - 라이트가 기본이고, <html data-theme="dark"> 일 때 아래 [data-theme='dark'] 값이 덮어쓴다.
    - 색은 여기 변수로만 정하고 화면 코드에 직접 쓰지 않는다.
    - 챗봇(features/chat/chat.css)은 자기 변수(--cb-*)를 따로 쓴다.
@@ -9,7 +9,7 @@
   /* 폭과 여백 */
   --sidebar-w: 220px;
   --header-h: 48px;
-  --page-max: 1680px; /* 본문 최대 폭 */
+  --page-max: 1280px; /* 본문 최대 폭. 넓은 화면에서는 가운데에 모인다 */
   --page-gutter: 24px; /* 본문 좌우 여백 */
   --gap: 16px; /* 영역 사이 간격 */
   --gap-sm: 12px; /* 작은 영역 사이 간격 */
@@ -19,108 +19,117 @@
   --chart-h: 200px;
   --drawer-w: 480px;
 
-  /* 모양: 기본은 8px 하나 */
-  --radius: 8px; /* 패널 */
-  --radius-md: 8px; /* 버튼, 입력창 */
-  --radius-sm: 8px; /* 뱃지, 태그 */
+  /* 모양: 패널·띠·지표 12px, 버튼·입력창·안쪽 칸 8px, 뱃지 6px, 알약 99px. 한 화면에서 바깥은 12, 안쪽은 8로 맞춘다 */
+  --radius: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
 
-  /* 글꼴: 화면은 Pretendard, 숫자는 Inter(tabular-nums) */
-  --font-ui: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-num: 'Inter Variable', Inter, 'Pretendard Variable', Pretendard, sans-serif;
+  /* 모션 */
+  --motion: 200ms ease;
+
+  /* 글꼴: Pretendard 하나. 숫자도 같은 글꼴, tabular-nums 로 자리를 맞춘다 */
+  --font-ui: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-num: var(--font-ui);
 
   /* 색: 바탕과 글자 (라이트) */
-  --color-bg: #f4f4f4; /* 페이지 바탕: gray-050 */
+  --color-bg: #f5f5f5; /* 페이지 바탕: neutral-50 */
   --color-surface: #ffffff; /* 패널, 사이드바 */
-  --color-elevated: #fafafa; /* 표 머리, 눌린 면: gray-025 */
-  --color-line: #e1e1e1; /* 1px 보더: gray-100 */
-  --color-line-strong: #c6c6c6; /* gray-200 */
-  --color-text: #262626; /* gray-900 */
-  --color-text-sub: #4c4c4c; /* gray-700 */
-  --color-muted: #767676; /* gray-500 */
-  --color-accent: #2a72e5; /* blue-500 */
-  --color-accent-hover: #0957c8; /* blue-600 */
-  --accent-weak: #c6e6ff; /* blue-100: 현재 쪽 번호 등 옅은 면 */
-  --accent-strong: #0043b3; /* blue-700 */
-  --color-danger: #bb1225; /* red-600 */
-  --hover-bg: rgba(38, 38, 38, 0.08); /* 올렸을 때 얹는 오버레이 8% */
+  --color-elevated: #fafafa; /* 표 머리, 눌린 면: neutral-25 */
+  --color-line: #e6e6e6; /* 1px 보더: neutral-100 */
+  --color-line-strong: #cccccc; /* neutral-200 */
+  --color-text: #141414; /* neutral-900 */
+  --color-text-sub: #787878; /* neutral-400 */
+  --color-muted: #a5a5a5; /* neutral-300 */
+  --color-accent: #1e9eff; /* 리디 블루 */
+  --color-accent-hover: #1c90e8; /* blue-600 */
+  --on-accent: #ffffff; /* 파랑 위의 글자 */
+  --accent-weak: #e9f5ff; /* blue-50 */
+  --accent-strong: #1e9eff;
+  --color-danger: #dc3232;
+  --hover-bg: rgba(0, 0, 0, 0.04);
 
   /* 색: 상태 뱃지(옅은 면 + 진한 글자) */
-  --ok-text: #00583a;
-  --ok-bg: #bbecd7;
-  --ok-line: #bbecd7;
-  --wait-text: #9e0000;
-  --wait-bg: #ffd9c8;
-  --wait-line: #ffd9c8;
-  --err-text: #9e0006;
-  --err-bg: #ffd8d7;
-  --err-line: #ffd8d7;
+  --ok-text: #288852; /* green-700 */
+  --ok-bg: #ebf9f1; /* green-50 */
+  --ok-line: #ebf9f1;
+  --wait-text: #b24e00; /* orange-700 */
+  --wait-bg: #fff1e6; /* orange-50 */
+  --wait-line: #fff1e6;
+  --err-text: #dc3232; /* red-500 */
+  --err-bg: #fcebeb; /* red-50 */
+  --err-line: #fcebeb;
   /* 지표 수치처럼 글자만 칠할 때 */
-  --ok-fg: #006c4b;
-  --wait-fg: #b72100;
-  --err-fg: #bb1225;
-  /* 서버 상태 점 */
-  --state-ok: #058765;
+  --ok-fg: #288852;
+  --wait-fg: #e46400; /* orange-600 */
+  --err-fg: #dc3232;
+  /* 서버 상태 점 등 */
+  --state-ok: #39bf74;
 
   /* 예전 이름(다른 파일이 쓰는 것)을 새 값에 이어 둔다 */
   --glass-bg: var(--color-surface);
   --glass-border: var(--color-line);
 
   /* 색: 차트 */
-  --color-grid: #ececec;
-  --color-axis: #c6c6c6;
+  --color-grid: #f0f0f0; /* emotion grey200 */
+  --color-axis: #cccccc;
   --tooltip-bg: #ffffff;
-  --shadow-lift: 0 4px 10px rgba(0, 0, 0, 0.2); /* 떠 있는 면(말풍선, 팝업)만 */
+  --shadow-lift: 5px 5px 10px rgba(0, 0, 0, 0.08); /* 떠 있는 면(말풍선, 팝업)만 */
 
   /* 색: 목록 행과 말풍선 */
-  --row-review-bg: #fff7e7;
-  --row-failed-bg: #fff5f4;
-  --row-failed-text: #bb1225;
-  --bubble-agent: #f4f4f4;
-  --bubble-customer: #e3effd;
+  --row-review-bg: #fffbeb; /* yellow-50 */
+  --row-failed-bg: #fcebeb; /* red-50 */
+  --row-failed-text: #dc3232;
+  --bubble-agent: #f5f5f5;
+  --bubble-customer: #e9f5ff;
   --upload-bg: #fafafa;
+  --band-bg: #eaf4ff; /* 업로드 띠 바탕: 옅은 파랑 */
+  --band-line: #a9d3fb; /* 업로드 띠 테두리(blue-100~200 사이) */
 }
 
 /* 다크 */
 [data-theme='dark'] {
-  --color-bg: #1f1f1f; /* dark-gray-025 */
-  --color-surface: #282828; /* dark-gray-050 */
-  --color-elevated: #363636; /* dark-gray-100 */
-  --color-line: #474747; /* dark-gray-200 */
-  --color-line-strong: #606060; /* dark-gray-300 */
-  --color-text: #fafafa;
-  --color-text-sub: #bebebe;
-  --color-muted: #898989;
-  --color-accent: #368aed; /* dark-blue-500 */
-  --color-accent-hover: #56acf9;
-  --accent-weak: #002898;
-  --accent-strong: #7bc6ff;
-  --color-danger: #fd8283;
-  --hover-bg: rgba(250, 250, 250, 0.08);
+  --color-bg: #141414; /* neutral-900 */
+  --color-surface: #202020; /* neutral-800 */
+  --color-elevated: #2c2c2c; /* neutral-750 */
+  --color-line: #373737; /* neutral-700 */
+  --color-line-strong: #505050; /* neutral-600 */
+  --color-text: #f5f5f5; /* neutral-50 */
+  --color-text-sub: #a5a5a5; /* 글자가 흐려지지 않게 neutral-300 (원본은 neutral-500) */
+  --color-muted: #787878; /* neutral-400 (원본은 neutral-600) */
+  --color-accent: #1496e6; /* 다크의 리디 블루 */
+  --color-accent-hover: #1e9eff;
+  --accent-weak: #11578c; /* blue-800 */
+  --accent-strong: #69beff; /* blue-300 */
+  --color-danger: #e35b5b;
+  --hover-bg: rgba(255, 255, 255, 0.08);
 
-  --ok-text: #5dd3aa;
-  --ok-bg: #003f23;
-  --ok-line: #003f23;
-  --wait-text: #fbac88;
-  --wait-bg: #750000;
-  --wait-line: #750000;
-  --err-text: #ffa7a6;
-  --err-bg: #750000;
-  --err-line: #750000;
-  --ok-fg: #46b993;
-  --wait-fg: #f58a56;
-  --err-fg: #fd8283;
-  --state-ok: #46b993;
+  --ok-text: #61cc90; /* green-400 */
+  --ok-bg: #1f6940; /* green-800 */
+  --ok-line: #1f6940;
+  --wait-text: #fc9e54; /* orange-300 */
+  --wait-bg: #8a3d00; /* orange-800 */
+  --wait-line: #8a3d00;
+  --err-text: #efa1a1; /* red-200 */
+  --err-bg: #791c1c; /* red-800 */
+  --err-line: #791c1c;
+  --ok-fg: #61cc90;
+  --wait-fg: #fc9e54;
+  --err-fg: #e87676; /* red-300 */
+  --state-ok: #61cc90;
 
-  --color-grid: rgba(255, 255, 255, 0.08);
-  --color-axis: #606060;
-  --tooltip-bg: #363636;
+  --color-grid: #2c2c2c;
+  --color-axis: #505050;
+  --tooltip-bg: #2c2c2c;
+  --shadow-lift: 5px 5px 10px rgba(0, 0, 0, 0.4);
 
-  --row-review-bg: rgba(244, 180, 2, 0.1);
-  --row-failed-bg: rgba(241, 79, 90, 0.12);
-  --row-failed-text: #fd8283;
-  --bubble-agent: #363636;
-  --bubble-customer: rgba(54, 138, 237, 0.22);
-  --upload-bg: #232323;
+  --row-review-bg: rgba(255, 210, 51, 0.1);
+  --row-failed-bg: rgba(227, 91, 91, 0.14);
+  --row-failed-text: #e87676;
+  --bubble-agent: #2c2c2c;
+  --bubble-customer: #11578c;
+  --upload-bg: #1b1b1b; /* neutral-850 */
+  --band-bg: #1a2836;
+  --band-line: #2f5173;
 }
 
 /* 폭이 좁으면 여백을 줄인다 */
