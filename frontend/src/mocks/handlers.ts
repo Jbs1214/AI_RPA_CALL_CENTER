@@ -104,5 +104,26 @@ export const handlers = [
     calls = [c, ...calls]
     return HttpResponse.json(toListItem(c), { status: 201 })
   }),
+  http.post('*/api/chat', async ({ request }) => {
+    const { message } = (await request.json()) as { message: string }
+    const done = calls.filter((c) => c.status === 'DONE')
+    const query: Record<string, string | boolean> = {}
+    let list = done
+    for (const cat of CATEGORIES) if (message.includes(cat)) { query.category = cat; list = list.filter((c) => c.category === cat) }
+    if (message.includes('후속')) { query.follow_up = true; list = list.filter((c) => c.follow_up_needed) }
+    if (message.includes('검토')) { query.needs_review = true; list = list.filter((c) => c.needs_review) }
+    if (!Object.keys(query).length && !message.includes('전체') && !message.includes('담당자별')) {
+      return HttpResponse.json({ reply: '질문을 이해하지 못했습니다. 예: 불만 중 후속조치 필요한 통화 보여줘', intent: 'help', mode: 'rule', query: {}, total: 0, items: [], stats: null, suggested_actions: [] })
+    }
+    const items = list.slice(0, 5).map(toListItem)
+    if (message.includes('담당자별')) {
+      return HttpResponse.json({ reply: `전체 통화는 ${done.length}건입니다.`, intent: 'stats', mode: 'rule', query: {}, total: done.length, items: [], stats: { by_agent: makeStats().by_agent }, suggested_actions: [] })
+    }
+    const action = message.includes('처리')
+    return HttpResponse.json({
+      reply: `${list.length}건입니다.`, intent: action ? 'action' : 'list', mode: 'rule', query, total: list.length, items, stats: null,
+      suggested_actions: action ? items.map((it) => ({ label: `확인 완료 처리: ${it.call_id}`, method: 'PATCH', path: `/api/calls/${it.call_id}`, body: { needs_review: false } })) : [],
+    })
+  }),
   http.get('*/health', () => HttpResponse.json({ status: 'ok', orchestrator: { enabled: false } })),
 ]
