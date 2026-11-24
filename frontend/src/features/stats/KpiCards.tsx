@@ -18,7 +18,10 @@ interface Item {
 
 const ICON = { size: 14, strokeWidth: 1.5 }
 
-/** 지표 6칸을 한 패널 안에 붙여 보여 준다. 칸 사이는 1px 선이다. */
+/**
+ * 지표 6칸을 한 패널 안에 붙여 보여 준다. 칸 사이는 1px 선이다.
+ * 수치는 기본이 글자색이고, 사람이 처리해야 하는 것(후속조치 필요, AI 결과 검토 필요)이 1건 이상일 때만 빨갛게 한다.
+ */
 export default function KpiCards({ range }: { range: DateRange }) {
   const { data, error, isLoading } = useStats(range)
   // 불만 통화 중 후속조치가 필요한 건수(엑셀 카드 아래 줄). 목록 API 의 total 로 센다
@@ -46,16 +49,16 @@ export default function KpiCards({ range }: { range: DateRange }) {
   const k = computeKpi(data)
   const items: Item[] = [
     { title: '분석된 통화', value: k.analyzed, sub: '완료 통화 기준', icon: <PhoneCall {...ICON} />, tone: 'neutral' },
-    { title: '후속조치 필요', value: k.followUp, sub: `전체의 ${k.percentOf(k.followUp)}%`, icon: <ClipboardCheck {...ICON} />, tone: 'warn' },
-    { title: 'AI 결과 검토 필요', value: k.needsReview, sub: `전체의 ${k.percentOf(k.needsReview)}%`, icon: <Eye {...ICON} />, tone: 'warn' },
+    { title: '후속조치 필요', value: k.followUp, sub: `전체의 ${k.percentOf(k.followUp)}%`, icon: <ClipboardCheck {...ICON} />, tone: k.followUp > 0 ? 'danger' : 'neutral' },
+    { title: 'AI 결과 검토 필요', value: k.needsReview, sub: `전체의 ${k.percentOf(k.needsReview)}%`, icon: <Eye {...ICON} />, tone: k.needsReview > 0 ? 'danger' : 'neutral' },
     {
       title: '불만 통화',
       value: k.complaint,
       sub: complaintFollowUp === undefined ? undefined : `후속조치 ${complaintFollowUp}건`,
       icon: <AlertTriangle {...ICON} />,
-      tone: 'danger',
+      tone: 'neutral',
     },
-    { title: '불만 비율', value: `${k.complaintRatio}%`, sub: `${k.complaint}건 / ${k.analyzed}건`, icon: <Percent {...ICON} />, tone: 'danger' },
+    { title: '불만 비율', value: `${k.complaintRatio}%`, sub: `${k.complaint}건 / ${k.analyzed}건`, icon: <Percent {...ICON} />, tone: 'neutral' },
     { title: '가장 많은 유형', value: k.topCategory, sub: `${k.topCount}건`, icon: <Tag {...ICON} />, tone: 'neutral' },
   ]
 
