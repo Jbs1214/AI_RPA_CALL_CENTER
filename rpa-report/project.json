@@ -10,7 +10,7 @@
   "entitiesStores": [],
   "schemaVersion": "4.1",
   "studioVersion": "26.10.0.0",
-  "projectVersion": "1.0.1",
+  "projectVersion": "1.0.4",
   "runtimeOptions": {
     "autoDispose": false,
     "netFrameworkLazyLoading": false,
@@ -36,7 +36,22 @@
       "privateWorkflows": []
     },
     "processOptions": {
-      "ignoredFiles": []
+      "ignoredFiles": [
+        "output\\콜센터_엑셀_최신.xlsx",
+        "testdata\\mock_calls_edge_v1.json",
+        "testdata\\mock_calls_seed14_v1.json",
+        "testdata\\queue_items_2_v1.csv",
+        "tools\\build_template.py",
+        "tools\\check_report.ps1",
+        "tools\\check_template.py",
+        "tools\\make_mock.py",
+        "HANDOFF.md",
+        "CLAUDE.md",
+        "README.md",
+        "config.example.json",
+        ".gitignore",
+        "templates\\콜센터_엑셀_최종본_MVP.xlsx"
+      ]
     },
     "fileInfoCollection": [],
     "saveToCloud": false
