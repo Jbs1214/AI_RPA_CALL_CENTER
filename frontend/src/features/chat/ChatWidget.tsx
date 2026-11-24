@@ -82,6 +82,7 @@ export default function ChatWidget() {
                     actionKey={actionKey}
                     acting={chat.isActing}
                     onAction={chat.runAction}
+                    onPick={submit}
                   />
                 )}
               </MessageRow>

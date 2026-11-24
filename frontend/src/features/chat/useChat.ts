@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { askChat, runSuggestedAction } from '../../api/chat'
 import { formatKst } from '../../lib/date'
 import type { ChatResponse, ChatTurn, SuggestedAction } from '../../types/Chat'
-import { HISTORY_LIMIT } from './constants'
+import { GREETING_PATTERN, GREETING_REPLY, HELP_REPLY, HISTORY_LIMIT, THANKS_PATTERN, THANKS_REPLY } from './constants'
 
 export interface Message {
   id: number
@@ -34,7 +34,8 @@ export function useChat() {
 
   const ask = useMutation({
     mutationFn: askChat,
-    onSuccess: (res) => addMessage({ role: 'assistant', text: res.reply, response: res }),
+    onSuccess: (res) =>
+      addMessage({ role: 'assistant', text: res.intent === 'help' ? HELP_REPLY : res.reply, response: res }),
     onError: addError,
   })
 
@@ -54,6 +55,13 @@ export function useChat() {
   const send = (raw: string): boolean => {
     const message = raw.trim()
     if (!message || ask.isPending) return false
+    // 인사·감사는 서버를 부르지 않고 바로 답한다
+    const smallTalk = GREETING_PATTERN.test(message) ? GREETING_REPLY : THANKS_PATTERN.test(message) ? THANKS_REPLY : null
+    if (smallTalk) {
+      addMessage({ role: 'user', text: message })
+      addMessage({ role: 'assistant', text: smallTalk })
+      return true
+    }
     const history: ChatTurn[] = messages
       .filter((m) => !m.error)
       .slice(-HISTORY_LIMIT)
