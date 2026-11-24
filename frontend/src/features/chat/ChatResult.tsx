@@ -94,13 +94,14 @@ export default function ChatResult({ response, done, actionKey, acting, onAction
           <div className="cb-card-top">
             <span className="cb-card-id">{c.call_id}</span>
             {c.category && (
-              <span className="cb-badge" style={{ background: CATEGORY_COLOR[c.category] }}>
+              <span className="cb-badge neutral">
+                <i className="cb-dot" />
                 {c.category}
               </span>
             )}
-            {c.status === 'FAILED' && <span className="cb-badge" style={{ background: '#d9534f' }}>실패</span>}
-            {c.follow_up_needed && <span className="cb-badge" style={{ background: '#e9822b' }}>후속조치</span>}
-            {c.needs_review && <span className="cb-badge" style={{ background: '#c9a100' }}>검토 필요</span>}
+            {c.status === 'FAILED' && <span className="cb-badge err">실패</span>}
+            {c.follow_up_needed && <span className="cb-badge wait">후속조치</span>}
+            {c.needs_review && <span className="cb-badge wait">검토 필요</span>}
           </div>
           <div className="cb-card-meta">
             {formatKst(c.called_at)} · {c.agent_name}

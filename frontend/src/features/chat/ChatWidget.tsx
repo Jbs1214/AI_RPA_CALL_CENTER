@@ -10,7 +10,7 @@
 //   constants.ts          문구와 수치
 //   chat.css              모양
 import { useEffect, useRef, useState } from 'react'
-import { MessageFilled } from '@ant-design/icons'
+import { MessageSquare } from 'lucide-react'
 import { ChatHeader, Composer, MessageRow, QuickReplies, TypingRow, WelcomeRow } from './ChatParts'
 import CallDrawer from '../calls/CallDrawer'
 import ChatResult from './ChatResult'
@@ -50,7 +50,7 @@ export default function ChatWidget() {
   return (
     <div className="cb-root">
       <button className={`cb-launcher${open ? ' hidden' : ''}`} aria-label="챗봇 열기" onClick={() => setOpen(true)}>
-        <MessageFilled />
+        <MessageSquare size={22} strokeWidth={1.5} />
       </button>
 
       {open && (

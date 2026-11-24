@@ -1,30 +1,14 @@
 // ChatWidget 을 이루는 작은 화면 조각들. 상태는 갖지 않고 받은 값만 그린다.
 import type { ReactNode } from 'react'
-import { CloseOutlined, ReloadOutlined, RobotOutlined, SendOutlined } from '@ant-design/icons'
+import { Bot, Maximize2, Minimize2, RotateCcw, Send, X } from 'lucide-react'
 import { EXAMPLES, WELCOME } from './constants'
 import type { Message } from './useChat'
 
 export function BotAvatar({ small = false }: { small?: boolean }) {
   return (
     <div className={`cb-avatar${small ? ' small' : ''}`}>
-      <RobotOutlined />
+      <Bot size={small ? 16 : 18} strokeWidth={1.5} />
     </div>
-  )
-}
-
-/** 창 컨트롤처럼 네모(크게 보기) / 겹친 네모(기본 크기로) */
-function SizeIcon({ big }: { big: boolean }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-      {big ? (
-        <>
-          <rect x="1.8" y="4.2" width="8" height="8" rx="1.5" />
-          <path d="M4.2 4.2V3.3a1.5 1.5 0 0 1 1.5-1.5h5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5h-.9" />
-        </>
-      ) : (
-        <rect x="1.8" y="1.8" width="10.4" height="10.4" rx="2" />
-      )}
-    </svg>
   )
 }
 
@@ -47,13 +31,13 @@ export function ChatHeader({ canClear, isBig, onClear, onToggleBig, onClose, dra
         <span>통화 기록 조회 · 통계</span>
       </div>
       <button className="cb-icon-btn" title="대화 지우기" disabled={!canClear} onClick={onClear}>
-        <ReloadOutlined />
+        <RotateCcw size={16} strokeWidth={1.5} />
       </button>
       <button className="cb-icon-btn cb-size-btn" title={isBig ? '기본 크기로' : '크게 보기'} onClick={onToggleBig}>
-        <SizeIcon big={isBig} />
+        {isBig ? <Minimize2 size={16} strokeWidth={1.5} /> : <Maximize2 size={16} strokeWidth={1.5} />}
       </button>
       <button className="cb-icon-btn" title="닫기" onClick={onClose}>
-        <CloseOutlined />
+        <X size={16} strokeWidth={1.5} />
       </button>
     </header>
   )
@@ -146,7 +130,7 @@ export function Composer({ value, busy, inputRef, onChange, onSubmit }: Composer
           }}
         />
         <button className="cb-send" aria-label="보내기" disabled={!value.trim() || busy} onClick={onSubmit}>
-          <SendOutlined />
+          <Send size={16} strokeWidth={1.5} />
         </button>
       </div>
       <div className="cb-notice">조회 전용입니다. 수정은 제안 버튼을 눌렀을 때만 반영돼요.</div>
