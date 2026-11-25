@@ -3,7 +3,8 @@
     <x:Property Name="in_baseUrl" Type="InArgument(x:String)" />
     <x:Property Name="in_apiKey" Type="InArgument(x:String)" />
     <x:Property Name="in_tempFolder" Type="InArgument(x:String)" />
-    <x:Property Name="in_onlyCallId" Type="InArgument(x:String)" /><x:Property Name="in_skipClaim" Type="InArgument(x:Boolean)" />
+    <x:Property Name="in_onlyCallId" Type="InArgument(x:String)" />
+    <x:Property Name="in_skipClaim" Type="InArgument(x:Boolean)" />
     <x:Property Name="out_callId" Type="OutArgument(x:String)" />
     <x:Property Name="out_audioPath" Type="OutArgument(x:String)" />
     <x:Property Name="out_message" Type="OutArgument(x:String)" />
@@ -41,6 +42,7 @@
       <x:String>GlobalConstantsNamespace</x:String>
       <x:String>UiPath.Web.Activities.Http</x:String>
       <x:String>UiPath.Web.Activities.Http.Models</x:String>
+      <x:String>UiPath.Platform.ResourceHandling</x:String>
       <x:String>System.Runtime.Serialization</x:String>
       <x:String>System.Linq.Expressions</x:String>
       <x:String>System.Numerics</x:String>
@@ -54,6 +56,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>UiPath.Web.Activities</AssemblyReference>
       <AssemblyReference>UiPath.Web.Activities.API</AssemblyReference>
+      <AssemblyReference>UiPath.Platform</AssemblyReference>
       <AssemblyReference>System.Private.CoreLib</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
@@ -99,7 +102,7 @@
       <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="서버의 대기 통화 1건을 가져가고 음성 파일을 내려받는다. ①초기화 ②목록 조회 ③가져가기 ④음성 받기." DisplayName="07_Pickup: 대기 통화 가져가기" sap:VirtualizedContainerService.HintSize="842,3662" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="서버의 대기 통화 1건을 가져가고 음성 파일을 내려받는다. ①초기화 ②목록 조회 ③가져가기 ④음성 받기." DisplayName="07_Pickup: 대기 통화 가져가기" sap:VirtualizedContainerService.HintSize="944,5326" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpList" />
       <Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpProc" />
@@ -108,6 +111,9 @@
       <Variable x:TypeArguments="x:String" Name="str_cid" />
       <Variable x:TypeArguments="x:String" Name="str_contentType" />
       <Variable x:TypeArguments="x:String" Name="str_ext" />
+      <Variable x:TypeArguments="x:String" Name="str_head" />
+      <Variable x:TypeArguments="x:String" Name="str_saved" />
+      <Variable x:TypeArguments="s:Byte[]" Name="byte_audio" />
       <Variable x:TypeArguments="x:String" Name="str_path" />
       <Variable x:TypeArguments="x:Int32" Name="int_attempt" />
     </Sequence.Variables>
@@ -147,16 +153,16 @@
         </Assign.Value>
       </Assign>
     </Sequence>
-    <TryCatch sap2010:Annotation.AnnotationText="아래 단계에서 예외가 나면 HTTP_ERROR 메시지로 바꿔 돌려준다." DisplayName="Try Catch: 가져오기 전체 보호" sap:VirtualizedContainerService.HintSize="842,2865" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+    <TryCatch sap2010:Annotation.AnnotationText="아래 단계에서 예외가 나면 HTTP_ERROR 메시지로 바꿔 돌려준다." DisplayName="Try Catch: 가져오기 전체 보호" sap:VirtualizedContainerService.HintSize="842,4529" sap2010:WorkflowViewState.IdRef="TryCatch_1">
       <TryCatch.Try>
-        <Sequence sap2010:Annotation.AnnotationText="status=RECEIVED 인 통화 목록을 서버에서 가져온다." DisplayName="② 대기 통화 목록 조회 (API 2)" sap:VirtualizedContainerService.HintSize="840,2520" sap2010:WorkflowViewState.IdRef="Sequence_12">
+        <Sequence sap2010:Annotation.AnnotationText="status=RECEIVED 인 통화 목록을 서버에서 가져온다." DisplayName="② 대기 통화 목록 조회 (API 2)" sap:VirtualizedContainerService.HintSize="840,4114" sap2010:WorkflowViewState.IdRef="Sequence_12">
           <sap:WorkflowViewStateService.ViewState>
             <scg:Dictionary x:TypeArguments="x:String, x:Object">
               <x:Boolean x:Key="IsExpanded">True</x:Boolean>
             </scg:Dictionary>
           </sap:WorkflowViewStateService.ViewState>
-          <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="GET /api/calls?status=RECEIVED. 헤더 X-API-Key 로 인증. 결과를 httpList 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 대기 목록 GET" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap:VirtualizedContainerService.HintSize="806,277" sap2010:WorkflowViewState.IdRef="NetHttpRequest_1" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="GET" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls?status=&quot; + If(in_skipClaim, &quot;PROCESSING&quot;, &quot;RECEIVED&quot;)]" Result="[httpList]" RetryCount="3" RetryPolicyType="None" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
-          <If sap2010:Annotation.AnnotationText="상태 코드가 200 이 아니면 LIST_FAILED 로 끝낸다." Condition="[CInt(httpList.StatusCode) &lt;&gt; 200]" DisplayName="If: 목록 조회 성공인가" sap:VirtualizedContainerService.HintSize="806,2183" sap2010:WorkflowViewState.IdRef="If_7">
+          <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="GET /api/calls?status=RECEIVED. 헤더 X-API-Key 로 인증. 결과를 httpList 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 대기 목록 GET" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xA;{&#xA;&#x9;New FileFormDataPart(),&#xA;&#x9;New BinaryFormDataPart(),&#xA;&#x9;New TextFormDataPart()&#xA;}]" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap:VirtualizedContainerService.HintSize="806,277" sap2010:WorkflowViewState.IdRef="NetHttpRequest_1" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="GET" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls?status=&quot; + If(in_skipClaim, &quot;PROCESSING&quot;, &quot;RECEIVED&quot;)]" Result="[httpList]" RetryCount="3" RetryPolicyType="None" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xA;{&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+          <If sap2010:Annotation.AnnotationText="상태 코드가 200 이 아니면 LIST_FAILED 로 끝낸다." Condition="[CInt(httpList.StatusCode) &lt;&gt; 200]" DisplayName="If: 목록 조회 성공인가" sap:VirtualizedContainerService.HintSize="806,3777" sap2010:WorkflowViewState.IdRef="If_7">
             <If.Then>
               <Assign sap2010:Annotation.AnnotationText="목록 조회 실패 코드를 메시지로 남긴다." DisplayName="Assign: out_message = LIST_FAILED" sap:VirtualizedContainerService.HintSize="804,143" sap2010:WorkflowViewState.IdRef="Assign_4">
                 <Assign.To>
@@ -168,7 +174,7 @@
               </Assign>
             </If.Then>
             <If.Else>
-              <Sequence sap2010:Annotation.AnnotationText="대기 건이 있으면 1건을 가져가고 음성을 받는다." DisplayName="목록 처리" sap:VirtualizedContainerService.HintSize="804,1856" sap2010:WorkflowViewState.IdRef="Sequence_11">
+              <Sequence sap2010:Annotation.AnnotationText="대기 건이 있으면 1건을 가져가고 음성을 받는다." DisplayName="목록 처리" sap:VirtualizedContainerService.HintSize="804,3450" sap2010:WorkflowViewState.IdRef="Sequence_11">
                 <sap:WorkflowViewStateService.ViewState>
                   <scg:Dictionary x:TypeArguments="x:String, x:Object">
                     <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -182,7 +188,7 @@
                     <InArgument x:TypeArguments="njl:JToken">[Newtonsoft.Json.Linq.JObject.Parse(httpList.TextContent)("items")]</InArgument>
                   </Assign.Value>
                 </Assign>
-                <If sap2010:Annotation.AnnotationText="items 가 없거나 비었으면 NO_PENDING 으로 끝낸다." Condition="[jtok_items Is Nothing OrElse jtok_items.Count() = 0]" DisplayName="If: 대기 건이 없는가" sap:VirtualizedContainerService.HintSize="770,1621" sap2010:WorkflowViewState.IdRef="If_6">
+                <If sap2010:Annotation.AnnotationText="items 가 없거나 비었으면 NO_PENDING 으로 끝낸다." Condition="[jtok_items Is Nothing OrElse jtok_items.Count() = 0]" DisplayName="If: 대기 건이 없는가" sap:VirtualizedContainerService.HintSize="770,3215" sap2010:WorkflowViewState.IdRef="If_6">
                   <If.Then>
                     <Assign sap2010:Annotation.AnnotationText="가져갈 건이 없다." DisplayName="Assign: out_message = NO_PENDING" sap:VirtualizedContainerService.HintSize="768,143" sap2010:WorkflowViewState.IdRef="Assign_6">
                       <Assign.To>
@@ -194,7 +200,7 @@
                     </Assign>
                   </If.Then>
                   <If.Else>
-                    <Sequence sap2010:Annotation.AnnotationText="대기 건을 가져가고 음성을 받는다." DisplayName="대기 건 처리" sap:VirtualizedContainerService.HintSize="768,1294" sap2010:WorkflowViewState.IdRef="Sequence_10">
+                    <Sequence sap2010:Annotation.AnnotationText="대기 건을 가져가고 음성을 받는다." DisplayName="대기 건 처리" sap:VirtualizedContainerService.HintSize="768,2888" sap2010:WorkflowViewState.IdRef="Sequence_10">
                       <sap:WorkflowViewStateService.ViewState>
                         <scg:Dictionary x:TypeArguments="x:String, x:Object">
                           <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -233,7 +239,11 @@
                                         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                                       </scg:Dictionary>
                                     </sap:WorkflowViewStateService.ViewState>
-                                    <If sap2010:Annotation.AnnotationText="Job 은 서버가 이미 API 12 를 호출했으므로 건너뛴다." Condition="[Not in_skipClaim]" DisplayName="If: 가져가기일 때만 API 12 호출" sap2010:WorkflowViewState.IdRef="If_901"><If.Then><uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="POST /api/calls/{call_id}/process. 본문 없음. 결과를 httpProc 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 가져가기 POST" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap:VirtualizedContainerService.HintSize="416,277" sap2010:WorkflowViewState.IdRef="NetHttpRequest_2" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="POST" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + str_cid + &quot;/process&quot;]" Result="[httpProc]" RetryCount="3" RetryPolicyType="None" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" /></If.Then></If>
+                                    <If sap2010:Annotation.AnnotationText="Job 은 서버가 이미 API 12 를 호출했으므로 건너뛴다." Condition="[Not in_skipClaim]" DisplayName="If: 가져가기일 때만 API 12 호출" sap2010:WorkflowViewState.IdRef="If_901">
+                                      <If.Then>
+                                        <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="POST /api/calls/{call_id}/process. 본문 없음. 결과를 httpProc 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 가져가기 POST" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xA;{&#xA;&#x9;New FileFormDataPart(),&#xA;&#x9;New BinaryFormDataPart(),&#xA;&#x9;New TextFormDataPart()&#xA;}]" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap:VirtualizedContainerService.HintSize="416,277" sap2010:WorkflowViewState.IdRef="NetHttpRequest_2" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="POST" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + str_cid + &quot;/process&quot;]" Result="[httpProc]" RetryCount="3" RetryPolicyType="None" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xA;{&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+                                      </If.Then>
+                                    </If>
                                     <If sap2010:Annotation.AnnotationText="200 이면 이 건이 내 것이다. 아니면 아무것도 하지 않고 다음 건으로 간다." Condition="[in_skipClaim OrElse CInt(httpProc.StatusCode) = 200]" DisplayName="If: 가져가기 성공인가" sap2010:WorkflowViewState.IdRef="If_1">
                                       <If.Then>
                                         <Assign sap2010:Annotation.AnnotationText="가져간 통화 ID 를 출력에 담는다." DisplayName="Assign: out_callId = 내 건" sap2010:WorkflowViewState.IdRef="Assign_8">
@@ -253,9 +263,9 @@
                           </Sequence>
                         </ActivityAction>
                       </ForEach>
-                      <If sap2010:Annotation.AnnotationText="한 건도 못 가져갔으면 사유를 남기고 끝낸다. 있으면 음성을 받는다." Condition="[out_callId = &quot;&quot;]" DisplayName="If: 가져간 건이 없는가" sap:VirtualizedContainerService.HintSize="734,224" sap2010:WorkflowViewState.IdRef="If_5">
+                      <If sap2010:Annotation.AnnotationText="한 건도 못 가져갔으면 사유를 남기고 끝낸다. 있으면 음성을 받는다." Condition="[out_callId = &quot;&quot;]" DisplayName="If: 가져간 건이 없는가" sap:VirtualizedContainerService.HintSize="734,1818" sap2010:WorkflowViewState.IdRef="If_5">
                         <If.Then>
-                          <Assign sap2010:Annotation.AnnotationText="대상 지정(in_onlyCallId) 건이 대기 중이 아니면 TARGET_NOT_PENDING, 아니면 다른 봇이 모두 가져간 것이므로 ALL_TAKEN." DisplayName="Assign: out_message = 사유" sap2010:WorkflowViewState.IdRef="Assign_9">
+                          <Assign sap2010:Annotation.AnnotationText="대상 지정(in_onlyCallId) 건이 대기 중이 아니면 TARGET_NOT_PENDING, 아니면 다른 봇이 모두 가져간 것이므로 ALL_TAKEN." DisplayName="Assign: out_message = 사유" sap:VirtualizedContainerService.HintSize="730,143" sap2010:WorkflowViewState.IdRef="Assign_9">
                             <Assign.To>
                               <OutArgument x:TypeArguments="x:String">[out_message]</OutArgument>
                             </Assign.To>
@@ -265,10 +275,20 @@
                           </Assign>
                         </If.Then>
                         <If.Else>
-                          <Sequence sap2010:Annotation.AnnotationText="가져간 통화의 음성 파일을 내려받는다." DisplayName="④ 음성 받기 (API 10)" sap2010:WorkflowViewState.IdRef="Sequence_9">
-                            <DoWhile sap2010:Annotation.AnnotationText="음성 파일을 받을 때까지 최대 3회 시도한다. 실패하면 5초 쉬고 다시 시도한다." DisplayName="Do While: 음성 받기 (최대 3회)" sap2010:WorkflowViewState.IdRef="DoWhile_1" Condition="[out_audioPath = &quot;&quot; AndAlso int_attempt &lt; 3]">
-                              <Sequence sap2010:Annotation.AnnotationText="한 번 요청하고 성공이면 파일로 저장한다." DisplayName="음성 받기 1회 시도" sap2010:WorkflowViewState.IdRef="Sequence_8">
-                                <Assign sap2010:Annotation.AnnotationText="시도 횟수를 1 올린다." DisplayName="Assign: int_attempt + 1" sap2010:WorkflowViewState.IdRef="Assign_10">
+                          <Sequence sap2010:Annotation.AnnotationText="가져간 통화의 음성 파일을 내려받는다." DisplayName="④ 음성 받기 (API 10)" sap:VirtualizedContainerService.HintSize="730,1491" sap2010:WorkflowViewState.IdRef="Sequence_9">
+                            <sap:WorkflowViewStateService.ViewState>
+                              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                              </scg:Dictionary>
+                            </sap:WorkflowViewStateService.ViewState>
+                            <DoWhile sap2010:Annotation.AnnotationText="음성 파일을 받을 때까지 최대 3회 시도한다. 실패하면 5초 쉬고 다시 시도한다." DisplayName="Do While: 음성 받기 (최대 3회)" sap:VirtualizedContainerService.HintSize="696,1431" sap2010:WorkflowViewState.IdRef="DoWhile_1" Condition="[out_audioPath = &quot;&quot; AndAlso int_attempt &lt; 3]">
+                              <Sequence sap2010:Annotation.AnnotationText="한 번 요청하고 성공이면 파일로 저장한다." DisplayName="음성 받기 1회 시도" sap:VirtualizedContainerService.HintSize="650,1244" sap2010:WorkflowViewState.IdRef="Sequence_8">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Assign sap2010:Annotation.AnnotationText="시도 횟수를 1 올린다." DisplayName="Assign: int_attempt + 1" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_10">
                                   <Assign.To>
                                     <OutArgument x:TypeArguments="x:Int32">[int_attempt]</OutArgument>
                                   </Assign.To>
@@ -276,11 +296,17 @@
                                     <InArgument x:TypeArguments="x:Int32">[int_attempt + 1]</InArgument>
                                   </Assign.Value>
                                 </Assign>
-                                <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" FormDataParts="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" RetryStatusCodes="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="GET /api/calls/{call_id}/audio. 음성 바이트를 httpAudio 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 음성 GET" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap2010:WorkflowViewState.IdRef="NetHttpRequest_3" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="GET" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + out_callId + &quot;/audio&quot;]" Result="[httpAudio]" RetryCount="3" RetryPolicyType="None" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
-                                <If sap2010:Annotation.AnnotationText="200 이면 파일로 저장하고, 아니면 실패 코드를 메시지에 남긴다." Condition="[CInt(httpAudio.StatusCode) = 200]" DisplayName="If: 음성 받기 성공인가" sap2010:WorkflowViewState.IdRef="If_4">
+                                <InvokeMethod sap2010:Annotation.AnnotationText="받은 음성을 저장할 임시 폴더가 없으면 요청 전에 만든다. HTTP Request 가 이 폴더에 바로 저장하기 때문이다." DisplayName="Invoke Method: 임시 폴더 먼저 만들기" sap2010:WorkflowViewState.IdRef="InvokeMethod_91" MethodName="CreateDirectory" TargetType="si:Directory"><InArgument x:TypeArguments="x:String">[in_tempFolder]</InArgument></InvokeMethod>
+                                <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="[out_callId + &quot;.download&quot;]" OutputFileTargetFolder="[in_tempFolder]" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" TextPayload="{x:Null}" sap2010:Annotation.AnnotationText="GET /api/calls/{call_id}/audio. 응답이 audio/* 이면 이 활동이 본문을 BinaryContent 가 아니라 파일로 저장한다(활동 동작). 그래서 SaveResponseAsFile 을 켜고 임시 폴더에 통화ID.download 로 저장하게 하며, 저장된 위치는 httpAudio.File.LocalPath 로 읽는다. 예전에는 BinaryContent 를 썼는데 비어 있어 0바이트 파일이 만들어져 CLOVA 가 거절했다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: 음성 GET" EnableCookies="True" FileOverwrite="Replace" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}}]" sap:VirtualizedContainerService.HintSize="616,277" sap2010:WorkflowViewState.IdRef="NetHttpRequest_3" InitialDelay="500" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="GET" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="None" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + out_callId + &quot;/audio&quot;]" Result="[httpAudio]" RetryCount="3" RetryPolicyType="None" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="True" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+                                <If sap2010:Annotation.AnnotationText="200 이면 파일로 저장하고, 아니면 실패 코드를 메시지에 남긴다." Condition="[CInt(httpAudio.StatusCode) = 200]" DisplayName="If: 음성 받기 성공인가" sap:VirtualizedContainerService.HintSize="616,732" sap2010:WorkflowViewState.IdRef="If_4">
                                   <If.Then>
-                                    <Sequence sap2010:Annotation.AnnotationText="응답 형식(mp3/m4a/wav)에 맞는 확장자로 임시 폴더에 저장한다." DisplayName="음성 파일로 저장" sap2010:WorkflowViewState.IdRef="Sequence_6">
-                                      <Assign sap2010:Annotation.AnnotationText="응답 헤더에서 Content-Type 을 소문자로 꺼낸다. 없으면 빈 값." DisplayName="Assign: str_contentType" sap2010:WorkflowViewState.IdRef="Assign_11">
+                                    <Sequence sap2010:Annotation.AnnotationText="응답 형식(mp3/m4a/wav)에 맞는 확장자로 임시 폴더에 저장한다." DisplayName="음성 파일로 저장" sap:VirtualizedContainerService.HintSize="450,550" sap2010:WorkflowViewState.IdRef="Sequence_6">
+                                      <sap:WorkflowViewStateService.ViewState>
+                                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                        </scg:Dictionary>
+                                      </sap:WorkflowViewStateService.ViewState>
+                                      <Assign sap2010:Annotation.AnnotationText="응답 헤더에서 Content-Type 을 소문자로 꺼낸다. 없으면 빈 값." DisplayName="Assign: str_contentType" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="Assign_11">
                                         <Assign.To>
                                           <OutArgument x:TypeArguments="x:String">[str_contentType]</OutArgument>
                                         </Assign.To>
@@ -288,14 +314,39 @@
                                           <InArgument x:TypeArguments="x:String">[If(httpAudio.ContentHeaders.Where(Function(h) h.Key.ToLower() = "content-type").Select(Function(h) h.Value).FirstOrDefault(), "").ToLower()]</InArgument>
                                         </Assign.Value>
                                       </Assign>
-                                      <Assign sap2010:Annotation.AnnotationText="mpeg·mp3 면 .mp3, mp4·m4a 면 .m4a, 그 외는 .wav." DisplayName="Assign: str_ext" sap2010:WorkflowViewState.IdRef="Assign_12">
+                                      <Assign sap2010:Annotation.AnnotationText="HTTP Request 가 파일로 저장했다면 그 위치를 꺼낸다. 파일로 저장하지 않은 응답이면 빈 값이다." DisplayName="Assign: str_saved 저장된 위치" sap2010:WorkflowViewState.IdRef="Assign_91">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:String">[str_saved]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:String">[If(httpAudio.File Is Nothing, "", httpAudio.File.LocalPath)]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                      <Assign sap2010:Annotation.AnnotationText="음성 바이트를 정한다. 파일로 저장됐으면 그 파일에서 읽고, 아니면 BinaryContent 를 쓴다. 머리표와 크기 확인에 쓴다." DisplayName="Assign: byte_audio 음성 바이트" sap2010:WorkflowViewState.IdRef="Assign_92">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="s:Byte[]">[byte_audio]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="s:Byte[]">[If(str_saved &lt;&gt; &quot;&quot;, System.IO.File.ReadAllBytes(str_saved), httpAudio.BinaryContent)]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                      <Assign sap2010:Annotation.AnnotationText="받은 음성 바이트의 앞 12개를 16진수로 적어 둔다. 확장자를 서버가 준 Content-Type 만 믿지 않고 파일 내용으로 정하기 위함이다. 대화 내용이 아니라 파일 머리표라 개인정보가 아니다." DisplayName="Assign: str_head 파일 머리표" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="Assign_90">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:String">[str_head]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:String">[If(byte_audio Is Nothing, "", System.BitConverter.ToString(byte_audio, 0, System.Math.Min(12, byte_audio.Length)))]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                      <Assign sap2010:Annotation.AnnotationText="파일 머리표로 먼저 정한다(ID3·MPEG 헤더 → .mp3, RIFF → .wav, ftyp → .m4a). 못 알아보면 예전처럼 Content-Type 으로 정한다(mpeg·mp3 → .mp3, mp4·m4a → .m4a, 그 외 .wav). CLOVA 가 확장자와 내용이 다른 파일을 거절할 수 있다." DisplayName="Assign: str_ext" sap2010:WorkflowViewState.IdRef="Assign_12">
                                         <Assign.To>
                                           <OutArgument x:TypeArguments="x:String">[str_ext]</OutArgument>
                                         </Assign.To>
                                         <Assign.Value>
-                                          <InArgument x:TypeArguments="x:String">[If(str_contentType.Contains("mp4") OrElse str_contentType.Contains("m4a"), ".m4a", If(str_contentType.Contains("mpeg") OrElse str_contentType.Contains("mp3"), ".mp3", ".wav"))]</InArgument>
+                                          <InArgument x:TypeArguments="x:String">[If(str_head.StartsWith("49-44-33") OrElse str_head.StartsWith("FF-F") OrElse str_head.StartsWith("FF-E"), ".mp3", If(str_head.StartsWith("52-49-46-46"), ".wav", If(str_head.Length &gt;= 23 AndAlso str_head.Substring(12, 11) = "66-74-79-70", ".m4a", If(str_contentType.Contains("mp4") OrElse str_contentType.Contains("m4a"), ".m4a", If(str_contentType.Contains("mpeg") OrElse str_contentType.Contains("mp3"), ".mp3", ".wav")))))]</InArgument>
                                         </Assign.Value>
                                       </Assign>
+                                      <ui:LogMessage sap2010:Annotation.AnnotationText="받은 음성의 형식 정보만 남긴다(Content-Type, 정한 확장자, 바이트 수, 머리표 4바이트). 대화 내용이나 파일명은 남기지 않는다. STT 형식 오류를 추적하기 위함이다." DisplayName="Log Message: 음성 형식" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;AUDIO_FMT type=&quot; + str_contentType + &quot; ext=&quot; + str_ext + &quot; bytes=&quot; + If(byte_audio Is Nothing, 0, byte_audio.Length).ToString() + &quot; head=&quot; + If(str_head.Length &gt;= 11, str_head.Substring(0, 11), str_head)]" />
                                       <InvokeMethod sap2010:Annotation.AnnotationText="임시 폴더가 없으면 만든다." DisplayName="Invoke Method: 임시 폴더 만들기" sap2010:WorkflowViewState.IdRef="InvokeMethod_1" MethodName="CreateDirectory" TargetType="si:Directory">
                                         <InArgument x:TypeArguments="x:String">[in_tempFolder]</InArgument>
                                       </InvokeMethod>
@@ -307,10 +358,21 @@
                                           <InArgument x:TypeArguments="x:String">[System.IO.Path.Combine(in_tempFolder, out_callId + str_ext)]</InArgument>
                                         </Assign.Value>
                                       </Assign>
-                                      <InvokeMethod sap2010:Annotation.AnnotationText="받은 음성 바이트를 파일로 쓴다." DisplayName="Invoke Method: 음성 파일 쓰기" sap2010:WorkflowViewState.IdRef="InvokeMethod_2" MethodName="WriteAllBytes" TargetType="si:File">
-                                        <InArgument x:TypeArguments="x:String">[str_path]</InArgument>
-                                        <InArgument x:TypeArguments="s:Byte[]">[httpAudio.BinaryContent]</InArgument>
-                                      </InvokeMethod>
+                                      <If sap2010:Annotation.AnnotationText="HTTP Request 가 이미 파일로 저장했으면 통화ID+확장자 이름으로 옮기고, 아니면 받은 바이트를 파일로 쓴다." Condition="[str_saved &lt;&gt; &quot;&quot;]" DisplayName="If: 파일로 저장돼 있는가" sap2010:WorkflowViewState.IdRef="If_91">
+                                        <If.Then>
+                                          <InvokeMethod sap2010:Annotation.AnnotationText="통화ID.download 로 저장된 음성을 통화ID+확장자(.mp3 등) 이름으로 옮긴다. CLOVA 가 확장자로 형식을 가리기 때문이다. 같은 이름이 있으면 덮어쓴다." DisplayName="Invoke Method: 저장된 음성 이름 바꾸기" sap2010:WorkflowViewState.IdRef="InvokeMethod_92" MethodName="Move" TargetType="si:File">
+                                            <InArgument x:TypeArguments="x:String">[str_saved]</InArgument>
+                                            <InArgument x:TypeArguments="x:String">[str_path]</InArgument>
+                                            <InArgument x:TypeArguments="x:Boolean">True</InArgument>
+                                          </InvokeMethod>
+                                        </If.Then>
+                                        <If.Else>
+                                          <InvokeMethod sap2010:Annotation.AnnotationText="파일로 저장되지 않은 응답은 받은 바이트를 파일로 쓴다." DisplayName="Invoke Method: 음성 파일 쓰기" sap2010:WorkflowViewState.IdRef="InvokeMethod_2" MethodName="WriteAllBytes" TargetType="si:File">
+                                            <InArgument x:TypeArguments="x:String">[str_path]</InArgument>
+                                            <InArgument x:TypeArguments="s:Byte[]">[byte_audio]</InArgument>
+                                          </InvokeMethod>
+                                        </If.Else>
+                                      </If>
                                       <Assign sap2010:Annotation.AnnotationText="저장한 파일 경로를 출력에 담는다." DisplayName="Assign: out_audioPath" sap2010:WorkflowViewState.IdRef="Assign_14">
                                         <Assign.To>
                                           <OutArgument x:TypeArguments="x:String">[out_audioPath]</OutArgument>
