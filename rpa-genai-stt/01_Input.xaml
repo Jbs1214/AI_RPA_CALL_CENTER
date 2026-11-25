@@ -117,6 +117,8 @@
       <Variable x:TypeArguments="x:String" Name="aiRaw" />
       <Variable x:TypeArguments="x:String" Name="failMsg" />
       <Variable x:TypeArguments="x:Int32" Name="saveStatus" />
+      <Variable x:TypeArguments="x:String" Name="invalidReason" />
+      <Variable x:TypeArguments="x:String" Name="requestBody" />
       <Variable x:TypeArguments="x:String" Name="saveBody" />
       <Variable x:TypeArguments="x:String" Name="backendUrl" />
       <Variable x:TypeArguments="x:String" Name="apiKey" />
@@ -163,6 +165,17 @@
         </ui:GetRobotAsset.Value>
       </ui:GetRobotAsset>
     </Sequence>
+    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="10_Resend" sap2010:Annotation.AnnotationText="이전 실행에서 못 보낸 결과(output\unsent)를 먼저 다시 보낸다." sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_901" UnSafe="False" WorkflowFileName="10_Resend.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="in_baseUrl">[backendUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_apiKey">[apiKey]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_mode">["A"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_unsentDir">["C:\CallCenter\output\unsent"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_inputDir">["C:\CallCenter\input"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_doneDir">["C:\CallCenter\done"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_failedDir">["C:\CallCenter\failed"]</InArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
     <ui:ForEachFileX DisplayName="For Each File in Folder" Folder="C:\CallCenter\input" sap:VirtualizedContainerService.HintSize="650,7868" sap2010:WorkflowViewState.IdRef="ForEachFileX_1" IncludeSubDirectories="False" OrderBy="NameAscFirst" SkipFolderWithoutPermission="False">
       <ui:ForEachFileX.Body>
         <ActivityAction x:TypeArguments="si:FileInfo, x:Int32">
@@ -178,7 +191,7 @@
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
-            <If Condition="[New String() {&quot;.wav&quot;, &quot;.mp3&quot;, &quot;.m4a&quot;}.Contains(inputDir.Extension.ToLower())]" DisplayName="If: 음성 확장자만 처리" sap:VirtualizedContainerService.HintSize="524,7635" sap2010:WorkflowViewState.IdRef="If_10">
+            <If Condition="[New String() {&quot;.wav&quot;, &quot;.mp3&quot;, &quot;.m4a&quot;}.Contains(inputDir.Extension.ToLower()) AndAlso Not System.IO.File.Exists(System.IO.Path.Combine(&quot;C:\CallCenter\output\unsent&quot;, inputDir.Name + &quot;.json&quot;))]" DisplayName="If: 음성 확장자만 처리" sap:VirtualizedContainerService.HintSize="524,7635" sap2010:WorkflowViewState.IdRef="If_10">
               <If.Then>
                 <Sequence DisplayName="Then: 파일 1건 처리" sap:VirtualizedContainerService.HintSize="522,7481" sap2010:WorkflowViewState.IdRef="Sequence_9">
                   <sap:WorkflowViewStateService.ViewState>
@@ -485,6 +498,7 @@
                                             <OutArgument x:TypeArguments="x:String" x:Key="out_actionTaken">[actionTaken]</OutArgument>
                                             <OutArgument x:TypeArguments="x:String" x:Key="out_customerQuestion">[customerQuestion]</OutArgument>
                                             <OutArgument x:TypeArguments="x:String" x:Key="out_category">[category]</OutArgument>
+                                            <OutArgument x:TypeArguments="x:String" x:Key="out_invalidReason">[invalidReason]</OutArgument>
                                             <InArgument x:TypeArguments="x:String" x:Key="in_maskedTranscript">[maskedTranscript]</InArgument>
                                           </ui:InvokeWorkflowFile.Arguments>
                                         </ui:InvokeWorkflowFile>
@@ -516,6 +530,18 @@
                                           </Assign.To>
                                           <Assign.Value>
                                             <InArgument x:TypeArguments="x:String">["LLM_FAILED: 응답 없음"]</InArgument>
+                                          </Assign.Value>
+                                        </Assign>
+                                      </If.Then>
+                                    </If>
+                                    <If Condition="[failMsg = &quot;&quot; AndAlso Not String.IsNullOrEmpty(invalidReason)]" sap2010:Annotation.AnnotationText="설계서 6단계: AI 출력이 규격(JSON)에 안 맞으면 INVALID_OUTPUT 으로 저장한다. LLM_FAILED 가 이미 있으면 그대로 둔다." DisplayName="If: 출력 규격 오류" sap2010:WorkflowViewState.IdRef="If_901">
+                                      <If.Then>
+                                        <Assign DisplayName="Assign: INVALID_OUTPUT" sap2010:WorkflowViewState.IdRef="Assign_901">
+                                          <Assign.To>
+                                            <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                          </Assign.To>
+                                          <Assign.Value>
+                                            <InArgument x:TypeArguments="x:String">["INVALID_OUTPUT: " + invalidReason]</InArgument>
                                           </Assign.Value>
                                         </Assign>
                                       </If.Then>
@@ -555,7 +581,7 @@
                       <InArgument x:TypeArguments="x:String" x:Key="in_customerCompany">[customerCompany]</InArgument>
                       <InArgument x:TypeArguments="x:String" x:Key="in_sourceFilename">[inputDir.Name]</InArgument>
                       <InArgument x:TypeArguments="x:String" x:Key="in_fileHash">[fileHash]</InArgument>
-                      <InArgument x:TypeArguments="x:String" x:Key="in_status">[If(failMsg = "", "DONE", "FAILED")]</InArgument>
+                      
                       <InArgument x:TypeArguments="x:String" x:Key="in_errorMessage">[failMsg]</InArgument>
                       <InArgument x:TypeArguments="x:String" x:Key="in_transcript">[maskedTranscript]</InArgument>
                       <InArgument x:TypeArguments="x:String" x:Key="in_category">[category]</InArgument>
@@ -568,27 +594,26 @@
                       <InArgument x:TypeArguments="x:Int32" x:Key="in_durationSec">[durationSec]</InArgument>
                       <OutArgument x:TypeArguments="x:Int32" x:Key="out_statusCode">[saveStatus]</OutArgument>
                       <OutArgument x:TypeArguments="x:String" x:Key="out_responseBody">[saveBody]</OutArgument>
+                      <OutArgument x:TypeArguments="x:String" x:Key="out_requestBody">[requestBody]</OutArgument>
                     </ui:InvokeWorkflowFile.Arguments>
                   </ui:InvokeWorkflowFile>
                   <ui:LogMessage DisplayName="Log SAVE" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="LogMessage_5" Message="[&quot;SAVE=&quot; + saveStatus.ToString() + &quot; &quot; + If(saveBody Is Nothing, &quot;(없음)&quot;, If(saveBody.Length &gt; 150, saveBody.Substring(0, 150), saveBody))]" />
+                  <If Condition="[saveStatus = 0 OrElse saveStatus &gt;= 500]" sap2010:Annotation.AnnotationText="설계서 4.2: 서버 연결 실패·5xx 는 결과 JSON 을 output\unsent 에 보관한다. 음성은 입력 폴더에 남기고, 다음 실행 때 10_Resend 가 STT 없이 다시 보낸다." DisplayName="If: 못 보냈으면 unsent 에 보관" sap2010:WorkflowViewState.IdRef="If_902">
+                    <If.Then>
+                      <Sequence DisplayName="Then: unsent 보관" sap2010:WorkflowViewState.IdRef="Sequence_901">
+                        <Sequence DisplayName="unsent 에 요청 본문 보관" sap2010:Annotation.AnnotationText="서버에 못 보낸 결과(요청 본문 JSON)를 output\unsent 에 파일로 저장해 둔다. 다음 실행 때 10_Resend 가 STT 없이 다시 보낸다."><ui:CreateDirectory DisplayName="Create Folder: unsent" sap2010:Annotation.AnnotationText="output\unsent 폴더가 없으면 만든다. 있으면 그대로 둔다." ContinueOnError="[True]" Output="{x:Null}" Path="C:\CallCenter\output\unsent" /><ui:WriteTextFile FileName="{x:Null}" Output="{x:Null}" DisplayName="Write Text File: 요청 본문 보관" sap2010:Annotation.AnnotationText="요청 본문을 UTF-8 로 저장한다. 파일 이름은 음성파일명.json. 개인정보가 들어 있으므로 시연 후 지운다." Encoding="65001" File="[LocalResource.FromPath(&quot;C:\CallCenter\output\unsent\&quot; + inputDir.Name + &quot;.json&quot;)]" Text="[requestBody]" /></Sequence>
+                        <ui:LogMessage DisplayName="Log UNSENT" sap2010:WorkflowViewState.IdRef="LogMessage_901" Message="[&quot;UNSENT: 서버에 못 보내 output\unsent 에 보관 (상태 코드 &quot; + saveStatus.ToString() + &quot;)&quot;]" />
+                      </Sequence>
+                    </If.Then>
+                  </If>
                   <If Condition="[(saveStatus = 201 AndAlso failMsg = &quot;&quot;) OrElse saveStatus = 409]" DisplayName="If: 입력 폴더에서 옮기기" sap:VirtualizedContainerService.HintSize="488,1101" sap2010:WorkflowViewState.IdRef="If_9">
                     <If.Then>
-                      <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA;    System.IO.Directory.CreateDirectory(destDir)&#xA;    Dim target As String = System.IO.Path.Combine(destDir, System.IO.Path.GetFileName(src))&#xA;    If System.IO.File.Exists(target) Then System.IO.File.Delete(target)&#xA;    System.IO.File.Move(src, target)&#xA;Catch ex As Exception&#xA;End Try" DisplayName="Invoke Code: 파일 이동 → done" sap:VirtualizedContainerService.HintSize="336,371" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
-                        <ui:InvokeCode.Arguments>
-                          <InArgument x:TypeArguments="x:String" x:Key="src">[inputDir.FullName]</InArgument>
-                          <InArgument x:TypeArguments="x:String" x:Key="destDir">["C:\CallCenter\done"]</InArgument>
-                        </ui:InvokeCode.Arguments>
-                      </ui:InvokeCode>
+                      <Sequence DisplayName="Then: 음성 → done" sap2010:Annotation.AnnotationText="처리가 끝난 음성을 입력 폴더에서 done 로 옮긴다. 폴더가 없으면 먼저 만든다. 같은 이름이 이미 있으면 덮어쓴다."><ui:CreateDirectory DisplayName="Create Folder: done 폴더" sap2010:Annotation.AnnotationText="도착 폴더가 없으면 만든다. 있으면 그대로 둔다. 실패해도 멈추지 않는다." ContinueOnError="[True]" Output="{x:Null}" Path="C:\CallCenter\done" /><ui:MoveFile DisplayName="Move File: 음성 → done" sap2010:Annotation.AnnotationText="입력 폴더의 음성 파일을 도착 폴더로 옮긴다. 실패해도 멈추지 않고(ContinueOnError) 다음 파일을 처리한다." ContinueOnError="[True]" Destination="[System.IO.Path.Combine(&quot;C:\CallCenter\done&quot;, inputDir.Name)]" DestinationResource="{x:Null}" Overwrite="True" Path="[inputDir.FullName]" PathResource="{x:Null}" /></Sequence>
                     </If.Then>
                     <If.Else>
                       <If Condition="[saveStatus = 201 OrElse saveStatus = 422]" DisplayName="If: 실패 건은 failed로" sap:VirtualizedContainerService.HintSize="336,524" sap2010:WorkflowViewState.IdRef="If_8">
                         <If.Then>
-                          <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA;    System.IO.Directory.CreateDirectory(destDir)&#xA;    Dim target As String = System.IO.Path.Combine(destDir, System.IO.Path.GetFileName(src))&#xA;    If System.IO.File.Exists(target) Then System.IO.File.Delete(target)&#xA;    System.IO.File.Move(src, target)&#xA;Catch ex As Exception&#xA;End Try" DisplayName="Invoke Code: 파일 이동 → failed" sap:VirtualizedContainerService.HintSize="334,371" sap2010:WorkflowViewState.IdRef="InvokeCode_2">
-                            <ui:InvokeCode.Arguments>
-                              <InArgument x:TypeArguments="x:String" x:Key="src">[inputDir.FullName]</InArgument>
-                              <InArgument x:TypeArguments="x:String" x:Key="destDir">["C:\CallCenter\failed"]</InArgument>
-                            </ui:InvokeCode.Arguments>
-                          </ui:InvokeCode>
+                          <Sequence DisplayName="Then: 음성 → failed" sap2010:Annotation.AnnotationText="처리가 끝난 음성을 입력 폴더에서 failed 로 옮긴다. 폴더가 없으면 먼저 만든다. 같은 이름이 이미 있으면 덮어쓴다."><ui:CreateDirectory DisplayName="Create Folder: failed 폴더" sap2010:Annotation.AnnotationText="도착 폴더가 없으면 만든다. 있으면 그대로 둔다. 실패해도 멈추지 않는다." ContinueOnError="[True]" Output="{x:Null}" Path="C:\CallCenter\failed" /><ui:MoveFile DisplayName="Move File: 음성 → failed" sap2010:Annotation.AnnotationText="입력 폴더의 음성 파일을 도착 폴더로 옮긴다. 실패해도 멈추지 않고(ContinueOnError) 다음 파일을 처리한다." ContinueOnError="[True]" Destination="[System.IO.Path.Combine(&quot;C:\CallCenter\failed&quot;, inputDir.Name)]" DestinationResource="{x:Null}" Overwrite="True" Path="[inputDir.FullName]" PathResource="{x:Null}" /></Sequence>
                         </If.Then>
                       </If>
                     </If.Else>

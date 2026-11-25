@@ -1,0 +1,387 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:si="clr-namespace:System.IO;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uwah="clr-namespace:UiPath.Web.Activities.Http;assembly=UiPath.Web.Activities" xmlns:uwahm="clr-namespace:UiPath.Web.Activities.Http.Models;assembly=UiPath.Web.Activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_baseUrl" Type="InArgument(x:String)" />
+    <x:Property Name="in_apiKey" Type="InArgument(x:String)" />
+    <x:Property Name="in_mode" Type="InArgument(x:String)" />
+    <x:Property Name="in_unsentDir" Type="InArgument(x:String)" />
+    <x:Property Name="in_inputDir" Type="InArgument(x:String)" />
+    <x:Property Name="in_doneDir" Type="InArgument(x:String)" />
+    <x:Property Name="in_failedDir" Type="InArgument(x:String)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Reflection</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>UiPath.Web.Activities.Http</x:String>
+      <x:String>UiPath.Web.Activities.Http.Models</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Numerics</x:String>
+      <x:String>UiPath.IntegrationService.Activities.SWEntities.CB53A7C5ADF_categorize_Create.Bundle</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>UiPath.Web.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Web.Activities.API</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Net.Mail</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>NPOI.Core</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Net.Http</AssemblyReference>
+      <AssemblyReference>System.Net.Primitives</AssemblyReference>
+      <AssemblyReference>System.Runtime.InteropServices</AssemblyReference>
+      <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence sap2010:Annotation.AnnotationText="서버 연결 실패나 5xx 로 못 보낸 결과 JSON 을 다시 보낸다. STT·GenAI 는 다시 하지 않는다. in_mode=A 는 POST /api/calls, B 는 PUT /api/calls/{call_id}/result 로 보낸다(B 는 파일명이 CALL- 로 시작). 성공하면 JSON 을 지우고, A 는 음성 파일을 done 또는 failed 로 옮긴다. 개인정보 보호를 위해 파일명·요청 본문·응답 본문은 로그에 남기지 않는다." DisplayName="10_Resend: output\unsent 에 쌓인 결과 다시 보내기" sap:VirtualizedContainerService.HintSize="944,6452" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:Int32" Name="sentCount" />
+      <Variable x:TypeArguments="x:Int32" Name="keptCount" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <Assign sap2010:Annotation.AnnotationText="이번 실행에서 다시 보내기에 성공한 건수를 0 으로 시작한다." DisplayName="Assign: 전송 완료 건수 0" sap:VirtualizedContainerService.HintSize="564,175" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[sentCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign sap2010:Annotation.AnnotationText="못 보내서 unsent 에 남기거나 거절돼 .rejected 로 바꾼 건수를 0 으로 시작한다." DisplayName="Assign: 남긴 건수 0" sap:VirtualizedContainerService.HintSize="564,175" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[keptCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If sap2010:Annotation.AnnotationText="한 번도 못 보낸 적이 없으면 unsent 폴더가 없다. 이때 For Each File in Folder 가 오류를 내지 않도록 먼저 확인한다." Condition="[System.IO.Directory.Exists(in_unsentDir)]" DisplayName="If: unsent 폴더가 있을 때만" sap:VirtualizedContainerService.HintSize="564,5913" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <ui:ForEachFileX sap2010:Annotation.AnnotationText="unsent 폴더의 *.json 을 이름순으로 하나씩 처리한다. 이미 거절돼 이름이 .json.rejected 로 바뀐 파일은 *.json 에 걸리지 않으므로 다시 보내지 않는다." DisplayName="For Each File in Folder: unsent 의 JSON" Filter="*.json" Folder="[in_unsentDir]" sap:VirtualizedContainerService.HintSize="562,5728" sap2010:WorkflowViewState.IdRef="ForEachFileX_1" IncludeSubDirectories="False" OrderBy="NameAscFirst" SkipFolderWithoutPermission="False">
+          <ui:ForEachFileX.Body>
+            <ActivityAction x:TypeArguments="si:FileInfo, x:Int32">
+              <ActivityAction.Argument1>
+                <DelegateInArgument x:TypeArguments="si:FileInfo" Name="CurrentFile" />
+              </ActivityAction.Argument1>
+              <ActivityAction.Argument2>
+                <DelegateInArgument x:TypeArguments="x:Int32" Name="CurrentIndex" />
+              </ActivityAction.Argument2>
+              <Sequence sap2010:Annotation.AnnotationText="JSON 파일 하나를 읽어 서버로 보내고, 결과에 따라 지우거나 남긴다." DisplayName="파일 1건 처리" sap:VirtualizedContainerService.HintSize="560,5578" sap2010:WorkflowViewState.IdRef="Sequence_9">
+                <Sequence.Variables>
+                  <Variable x:TypeArguments="x:Boolean" Name="isB" />
+                  <Variable x:TypeArguments="x:String" Name="reqBody" />
+                  <Variable x:TypeArguments="x:String" Name="resp" />
+                  <Variable x:TypeArguments="x:Int32" Name="status" />
+                  <Variable x:TypeArguments="x:Boolean" Name="isDone" />
+                  <Variable x:TypeArguments="x:Boolean" Name="isFailed" />
+                  <Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpRes" />
+                </Sequence.Variables>
+                <sap:WorkflowViewStateService.ViewState>
+                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                  </scg:Dictionary>
+                </sap:WorkflowViewStateService.ViewState>
+                <Assign sap2010:Annotation.AnnotationText="흐름 B 는 보관 파일 이름이 call_id(CALL-로 시작)다. 흐름 A 는 원본 음성 파일명이다. 이 이름으로 PUT 과 POST 를 가른다." DisplayName="Assign: 흐름 B 파일인지" sap:VirtualizedContainerService.HintSize="526,175" sap2010:WorkflowViewState.IdRef="Assign_3">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Boolean">[isB]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Boolean">[CurrentFile.Name.StartsWith("CALL-", System.StringComparison.OrdinalIgnoreCase)]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <If sap2010:Annotation.AnnotationText="같은 폴더에 A 와 B 의 파일이 섞여 있어도 이번 실행(in_mode)에 맞는 파일만 보낸다. 나머지는 다음 실행(다른 흐름)이 처리한다." Condition="[isB = (in_mode = &quot;B&quot;)]" DisplayName="If: 이번 실행 모드의 파일일 때만" sap:VirtualizedContainerService.HintSize="526,5343" sap2010:WorkflowViewState.IdRef="If_7">
+                  <sap:WorkflowViewStateService.ViewState>
+                    <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                      <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+                    </scg:Dictionary>
+                  </sap:WorkflowViewStateService.ViewState>
+                  <If.Then>
+                    <TryCatch sap2010:Annotation.AnnotationText="읽기, 이동, 삭제 중 예외가 나도 다른 파일 처리를 멈추지 않는다. 예외가 나면 그 파일은 그대로 두고 남긴 건수에 더한다." DisplayName="Try Catch: 파일 1건 보호" sap:VirtualizedContainerService.HintSize="524,5167" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+                      <TryCatch.Try>
+                        <Sequence DisplayName="Try: 읽기, 전송, 정리" sap:VirtualizedContainerService.HintSize="522,4567" sap2010:WorkflowViewState.IdRef="Sequence_7">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <Assign sap2010:Annotation.AnnotationText="이전 파일의 값이 남지 않게 상태 코드를 0(미전송)으로 둔다." DisplayName="Assign: 상태 코드 0 으로 초기화" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="Assign_4">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:Int32">[status]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign sap2010:Annotation.AnnotationText="이전 파일의 응답 본문이 남지 않게 비운다." DisplayName="Assign: 응답 본문 비우기" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="Assign_5">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[resp]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[""]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign sap2010:Annotation.AnnotationText="이번 전송이 예외로 끝나도 이전 파일의 응답 객체를 읽지 않게 Nothing 으로 둔다." DisplayName="Assign: 이전 응답 비우기" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="Assign_6">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="uwahm:HttpResponseSummary">[httpRes]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="uwahm:HttpResponseSummary">[Nothing]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <ui:ReadTextFile File="{x:Null}" sap2010:Annotation.AnnotationText="unsent 에 저장해 둔 요청 본문(JSON)을 UTF-8 로 읽는다. 처음 보낼 때 만든 본문 그대로라 같은 내용이 다시 간다." Content="[reqBody]" DisplayName="Read Text File: 보관된 요청 본문" Encoding="utf-8" FileName="[CurrentFile.FullName]" sap:VirtualizedContainerService.HintSize="488,124" sap2010:WorkflowViewState.IdRef="ReadTextFile_1" />
+                          <TryCatch sap2010:Annotation.AnnotationText="주소 비어 있음, 연결 불가 같은 예외가 나도 멈추지 않고 상태 코드 0 으로 돌려 unsent 에 남긴다." DisplayName="Try Catch: 전송 오류 보호" sap:VirtualizedContainerService.HintSize="488,1833" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+                            <sap:WorkflowViewStateService.ViewState>
+                              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+                              </scg:Dictionary>
+                            </sap:WorkflowViewStateService.ViewState>
+                            <TryCatch.Try>
+                              <Sequence DisplayName="Try: 서버로 전송" sap:VirtualizedContainerService.HintSize="450,1418" sap2010:WorkflowViewState.IdRef="Sequence_2">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <If sap2010:Annotation.AnnotationText="흐름 B 는 이미 서버에 있는 통화에 결과를 넣는 PUT, 흐름 A 는 새 통화를 만드는 POST 다. HTTP Request 의 Method 는 식으로 못 바꾸므로 활동을 둘로 나눴다." Condition="[isB]" DisplayName="If: 흐름 B 이면 PUT, 아니면 POST" sap:VirtualizedContainerService.HintSize="416,1017" sap2010:WorkflowViewState.IdRef="If_2">
+                                  <sap:WorkflowViewStateService.ViewState>
+                                    <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                      <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+                                    </scg:Dictionary>
+                                  </sap:WorkflowViewStateService.ViewState>
+                                  <If.Then>
+                                    <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" sap2010:Annotation.AnnotationText="흐름 B: 파일명(call_id)으로 만든 주소에 PUT 으로 결과를 보낸다. 5xx·네트워크 오류면 5초 간격 최대 3회 재시도하고 4xx 는 재시도하지 않는다. 키는 X-API-Key 헤더로 보내며 코드에 넣지 않는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: PUT /api/calls/{id}/result" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[If(in_apiKey Is Nothing OrElse in_apiKey = &quot;&quot;, New Dictionary(Of String, String)(), New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}})]" sap:VirtualizedContainerService.HintSize="334,401" sap2010:WorkflowViewState.IdRef="NetHttpRequest_1" InitialDelay="[5000]" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="PUT" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="Text" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + System.IO.Path.GetFileNameWithoutExtension(CurrentFile.Name) + &quot;/result&quot;]" Result="[httpRes]" RetryCount="[3]" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayload="[reqBody]" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+                                  </If.Then>
+                                  <If.Else>
+                                    <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" sap2010:Annotation.AnnotationText="흐름 A: 새 통화로 POST 해 저장한다. 5xx·네트워크 오류면 5초 간격 최대 3회 재시도하고 4xx 는 재시도하지 않는다. 같은 파일은 서버가 file_hash 로 막아 주므로 다시 보내도 중복 저장되지 않는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: POST /api/calls" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[If(in_apiKey Is Nothing OrElse in_apiKey = &quot;&quot;, New Dictionary(Of String, String)(), New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}})]" sap:VirtualizedContainerService.HintSize="334,401" sap2010:WorkflowViewState.IdRef="NetHttpRequest_2" InitialDelay="[5000]" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="POST" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="Text" RequestUrl="[in_baseUrl + &quot;/api/calls&quot;]" Result="[httpRes]" RetryCount="[3]" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayload="[reqBody]" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+                                  </If.Else>
+                                </If>
+                                <Assign sap2010:Annotation.AnnotationText="서버가 돌려준 상태 코드를 담는다." DisplayName="Assign: 상태 코드" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="Assign_7">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:Int32">[status]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:Int32">[CInt(httpRes.StatusCode)]</InArgument>
+                                  </Assign.Value>
+                                  <sap:WorkflowViewStateService.ViewState>
+                                    <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                      <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+                                    </scg:Dictionary>
+                                  </sap:WorkflowViewStateService.ViewState>
+                                </Assign>
+                                <Assign sap2010:Annotation.AnnotationText="서버가 돌려준 본문을 담는다. 409 의 INVALID_STATE 를 알아보는 데만 쓰고 로그에는 남기지 않는다." DisplayName="Assign: 응답 본문" sap:VirtualizedContainerService.HintSize="416,166" sap2010:WorkflowViewState.IdRef="Assign_8">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[resp]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[httpRes.TextContent]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                              </Sequence>
+                            </TryCatch.Try>
+                            <TryCatch.Catches>
+                              <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+                                <ActivityAction x:TypeArguments="s:Exception">
+                                  <ActivityAction.Argument>
+                                    <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                  </ActivityAction.Argument>
+                                  <Assign sap2010:Annotation.AnnotationText="전송 중 예외가 났다. 상태 코드를 0 으로 두면 아래에서 못 보낸 것으로 보고 파일을 그대로 남긴다." DisplayName="Assign: 상태 코드 0 (전송 실패)" sap:VirtualizedContainerService.HintSize="450,143" sap2010:WorkflowViewState.IdRef="Assign_9">
+                                    <Assign.To>
+                                      <OutArgument x:TypeArguments="x:Int32">[status]</OutArgument>
+                                    </Assign.To>
+                                    <Assign.Value>
+                                      <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+                                    </Assign.Value>
+                                  </Assign>
+                                </ActivityAction>
+                              </Catch>
+                            </TryCatch.Catches>
+                          </TryCatch>
+                          <Assign sap2010:Annotation.AnnotationText="끝난 것으로 보는 경우. 흐름 B: 200(저장됨) 또는 409 INVALID_STATE(이미 반영됨 = 성공으로 봄). 흐름 A: 201(저장됨), 409(DUPLICATE_FILE 이미 저장됨), 422(입력 오류라 다시 보내도 소용없음, 음성은 failed 로). 설계서 4.2 와 같다." DisplayName="Assign: 다시 보내기 끝났는지" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="Assign_10">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:Boolean">[isDone]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:Boolean">[If(isB, status = 200 OrElse (status = 409 AndAlso resp IsNot Nothing AndAlso resp.Contains("INVALID_STATE")), status = 201 OrElse status = 409 OrElse status = 422)]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <ui:LogMessage sap2010:Annotation.AnnotationText="순번과 상태 코드만 남긴다. 파일명에 담당자·고객사가 있고 본문에 대화가 있어 남기지 않는다." DisplayName="Log Message: 재전송 상태 코드" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;10_Resend(&quot; + in_mode + &quot;) &quot; + CurrentIndex.ToString() + &quot;번째 상태 코드=&quot; + status.ToString()]" />
+                          <Assign sap2010:Annotation.AnnotationText="422 이거나, 201 로 저장됐는데 본문의 status 가 FAILED 이면 failed 로 보낸다. 01_Input 의 규칙(저장 201·409 는 done, FAILED 저장·422 는 failed)과 같다. 409 는 done. 흐름 B 는 결과를 쓰지 않는다." DisplayName="Assign: 실패 건인지" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="Assign_11">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:Boolean">[isFailed]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:Boolean">[isDone AndAlso (status = 422 OrElse (status = 201 AndAlso Newtonsoft.Json.Linq.JObject.Parse(reqBody)("status").ToString() = "FAILED"))]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+<If sap2010:Annotation.AnnotationText="흐름 A 는 못 보냈을 때 음성을 입력 폴더에 남겨 뒀다. 이제 보냈으니 01_Input 과 같은 규칙으로 done 또는 failed 로 옮긴다. 흐름 B 는 임시 음성을 이미 지웠으므로 옮길 것이 없다. 사람이 음성을 이미 치웠으면 건너뛴다. If 가 겹치지 않게 끝났는지(isDone)와 두 조건을 하나로 합쳐 JSON 삭제보다 앞에 둔다." Condition="[isDone AndAlso Not isB AndAlso System.IO.File.Exists(System.IO.Path.Combine(in_inputDir, System.IO.Path.GetFileNameWithoutExtension(CurrentFile.Name)))]" DisplayName="If: 끝난 흐름 A 건이고 음성이 있을 때" sap2010:WorkflowViewState.IdRef="If_4">
+  <If.Then>
+<Sequence DisplayName="Then: done 또는 failed 로 이동" sap2010:WorkflowViewState.IdRef="Sequence_3">
+                                            <ui:CreateDirectory ContinueOnError="{x:Null}" Output="{x:Null}" sap2010:Annotation.AnnotationText="도착 폴더(done 또는 failed)가 없으면 만든다. 있으면 그대로 둔다." DisplayName="Create Folder: 도착 폴더" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="[If(isFailed, in_failedDir, in_doneDir)]" />
+                                            <ui:MoveFile ContinueOnError="{x:Null}" DestinationResource="{x:Null}" PathResource="{x:Null}" sap2010:Annotation.AnnotationText="처리한 음성을 입력 폴더에서 옮긴다. 같은 이름이 이미 있으면 덮어쓴다(01_Input 과 같은 동작)." Destination="[System.IO.Path.Combine(If(isFailed, in_failedDir, in_doneDir), System.IO.Path.GetFileNameWithoutExtension(CurrentFile.Name))]" DisplayName="Move File: 음성 → done 또는 failed" sap2010:WorkflowViewState.IdRef="MoveFile_1" Overwrite="True" Path="[System.IO.Path.Combine(in_inputDir, System.IO.Path.GetFileNameWithoutExtension(CurrentFile.Name))]" />
+                                          </Sequence>
+  </If.Then>
+</If>
+<If sap2010:Annotation.AnnotationText="끝났으면 JSON 을 지운다. 흐름 A 는 입력 폴더에 남겨 둔 음성도 done 또는 failed 로 옮긴다." Condition="[isDone]" DisplayName="If: 다시 보내기가 끝났을 때" sap:VirtualizedContainerService.HintSize="488,1675" sap2010:WorkflowViewState.IdRef="If_6">
+                            <If.Then>
+                              <Sequence DisplayName="Then: 정리" sap:VirtualizedContainerService.HintSize="486,768" sap2010:WorkflowViewState.IdRef="Sequence_5">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <ui:DeleteFileX sap2010:Annotation.AnnotationText="서버에 반영됐으므로 unsent 의 JSON 을 지운다. 지우지 않으면 다음 실행 때 또 보낸다." DisplayName="Delete File: 보관한 JSON" sap:VirtualizedContainerService.HintSize="452,124" sap2010:WorkflowViewState.IdRef="DeleteFileX_1" Path="[CurrentFile.FullName]" />
+                                <Assign sap2010:Annotation.AnnotationText="성공한 건수를 하나 늘린다." DisplayName="Assign: 전송 완료 건수 +1" sap:VirtualizedContainerService.HintSize="452,166" sap2010:WorkflowViewState.IdRef="Assign_12">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:Int32">[sentCount]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:Int32">[sentCount + 1]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                              </Sequence>
+                            </If.Then>
+                          </If>
+<If sap2010:Annotation.AnnotationText="4xx 는 다시 보내도 같은 결과라 계속 시도하지 않는다. 파일 이름 끝에 .rejected 를 붙여 사람이 확인할 수 있게 남긴다. If 가 겹치지 않도록 위의 끝났을 때 If 안이 아니라 같은 층에 둔다." Condition="[Not isDone AndAlso status &gt; 0 AndAlso status &lt; 500]" DisplayName="If: 서버가 거절(4xx)했을 때" sap2010:WorkflowViewState.IdRef="If_5">
+  <If.Then>
+<Sequence DisplayName="Then: .rejected 로 이름 바꾸기" sap:VirtualizedContainerService.HintSize="450,419" sap2010:WorkflowViewState.IdRef="Sequence_6">
+                                    <sap:WorkflowViewStateService.ViewState>
+                                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                      </scg:Dictionary>
+                                    </sap:WorkflowViewStateService.ViewState>
+                                    <ui:MoveFile ContinueOnError="{x:Null}" DestinationResource="{x:Null}" PathResource="{x:Null}" sap2010:Annotation.AnnotationText="*.json 필터에 더는 걸리지 않게 이름 뒤에 .rejected 를 붙인다." Destination="[CurrentFile.FullName + &quot;.rejected&quot;]" DisplayName="Move File: JSON → .rejected" sap:VirtualizedContainerService.HintSize="416,193" sap2010:WorkflowViewState.IdRef="MoveFile_2" Overwrite="True" Path="[CurrentFile.FullName]" />
+                                    <Assign sap2010:Annotation.AnnotationText="거절돼 따로 남긴 건수를 하나 늘린다." DisplayName="Assign: 남긴 건수 +1 (거절)" sap:VirtualizedContainerService.HintSize="416,166" sap2010:WorkflowViewState.IdRef="Assign_13">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:Int32">[keptCount]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:Int32">[keptCount + 1]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                  </Sequence>
+  </If.Then>
+</If>
+<If sap2010:Annotation.AnnotationText="서버가 아직 안 살아 있다(0 은 연결 실패, 5xx 는 서버 오류). JSON 을 그대로 두고 다음 실행에서 다시 보낸다. 위의 거절 If 와 같은 층에 둔다." Condition="[Not isDone AndAlso (status = 0 OrElse status &gt;= 500)]" DisplayName="If: 서버가 아직 안 될 때(0·5xx)" sap2010:WorkflowViewState.IdRef="If_8">
+  <If.Then>
+<Assign sap2010:Annotation.AnnotationText="서버가 아직 안 살아 있다(0·5xx). JSON 을 그대로 두고 다음 실행에서 다시 보낸다." DisplayName="Assign: 남긴 건수 +1 (서버 불가)" sap:VirtualizedContainerService.HintSize="450,143" sap2010:WorkflowViewState.IdRef="Assign_14">
+                                    <Assign.To>
+                                      <OutArgument x:TypeArguments="x:Int32">[keptCount]</OutArgument>
+                                    </Assign.To>
+                                    <Assign.Value>
+                                      <InArgument x:TypeArguments="x:Int32">[keptCount + 1]</InArgument>
+                                    </Assign.Value>
+                                  </Assign>
+  </If.Then>
+</If>
+                        </Sequence>
+                      </TryCatch.Try>
+                      <TryCatch.Catches>
+                        <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+                          <ActivityAction x:TypeArguments="s:Exception">
+                            <ActivityAction.Argument>
+                              <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                            </ActivityAction.Argument>
+                            <Sequence DisplayName="Catch: 파일 처리 실패" sap:VirtualizedContainerService.HintSize="522,401" sap2010:WorkflowViewState.IdRef="Sequence_8">
+                              <sap:WorkflowViewStateService.ViewState>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                </scg:Dictionary>
+                              </sap:WorkflowViewStateService.ViewState>
+                              <ui:LogMessage sap2010:Annotation.AnnotationText="예외 종류만 남긴다. 메시지에 파일 경로나 내용이 들어갈 수 있어 남기지 않는다." DisplayName="Log Message: 처리 중 예외" sap:VirtualizedContainerService.HintSize="488,175" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Warn" Message="[&quot;10_Resend(&quot; + in_mode + &quot;) &quot; + CurrentIndex.ToString() + &quot;번째 처리 중 예외: &quot; + exception.GetType().Name]" />
+                              <Assign sap2010:Annotation.AnnotationText="예외가 난 파일은 그대로 두고 다음 실행에서 다시 시도한다." DisplayName="Assign: 남긴 건수 +1 (예외)" sap:VirtualizedContainerService.HintSize="488,166" sap2010:WorkflowViewState.IdRef="Assign_15">
+                                <Assign.To>
+                                  <OutArgument x:TypeArguments="x:Int32">[keptCount]</OutArgument>
+                                </Assign.To>
+                                <Assign.Value>
+                                  <InArgument x:TypeArguments="x:Int32">[keptCount + 1]</InArgument>
+                                </Assign.Value>
+                              </Assign>
+                            </Sequence>
+                          </ActivityAction>
+                        </Catch>
+                      </TryCatch.Catches>
+                    </TryCatch>
+                  </If.Then>
+                </If>
+              </Sequence>
+            </ActivityAction>
+          </ui:ForEachFileX.Body>
+        </ui:ForEachFileX>
+      </If.Then>
+    </If>
+    <ui:LogMessage sap2010:Annotation.AnnotationText="이번 실행에서 보낸 건수와 남긴 건수만 남긴다." DisplayName="Log Message: 재전송 결과" sap:VirtualizedContainerService.HintSize="564,166" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;10_Resend(&quot; + in_mode + &quot;): 전송 완료 &quot; + sentCount.ToString() + &quot;건, 남김 &quot; + keptCount.ToString() + &quot;건&quot;]">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:LogMessage>
+  </Sequence>
+</Activity>
