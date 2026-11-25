@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:uwahm="clr-namespace:UiPath.Web.Activities.Http.Models;assembly=UiPath.Web.Activities" xmlns:uwah="clr-namespace:UiPath.Web.Activities.Http;assembly=UiPath.Web.Activities" xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sio="clr-namespace:System.IO;assembly=System.Private.CoreLib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uwah="clr-namespace:UiPath.Web.Activities.Http;assembly=UiPath.Web.Activities" xmlns:uwahm="clr-namespace:UiPath.Web.Activities.Http.Models;assembly=UiPath.Web.Activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_baseUrl" Type="InArgument(x:String)" />
     <x:Property Name="in_apiKey" Type="InArgument(x:String)" />
@@ -15,6 +15,7 @@
     <x:Property Name="in_custName" Type="InArgument(x:String)" />
     <x:Property Name="in_durationSec" Type="InArgument(x:Int32)" />
     <x:Property Name="out_statusCode" Type="OutArgument(x:Int32)" />
+    <x:Property Name="out_requestBody" Type="OutArgument(x:String)" />
     <x:Property Name="out_respBody" Type="OutArgument(x:String)" />
   </x:Members>
   <VisualBasic.Settings>
@@ -108,5 +109,368 @@
       <AssemblyReference>CB53A7C5ADF_categori.fli3N2L6VDG1RdEce3rj6vL4</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="08_SaveB: 통화 결과 서버에 저장 (PUT)" sap2010:Annotation.AnnotationText="가져간 통화 1건의 처리 결과를 PUT /api/calls/{id}/result 로 서버에 저장한다. ①초기화 ②공통 필드 ③본문 조립 ④직렬화 ⑤전송 순서."><Sequence.Variables><Variable x:TypeArguments="scg:Dictionary(x:String, x:Object)" Name="dict_body" /><Variable x:TypeArguments="njl:JObject" Name="jo_analysis" /><Variable x:TypeArguments="x:String" Name="str_errorMessage" /><Variable x:TypeArguments="x:String" Name="str_body" /><Variable x:TypeArguments="x:Boolean" Name="bool_aiParseFailed" /><Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpRes" /></Sequence.Variables><Sequence DisplayName="① 초기화" sap2010:Annotation.AnnotationText="출력값과 요청 본문 딕셔너리를 비운다."><Assign DisplayName="Assign: out_statusCode 초기화" sap2010:Annotation.AnnotationText="상태 코드를 0(미전송)으로 둔다. 전송하면 서버 응답 코드로 바뀐다."><Assign.To><OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: out_respBody 초기화" sap2010:Annotation.AnnotationText="응답 본문을 빈 문자열로 둔다."><Assign.To><OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[&quot;&quot;]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: dict_body 새로 만들기" sap2010:Annotation.AnnotationText="JSON 으로 바꿀 요청 본문을 담을 빈 딕셔너리를 만든다."><Assign.To><OutArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)">[dict_body]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)">[New Dictionary(Of String, Object)()]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: jo_analysis 새로 만들기" sap2010:Annotation.AnnotationText="AI 분석 결과를 담을 빈 JSON 객체를 만든다. 파싱에 실패해도 빈 객체로 남는다."><Assign.To><OutArgument x:TypeArguments="njl:JObject">[jo_analysis]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JObject">[New Newtonsoft.Json.Linq.JObject()]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: bool_aiParseFailed 초기화" sap2010:Annotation.AnnotationText="AI 응답 파싱 실패 여부. 실패하면 사람 검토 대상(needs_review)이 된다."><Assign.To><OutArgument x:TypeArguments="x:Boolean">[bool_aiParseFailed]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[False]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: str_errorMessage 복사" sap2010:Annotation.AnnotationText="실패 사유 인자를 지역 변수로 복사한다. 비어 있으면 아래에서 기본값을 넣기 위함이다."><Assign.To><OutArgument x:TypeArguments="x:String">[str_errorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[in_errorMessage]</InArgument></Assign.Value></Assign></Sequence><Sequence DisplayName="② 공통 필드 채우기" sap2010:Annotation.AnnotationText="성공과 실패 모두에 들어가는 status 를 채운다."><Assign DisplayName="Assign: status" sap2010:Annotation.AnnotationText="처리 결과(SUCCESS 또는 FAILED)."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;status&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_status]</InArgument></Assign.Value></Assign></Sequence><Sequence DisplayName="③ 요청 본문 조립" sap2010:Annotation.AnnotationText="status 가 FAILED 인지에 따라 본문 내용을 다르게 채운다."><If Condition="[in_status = &quot;FAILED&quot;]" DisplayName="If: 실패 건인가" sap2010:Annotation.AnnotationText="FAILED 이면 실패 사유만, 아니면 분석 결과 전체를 담는다."><If.Then><Sequence DisplayName="FAILED: 실패 사유만 담기" sap2010:Annotation.AnnotationText="실패 건은 사유만 서버에 남긴다. 분석 필드는 보내지 않는다."><If Condition="[str_errorMessage Is Nothing OrElse str_errorMessage.Trim() = &quot;&quot;]" DisplayName="If: 실패 사유가 비었는가" sap2010:Annotation.AnnotationText="사유가 Nothing 또는 공백이면 &quot;UNKNOWN: 사유 불명&quot;으로 바꿔 서버가 빈 사유를 받지 않게 한다."><If.Then><Assign DisplayName="Assign: 기본 사유 넣기" sap2010:Annotation.AnnotationText="사유가 없을 때 기본 문구를 넣는다."><Assign.To><OutArgument x:TypeArguments="x:String">[str_errorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[&quot;UNKNOWN: 사유 불명&quot;]</InArgument></Assign.Value></Assign></If.Then></If><Assign DisplayName="Assign: error_message" sap2010:Annotation.AnnotationText="실패 사유."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;error_message&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[str_errorMessage]</InArgument></Assign.Value></Assign></Sequence></If.Then><If.Else><Sequence DisplayName="SUCCESS: 분석 결과 담기" sap2010:Annotation.AnnotationText="성공 건은 대화 전문과 AI 분석 결과를 모두 담는다."><Assign DisplayName="Assign: category" sap2010:Annotation.AnnotationText="AI 가 분류한 문의 유형."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;category&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_category]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: customer_question" sap2010:Annotation.AnnotationText="고객 질문 요지."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;customer_question&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_question]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: action_taken" sap2010:Annotation.AnnotationText="상담원 조치 내용."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;action_taken&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_action]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: follow_up_needed" sap2010:Annotation.AnnotationText="후속 조치 필요 여부. 문자열 &quot;true&quot; 일 때만 True."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;follow_up_needed&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_followUp = &quot;true&quot;]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: confidence" sap2010:Annotation.AnnotationText="AI 확신도. 소수 둘째 자리까지 반올림."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;confidence&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[Math.Round(in_confidence, 2)]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: transcript" sap2010:Annotation.AnnotationText="마스킹된 대화 전문."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;transcript&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_transcript]</InArgument></Assign.Value></Assign><If Condition="[in_transcript IsNot Nothing AndAlso System.Text.RegularExpressions.Regex.IsMatch(in_transcript, &quot;(?m)^\[고객\].*?(\d{2,3}-\*{4}-\d{4})&quot;)]" DisplayName="If: 대화에 마스킹된 고객 번호가 있는가" sap2010:Annotation.AnnotationText="고객 발화 줄에 02-****-1234 형태가 있으면 그 번호를 customer_phone 으로 쓰고, 없으면 null 로 둔다."><If.Then><Assign DisplayName="Assign: customer_phone" sap2010:Annotation.AnnotationText="마스킹된 고객 번호."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;customer_phone&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[System.Text.RegularExpressions.Regex.Match(in_transcript, &quot;(?m)^\[고객\].*?(\d{2,3}-\*{4}-\d{4})&quot;).Groups(1).Value]</InArgument></Assign.Value></Assign></If.Then><If.Else><Assign DisplayName="Assign: customer_phone" sap2010:Annotation.AnnotationText="번호가 없으면 null."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;customer_phone&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[Nothing]</InArgument></Assign.Value></Assign></If.Else></If><TryCatch DisplayName="Try Catch: AI 응답 JSON 파싱" sap2010:Annotation.AnnotationText="AI 원문(in_aiRaw)을 JSON 객체로 읽는다. 형식이 깨졌으면 실패 표시를 하고 빈 객체로 계속한다."><TryCatch.Try><Assign DisplayName="Assign: jo_analysis 파싱" sap2010:Annotation.AnnotationText="AI 원문을 JSON 객체로 바꾼다."><Assign.To><OutArgument x:TypeArguments="njl:JObject">[jo_analysis]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JObject">[Newtonsoft.Json.Linq.JObject.Parse(in_aiRaw)]</InArgument></Assign.Value></Assign></TryCatch.Try><TryCatch.Catches><Catch x:TypeArguments="s:Exception"><ActivityAction x:TypeArguments="s:Exception"><ActivityAction.Argument><DelegateInArgument x:TypeArguments="s:Exception" Name="exception" /></ActivityAction.Argument><Sequence DisplayName="파싱 실패 처리" sap2010:Annotation.AnnotationText="파싱 실패를 기록하고 경고를 남긴다."><Assign DisplayName="Assign: bool_aiParseFailed = True" sap2010:Annotation.AnnotationText="파싱 실패를 기록한다. 아래 needs_review 판단에 쓰인다."><Assign.To><OutArgument x:TypeArguments="x:Boolean">[bool_aiParseFailed]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value></Assign><ui:LogMessage DisplayName="Log Message: AI 응답 파싱 실패" sap2010:Annotation.AnnotationText="파싱 실패를 경고로 남긴다." Level="Warn" Message="[&quot;AI 응답 JSON 파싱 실패: &quot; + exception.Message]" /></Sequence></ActivityAction></Catch></TryCatch.Catches></TryCatch><Assign DisplayName="Assign: needs_review" sap2010:Annotation.AnnotationText="확신도가 0.7 미만이거나 AI 응답 파싱에 실패했으면 사람이 검토해야 한다."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;needs_review&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[in_confidence &lt; 0.7 OrElse bool_aiParseFailed]</InArgument></Assign.Value></Assign><If Condition="[in_custName = &quot;&quot;]" DisplayName="If: 고객 이름이 비었는가" sap2010:Annotation.AnnotationText="이름이 없으면 null, 있으면 이름을 분석 JSON 에 넣는다."><If.Then><Assign DisplayName="Assign: customer_name = null" sap2010:Annotation.AnnotationText="이름 없음."><Assign.To><OutArgument x:TypeArguments="njl:JToken">[jo_analysis(&quot;customer_name&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JToken">[Newtonsoft.Json.Linq.JValue.CreateNull()]</InArgument></Assign.Value></Assign></If.Then><If.Else><Assign DisplayName="Assign: customer_name = 이름" sap2010:Annotation.AnnotationText="고객 이름을 분석 JSON 에 넣는다."><Assign.To><OutArgument x:TypeArguments="njl:JToken">[jo_analysis(&quot;customer_name&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JToken">[in_custName]</InArgument></Assign.Value></Assign></If.Else></If><Assign DisplayName="Assign: duration_sec" sap2010:Annotation.AnnotationText="통화 길이(초)를 분석 JSON 에 넣는다."><Assign.To><OutArgument x:TypeArguments="njl:JToken">[jo_analysis(&quot;duration_sec&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JToken">[in_durationSec]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: analysis_json" sap2010:Annotation.AnnotationText="완성된 분석 JSON 을 본문에 넣는다."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;analysis_json&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[jo_analysis]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: error_message" sap2010:Annotation.AnnotationText="성공 건은 사유 없음(null)."><Assign.To><OutArgument x:TypeArguments="x:Object">[dict_body(&quot;error_message&quot;)]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Object">[Nothing]</InArgument></Assign.Value></Assign></Sequence></If.Else></If></Sequence><Sequence DisplayName="④ JSON 문자열 만들기" sap2010:Annotation.AnnotationText="딕셔너리를 서버에 보낼 JSON 문자열로 바꾼다."><Assign DisplayName="Assign: str_body 직렬화" sap2010:Annotation.AnnotationText="dict_body 를 한 줄 JSON 문자열로 바꾼다. null 값도 그대로 포함된다."><Assign.To><OutArgument x:TypeArguments="x:String">[str_body]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[Newtonsoft.Json.JsonConvert.SerializeObject(dict_body)]</InArgument></Assign.Value></Assign></Sequence><Sequence DisplayName="⑤ 서버로 전송" sap2010:Annotation.AnnotationText="만든 JSON 을 백엔드에 보내고 상태 코드와 응답 본문을 인자로 돌려준다. 주소 오류 등 예외는 상태 코드 0 과 HTTP_ERROR 메시지로 바꿔 돌려준다."><TryCatch DisplayName="Try Catch: 전송 오류 보호" sap2010:Annotation.AnnotationText="전송 중 예외(주소 비어 있음, 연결 불가 등)가 나도 워크플로가 멈추지 않게 한다."><TryCatch.Try><Sequence DisplayName="전송과 결과 저장" sap2010:Annotation.AnnotationText="만든 JSON 을 백엔드에 PUT 으로 보내고 상태 코드와 응답 본문을 인자로 돌려준다."><uwah:NetHttpRequest DisplayName="HTTP Request: PUT /api/calls/{id}/result" sap2010:Annotation.AnnotationText="JSON 본문(str_body)을 PUT /api/calls/{call_id}/result 로 보낸다. 5xx·네트워크 오류면 5초 간격 최대 3회 재시도하고 4xx 는 재시도하지 않는다. 결과는 httpRes 에 담는다." Method="PUT" RequestBodyType="Text" RetryPolicyType="Basic" RetryCount="[3]" InitialDelay="[5000]" ContinueOnError="[True]" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + in_callId + &quot;/result&quot;]" TextPayload="[str_body]" Result="[httpRes]" TimeoutInMiliseconds="[60000]"><uwah:NetHttpRequest.Headers><InArgument x:TypeArguments="scg:Dictionary(x:String, x:String)">[If(in_apiKey Is Nothing OrElse in_apiKey = &quot;&quot;, New Dictionary(Of String, String)(), New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}})]</InArgument></uwah:NetHttpRequest.Headers></uwah:NetHttpRequest><Assign DisplayName="Assign: out_statusCode" sap2010:Annotation.AnnotationText="서버가 돌려준 상태 코드를 출력 인자에 담는다."><Assign.To><OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[CInt(httpRes.StatusCode)]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: out_respBody" sap2010:Annotation.AnnotationText="서버가 돌려준 본문을 출력 인자에 담는다."><Assign.To><OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[httpRes.TextContent]</InArgument></Assign.Value></Assign></Sequence></TryCatch.Try><TryCatch.Catches><Catch x:TypeArguments="s:Exception"><ActivityAction x:TypeArguments="s:Exception"><ActivityAction.Argument><DelegateInArgument x:TypeArguments="s:Exception" Name="exception" /></ActivityAction.Argument><Sequence DisplayName="전송 실패 처리" sap2010:Annotation.AnnotationText="예외를 상태 코드 0 과 HTTP_ERROR 메시지로 바꾼다."><Assign DisplayName="Assign: out_statusCode = 0" sap2010:Annotation.AnnotationText="예외가 났으므로 상태 코드를 0(전송 실패)으로 둔다."><Assign.To><OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign><Assign DisplayName="Assign: out_respBody = HTTP_ERROR" sap2010:Annotation.AnnotationText="예외 종류와 메시지를 응답 본문 자리에 남긴다. 호출한 쪽이 이 값을 보고 실패 처리한다."><Assign.To><OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[&quot;HTTP_ERROR: &quot; + exception.GetType().Name + &quot; &quot; + exception.Message]</InArgument></Assign.Value></Assign></Sequence></ActivityAction></Catch></TryCatch.Catches></TryCatch></Sequence><ui:LogMessage DisplayName="Log Message: 전송 결과" sap2010:Annotation.AnnotationText="전송 결과 코드만 남긴다. 본문은 개인정보가 있을 수 있어 찍지 않는다." Level="Info" Message="[&quot;08_SaveB: PUT 상태 코드=&quot; + out_statusCode.ToString()]" /></Sequence>
+  <Sequence sap2010:Annotation.AnnotationText="가져간 통화 1건의 처리 결과를 PUT /api/calls/{id}/result 로 서버에 저장한다. ①초기화 ②공통 필드 ③본문 조립 ④직렬화 ⑤전송 순서." DisplayName="08_SaveB: 통화 결과 서버에 저장 (PUT)" sap:VirtualizedContainerService.HintSize="944,3405" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="scg:Dictionary(x:String, x:Object)" Name="dict_body" />
+      <Variable x:TypeArguments="njl:JObject" Name="jo_analysis" />
+      <Variable x:TypeArguments="x:String" Name="str_errorMessage" />
+      <Variable x:TypeArguments="x:String" Name="str_body" />
+      <Variable x:TypeArguments="x:Boolean" Name="bool_aiParseFailed" />
+      <Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpRes" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <Sequence sap2010:Annotation.AnnotationText="출력값과 요청 본문 딕셔너리를 비운다." DisplayName="① 초기화" sap:VirtualizedContainerService.HintSize="650,1133" sap2010:WorkflowViewState.IdRef="Sequence_2">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <Assign sap2010:Annotation.AnnotationText="상태 코드를 0(미전송)으로 둔다. 전송하면 서버 응답 코드로 바뀐다." DisplayName="Assign: out_statusCode 초기화" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_1">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="응답 본문을 빈 문자열로 둔다." DisplayName="Assign: out_respBody 초기화" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_2">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">[""]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="JSON 으로 바꿀 요청 본문을 담을 빈 딕셔너리를 만든다." DisplayName="Assign: dict_body 새로 만들기" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_3">
+        <Assign.To>
+          <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)">[dict_body]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)">[New Dictionary(Of String, Object)()]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="AI 분석 결과를 담을 빈 JSON 객체를 만든다. 파싱에 실패해도 빈 객체로 남는다." DisplayName="Assign: jo_analysis 새로 만들기" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_4">
+        <Assign.To>
+          <OutArgument x:TypeArguments="njl:JObject">[jo_analysis]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="njl:JObject">[New Newtonsoft.Json.Linq.JObject()]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="AI 응답 파싱 실패 여부. 실패하면 사람 검토 대상(needs_review)이 된다." DisplayName="Assign: bool_aiParseFailed 초기화" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_5">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Boolean">[bool_aiParseFailed]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="실패 사유 인자를 지역 변수로 복사한다. 비어 있으면 아래에서 기본값을 넣기 위함이다." DisplayName="Assign: str_errorMessage 복사" sap:VirtualizedContainerService.HintSize="616,166" sap2010:WorkflowViewState.IdRef="Assign_6">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[str_errorMessage]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">[in_errorMessage]</InArgument>
+        </Assign.Value>
+      </Assign>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="성공과 실패 모두에 들어가는 status 를 채운다." DisplayName="② 공통 필드 채우기" sap:VirtualizedContainerService.HintSize="650,258" sap2010:WorkflowViewState.IdRef="Sequence_3">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <Assign sap2010:Annotation.AnnotationText="처리 결과(SUCCESS 또는 FAILED)." DisplayName="Assign: status" sap:VirtualizedContainerService.HintSize="616,166" sap2010:WorkflowViewState.IdRef="Assign_7">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:Object">[dict_body("status")]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:Object">[in_status]</InArgument>
+        </Assign.Value>
+      </Assign>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="status 가 FAILED 인지에 따라 본문 내용을 다르게 채운다." DisplayName="③ 요청 본문 조립" sap:VirtualizedContainerService.HintSize="650,294" sap2010:WorkflowViewState.IdRef="Sequence_7">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <If sap2010:Annotation.AnnotationText="FAILED 이면 실패 사유만, 아니면 분석 결과 전체를 담는다." Condition="[in_status = &quot;FAILED&quot;]" DisplayName="If: 실패 건인가" sap:VirtualizedContainerService.HintSize="616,202" sap2010:WorkflowViewState.IdRef="If_4">
+        <If.Then>
+          <Sequence sap2010:Annotation.AnnotationText="실패 건은 사유만 서버에 남긴다. 분석 필드는 보내지 않는다." DisplayName="FAILED: 실패 사유만 담기" sap2010:WorkflowViewState.IdRef="Sequence_4">
+            <If sap2010:Annotation.AnnotationText="사유가 Nothing 또는 공백이면 &quot;UNKNOWN: 사유 불명&quot;으로 바꿔 서버가 빈 사유를 받지 않게 한다." Condition="[str_errorMessage Is Nothing OrElse str_errorMessage.Trim() = &quot;&quot;]" DisplayName="If: 실패 사유가 비었는가" sap2010:WorkflowViewState.IdRef="If_1">
+              <If.Then>
+                <Assign sap2010:Annotation.AnnotationText="사유가 없을 때 기본 문구를 넣는다." DisplayName="Assign: 기본 사유 넣기" sap2010:WorkflowViewState.IdRef="Assign_8">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[str_errorMessage]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">["UNKNOWN: 사유 불명"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+            </If>
+            <Assign sap2010:Annotation.AnnotationText="실패 사유." DisplayName="Assign: error_message" sap2010:WorkflowViewState.IdRef="Assign_9">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("error_message")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[str_errorMessage]</InArgument>
+              </Assign.Value>
+            </Assign>
+          </Sequence>
+        </If.Then>
+        <If.Else>
+          <Sequence sap2010:Annotation.AnnotationText="성공 건은 대화 전문과 AI 분석 결과를 모두 담는다." DisplayName="SUCCESS: 분석 결과 담기" sap2010:WorkflowViewState.IdRef="Sequence_6">
+            <Assign sap2010:Annotation.AnnotationText="AI 가 분류한 문의 유형." DisplayName="Assign: category" sap2010:WorkflowViewState.IdRef="Assign_10">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("category")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_category]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="고객 질문 요지." DisplayName="Assign: customer_question" sap2010:WorkflowViewState.IdRef="Assign_11">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("customer_question")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_question]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="상담원 조치 내용." DisplayName="Assign: action_taken" sap2010:WorkflowViewState.IdRef="Assign_12">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("action_taken")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_action]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="후속 조치 필요 여부. 문자열 &quot;true&quot; 일 때만 True." DisplayName="Assign: follow_up_needed" sap2010:WorkflowViewState.IdRef="Assign_13">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("follow_up_needed")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_followUp = "true"]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="AI 확신도. 소수 둘째 자리까지 반올림." DisplayName="Assign: confidence" sap2010:WorkflowViewState.IdRef="Assign_14">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("confidence")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[Math.Round(in_confidence, 2)]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="마스킹된 대화 전문." DisplayName="Assign: transcript" sap2010:WorkflowViewState.IdRef="Assign_15">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("transcript")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_transcript]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <If sap2010:Annotation.AnnotationText="고객 발화 줄에 02-****-1234 형태가 있으면 그 번호를 customer_phone 으로 쓰고, 없으면 null 로 둔다." Condition="[in_transcript IsNot Nothing AndAlso System.Text.RegularExpressions.Regex.IsMatch(in_transcript, &quot;(?m)^\[고객\].*?(\d{2,3}-\*{4}-\d{4})&quot;)]" DisplayName="If: 대화에 마스킹된 고객 번호가 있는가" sap2010:WorkflowViewState.IdRef="If_2">
+              <If.Then>
+                <Assign sap2010:Annotation.AnnotationText="마스킹된 고객 번호." DisplayName="Assign: customer_phone" sap2010:WorkflowViewState.IdRef="Assign_16">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Object">[dict_body("customer_phone")]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Object">[System.Text.RegularExpressions.Regex.Match(in_transcript, "(?m)^\[고객\].*?(\d{2,3}-\*{4}-\d{4})").Groups(1).Value]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+              <If.Else>
+                <Assign sap2010:Annotation.AnnotationText="번호가 없으면 null." DisplayName="Assign: customer_phone" sap2010:WorkflowViewState.IdRef="Assign_17">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Object">[dict_body("customer_phone")]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Object">[Nothing]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Else>
+            </If>
+            <TryCatch sap2010:Annotation.AnnotationText="AI 원문(in_aiRaw)을 JSON 객체로 읽는다. 형식이 깨졌으면 실패 표시를 하고 빈 객체로 계속한다." DisplayName="Try Catch: AI 응답 JSON 파싱" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+              <TryCatch.Try>
+                <Assign sap2010:Annotation.AnnotationText="AI 원문을 JSON 객체로 바꾼다." DisplayName="Assign: jo_analysis 파싱" sap2010:WorkflowViewState.IdRef="Assign_18">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="njl:JObject">[jo_analysis]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="njl:JObject">[Newtonsoft.Json.Linq.JObject.Parse(in_aiRaw)]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </TryCatch.Try>
+              <TryCatch.Catches>
+                <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+                  <ActivityAction x:TypeArguments="s:Exception">
+                    <ActivityAction.Argument>
+                      <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                    </ActivityAction.Argument>
+                    <Sequence sap2010:Annotation.AnnotationText="파싱 실패를 기록하고 경고를 남긴다." DisplayName="파싱 실패 처리" sap2010:WorkflowViewState.IdRef="Sequence_5">
+                      <Assign sap2010:Annotation.AnnotationText="파싱 실패를 기록한다. 아래 needs_review 판단에 쓰인다." DisplayName="Assign: bool_aiParseFailed = True" sap2010:WorkflowViewState.IdRef="Assign_19">
+                        <Assign.To>
+                          <OutArgument x:TypeArguments="x:Boolean">[bool_aiParseFailed]</OutArgument>
+                        </Assign.To>
+                        <Assign.Value>
+                          <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+                        </Assign.Value>
+                      </Assign>
+                      <ui:LogMessage sap2010:Annotation.AnnotationText="파싱 실패를 경고로 남긴다." DisplayName="Log Message: AI 응답 파싱 실패" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Warn" Message="[&quot;AI 응답 JSON 파싱 실패: &quot; + exception.Message]" />
+                    </Sequence>
+                  </ActivityAction>
+                </Catch>
+              </TryCatch.Catches>
+            </TryCatch>
+            <Assign sap2010:Annotation.AnnotationText="확신도가 0.7 미만이거나 AI 응답 파싱에 실패했으면 사람이 검토해야 한다." DisplayName="Assign: needs_review" sap2010:WorkflowViewState.IdRef="Assign_20">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("needs_review")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[in_confidence &lt; 0.7 OrElse bool_aiParseFailed]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <If sap2010:Annotation.AnnotationText="이름이 없으면 null, 있으면 이름을 분석 JSON 에 넣는다." Condition="[in_custName = &quot;&quot;]" DisplayName="If: 고객 이름이 비었는가" sap2010:WorkflowViewState.IdRef="If_3">
+              <If.Then>
+                <Assign sap2010:Annotation.AnnotationText="이름 없음." DisplayName="Assign: customer_name = null" sap2010:WorkflowViewState.IdRef="Assign_21">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="njl:JToken">[jo_analysis("customer_name")]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="njl:JToken">[Newtonsoft.Json.Linq.JValue.CreateNull()]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+              <If.Else>
+                <Assign sap2010:Annotation.AnnotationText="고객 이름을 분석 JSON 에 넣는다." DisplayName="Assign: customer_name = 이름" sap2010:WorkflowViewState.IdRef="Assign_22">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="njl:JToken">[jo_analysis("customer_name")]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="njl:JToken">[in_custName]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Else>
+            </If>
+            <Assign sap2010:Annotation.AnnotationText="통화 길이(초)를 분석 JSON 에 넣는다." DisplayName="Assign: duration_sec" sap2010:WorkflowViewState.IdRef="Assign_23">
+              <Assign.To>
+                <OutArgument x:TypeArguments="njl:JToken">[jo_analysis("duration_sec")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="njl:JToken">[in_durationSec]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="완성된 분석 JSON 을 본문에 넣는다." DisplayName="Assign: analysis_json" sap2010:WorkflowViewState.IdRef="Assign_24">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("analysis_json")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[jo_analysis]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="성공 건은 사유 없음(null)." DisplayName="Assign: error_message" sap2010:WorkflowViewState.IdRef="Assign_25">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Object">[dict_body("error_message")]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Object">[Nothing]</InArgument>
+              </Assign.Value>
+            </Assign>
+          </Sequence>
+        </If.Else>
+      </If>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="딕셔너리를 서버에 보낼 JSON 문자열로 바꾼다." DisplayName="④ JSON 문자열 만들기" sap:VirtualizedContainerService.HintSize="650,433" sap2010:WorkflowViewState.IdRef="Sequence_8">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <Assign sap2010:Annotation.AnnotationText="dict_body 를 한 줄 JSON 문자열로 바꾼다. null 값도 그대로 포함된다." DisplayName="Assign: str_body 직렬화" sap:VirtualizedContainerService.HintSize="616,175" sap2010:WorkflowViewState.IdRef="Assign_26">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[str_body]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">[Newtonsoft.Json.JsonConvert.SerializeObject(dict_body)]</InArgument>
+        </Assign.Value>
+      </Assign>
+      <Assign sap2010:Annotation.AnnotationText="보낸 JSON 본문을 호출한 쪽에 돌려준다. 서버 연결 실패·5xx일 때 output\unsent 에 보관해 다시 보내기 위함." DisplayName="Assign: out_requestBody" sap:VirtualizedContainerService.HintSize="616,166" sap2010:WorkflowViewState.IdRef="Assign_27">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[out_requestBody]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">[str_body]</InArgument>
+        </Assign.Value>
+      </Assign>
+    </Sequence>
+    <Sequence sap2010:Annotation.AnnotationText="만든 JSON 을 백엔드에 보내고 상태 코드와 응답 본문을 인자로 돌려준다. 주소 오류 등 예외는 상태 코드 0 과 HTTP_ERROR 메시지로 바꿔 돌려준다." DisplayName="⑤ 서버로 전송" sap:VirtualizedContainerService.HintSize="650,1098" sap2010:WorkflowViewState.IdRef="Sequence_11">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <TryCatch sap2010:Annotation.AnnotationText="전송 중 예외(주소 비어 있음, 연결 불가 등)가 나도 워크플로가 멈추지 않게 한다." DisplayName="Try Catch: 전송 오류 보호" sap:VirtualizedContainerService.HintSize="616,1006" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+        <TryCatch.Try>
+          <Sequence sap2010:Annotation.AnnotationText="만든 JSON 을 백엔드에 PUT 으로 보내고 상태 코드와 응답 본문을 인자로 돌려준다." DisplayName="전송과 결과 저장" sap:VirtualizedContainerService.HintSize="450,834" sap2010:WorkflowViewState.IdRef="Sequence_9">
+            <sap:WorkflowViewStateService.ViewState>
+              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+              </scg:Dictionary>
+            </sap:WorkflowViewStateService.ViewState>
+            <uwah:NetHttpRequest BasicAuthPassword="{x:Null}" BasicAuthSecurePassword="{x:Null}" BasicAuthUsername="{x:Null}" BinaryPayload="{x:Null}" ClientCertPassword="{x:Null}" ClientCertPath="{x:Null}" ClientCertSecurePassword="{x:Null}" Cookies="{x:Null}" CustomNegotiatedAuthCredentials="{x:Null}" FilePath="{x:Null}" FormData="{x:Null}" LocalFiles="{x:Null}" OAuthToken="{x:Null}" OutputFileName="{x:Null}" OutputFileTargetFolder="{x:Null}" Parameters="{x:Null}" PathResource="{x:Null}" ProxyConfiguration="{x:Null}" ResourceFiles="{x:Null}" sap2010:Annotation.AnnotationText="JSON 본문(str_body)을 PUT /api/calls/{call_id}/result 로 보낸다. 5xx·네트워크 오류면 5초 간격 최대 3회 재시도하고 4xx 는 재시도하지 않는다. 결과는 httpRes 에 담는다." AuthenticationType="None" ContinueOnError="[True]" DisableSslVerification="False" DisplayName="HTTP Request: PUT /api/calls/{id}/result" EnableCookies="True" FileOverwrite="AutoRename" FollowRedirects="True" FormDataParts="[New List (Of FormDataPart) From _&#xD;&#xA;{&#xD;&#xA;&#x9;New FileFormDataPart(),&#xD;&#xA;&#x9;New BinaryFormDataPart(),&#xD;&#xA;&#x9;New TextFormDataPart()&#xD;&#xA;}]" Headers="[If(in_apiKey Is Nothing OrElse in_apiKey = &quot;&quot;, New Dictionary(Of String, String)(), New Dictionary(Of String, String) From {{&quot;X-API-Key&quot;, in_apiKey}})]" sap:VirtualizedContainerService.HintSize="416,433" sap2010:WorkflowViewState.IdRef="NetHttpRequest_1" InitialDelay="[5000]" MaxRedirects="3" MaxRetryAfterDelay="30000" Method="PUT" Multiplier="2" PreferRetryAfterValue="True" RequestBodyType="Text" RequestUrl="[in_baseUrl + &quot;/api/calls/&quot; + in_callId + &quot;/result&quot;]" Result="[httpRes]" RetryCount="[3]" RetryStatusCodes="[New List (Of System.Net.HttpStatusCode) From _&#xD;&#xA;{&#xD;&#xA;&#x9;System.Net.HttpStatusCode.RequestTimeout,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.TooManyRequests,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.InternalServerError,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.BadGateway,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.ServiceUnavailable,&#xD;&#xA;&#x9;System.Net.HttpStatusCode.GatewayTimeout&#xD;&#xA;}]" SaveRawRequestResponse="False" SaveResponseAsFile="False" TextPayload="[str_body]" TextPayloadContentType="application/json" TextPayloadEncoding="UTF-8" TimeoutInMiliseconds="[60000]" TlsProtocol="Automatic" UseJitter="True" UseOsNegotiatedAuthCredentials="True" />
+            <Assign sap2010:Annotation.AnnotationText="서버가 돌려준 상태 코드를 출력 인자에 담는다." DisplayName="Assign: out_statusCode" sap:VirtualizedContainerService.HintSize="416,175" sap2010:WorkflowViewState.IdRef="Assign_28">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Int32">[CInt(httpRes.StatusCode)]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign sap2010:Annotation.AnnotationText="서버가 돌려준 본문을 출력 인자에 담는다." DisplayName="Assign: out_respBody" sap:VirtualizedContainerService.HintSize="416,166" sap2010:WorkflowViewState.IdRef="Assign_29">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">[httpRes.TextContent]</InArgument>
+              </Assign.Value>
+            </Assign>
+          </Sequence>
+        </TryCatch.Try>
+        <TryCatch.Catches>
+          <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+            <ActivityAction x:TypeArguments="s:Exception">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+              </ActivityAction.Argument>
+              <Sequence sap2010:Annotation.AnnotationText="예외를 상태 코드 0 과 HTTP_ERROR 메시지로 바꾼다." DisplayName="전송 실패 처리" sap2010:WorkflowViewState.IdRef="Sequence_10">
+                <Assign sap2010:Annotation.AnnotationText="예외가 났으므로 상태 코드를 0(전송 실패)으로 둔다." DisplayName="Assign: out_statusCode = 0" sap2010:WorkflowViewState.IdRef="Assign_30">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[out_statusCode]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign sap2010:Annotation.AnnotationText="예외 종류와 메시지를 응답 본문 자리에 남긴다. 호출한 쪽이 이 값을 보고 실패 처리한다." DisplayName="Assign: out_respBody = HTTP_ERROR" sap2010:WorkflowViewState.IdRef="Assign_31">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[out_respBody]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">["HTTP_ERROR: " + exception.GetType().Name + " " + exception.Message]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </ActivityAction>
+          </Catch>
+        </TryCatch.Catches>
+      </TryCatch>
+    </Sequence>
+    <ui:LogMessage sap2010:Annotation.AnnotationText="전송 결과 코드만 남긴다. 본문은 개인정보가 있을 수 있어 찍지 않는다." DisplayName="Log Message: 전송 결과" sap:VirtualizedContainerService.HintSize="650,166" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;08_SaveB: PUT 상태 코드=&quot; + out_statusCode.ToString()]" />
+  </Sequence>
 </Activity>

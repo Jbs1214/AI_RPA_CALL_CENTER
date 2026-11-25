@@ -116,6 +116,8 @@
       <Variable x:TypeArguments="x:String" Name="customerQuestion" />
       <Variable x:TypeArguments="x:String" Name="category" />
       <Variable x:TypeArguments="x:Int32" Name="saveStatus" />
+      <Variable x:TypeArguments="x:String" Name="invalidReason" />
+      <Variable x:TypeArguments="x:String" Name="requestBody" />
       <Variable x:TypeArguments="x:String" Name="saveBody" />
     </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
@@ -155,6 +157,17 @@
         <InArgument x:TypeArguments="x:String">[""]</InArgument>
       </Assign.Value>
     </Assign>
+    <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="10_Resend" sap2010:Annotation.AnnotationText="이전 실행에서 못 보낸 결과(output\unsent)를 먼저 다시 보낸다." sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_901" UnSafe="False" WorkflowFileName="10_Resend.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="in_baseUrl">[backendUrl]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_apiKey">[apiKey]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_mode">["B"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_unsentDir">["C:\CallCenter\output\unsent"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_inputDir">["C:\CallCenter\input"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_doneDir">["C:\CallCenter\done"]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_failedDir">["C:\CallCenter\failed"]</InArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
     <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" DisplayName="07_Pickup" sap:VirtualizedContainerService.HintSize="490,177" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="07_Pickup.xaml">
       <ui:InvokeWorkflowFile.Arguments>
         <InArgument x:TypeArguments="x:String" x:Key="in_baseUrl">[backendUrl]</InArgument>
@@ -284,6 +297,7 @@
                                         <OutArgument x:TypeArguments="x:String" x:Key="out_actionTaken">[actionTaken]</OutArgument>
                                         <OutArgument x:TypeArguments="x:String" x:Key="out_customerQuestion">[customerQuestion]</OutArgument>
                                         <OutArgument x:TypeArguments="x:String" x:Key="out_category">[category]</OutArgument>
+                                        <OutArgument x:TypeArguments="x:String" x:Key="out_invalidReason">[invalidReason]</OutArgument>
                                         <InArgument x:TypeArguments="x:String" x:Key="in_maskedTranscript">[maskedTranscript]</InArgument>
                                       </ui:InvokeWorkflowFile.Arguments>
                                     </ui:InvokeWorkflowFile>
@@ -315,6 +329,18 @@
                                       </Assign.To>
                                       <Assign.Value>
                                         <InArgument x:TypeArguments="x:String">["LLM_FAILED: 응답 없음"]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                  </If.Then>
+                                </If>
+                                <If Condition="[failMsg = &quot;&quot; AndAlso Not String.IsNullOrEmpty(invalidReason)]" sap2010:Annotation.AnnotationText="설계서 6단계: AI 출력이 규격(JSON)에 안 맞으면 INVALID_OUTPUT 으로 저장한다. LLM_FAILED 가 이미 있으면 그대로 둔다." DisplayName="If: 출력 규격 오류" sap2010:WorkflowViewState.IdRef="If_901">
+                                  <If.Then>
+                                    <Assign DisplayName="Assign: INVALID_OUTPUT" sap2010:WorkflowViewState.IdRef="Assign_901">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:String">["INVALID_OUTPUT: " + invalidReason]</InArgument>
                                       </Assign.Value>
                                     </Assign>
                                   </If.Then>
@@ -365,14 +391,29 @@
               <InArgument x:TypeArguments="x:Int32" x:Key="in_durationSec">[durationSec]</InArgument>
               <OutArgument x:TypeArguments="x:Int32" x:Key="out_statusCode">[saveStatus]</OutArgument>
               <OutArgument x:TypeArguments="x:String" x:Key="out_respBody">[saveBody]</OutArgument>
+              <OutArgument x:TypeArguments="x:String" x:Key="out_requestBody">[requestBody]</OutArgument>
             </ui:InvokeWorkflowFile.Arguments>
           </ui:InvokeWorkflowFile>
           <ui:LogMessage DisplayName="Log SAVE" sap:VirtualizedContainerService.HintSize="454,175" sap2010:WorkflowViewState.IdRef="LogMessage_5" Message="[&quot;SAVE=&quot; + saveStatus.ToString() + &quot; &quot; + If(saveBody Is Nothing, &quot;(없음)&quot;, If(saveBody.Length &gt; 150, saveBody.Substring(0, 150), saveBody))]" />
-          <ui:InvokeCode ContinueOnError="{x:Null}" Code="Try&#xA;    If p &lt;&gt; &quot;&quot; AndAlso System.IO.File.Exists(p) Then System.IO.File.Delete(p)&#xA;Catch ex As Exception&#xA;End Try" DisplayName="Invoke Code: 임시 음성 삭제" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
-            <ui:InvokeCode.Arguments>
-              <InArgument x:TypeArguments="x:String" x:Key="p">[audioPath]</InArgument>
-            </ui:InvokeCode.Arguments>
-          </ui:InvokeCode>
+          <If Condition="[saveStatus = 0 OrElse saveStatus &gt;= 500]" sap2010:Annotation.AnnotationText="설계서 4.2: 서버 연결 실패·5xx 는 결과 JSON 을 output\unsent 에 보관한다. 다음 실행 때 10_Resend 가 다시 보낸다." DisplayName="If: 저장 결과 확인" sap2010:WorkflowViewState.IdRef="If_902">
+            <If.Then>
+              <Sequence DisplayName="Then: unsent 보관" sap2010:WorkflowViewState.IdRef="Sequence_901">
+                <Sequence DisplayName="unsent 에 요청 본문 보관" sap2010:Annotation.AnnotationText="서버에 못 보낸 결과(요청 본문 JSON)를 output\unsent 에 파일로 저장해 둔다. 다음 실행 때 10_Resend 가 STT 없이 다시 보낸다."><ui:CreateDirectory DisplayName="Create Folder: unsent" sap2010:Annotation.AnnotationText="output\unsent 폴더가 없으면 만든다. 있으면 그대로 둔다." ContinueOnError="[True]" Output="{x:Null}" Path="C:\CallCenter\output\unsent" /><ui:WriteTextFile FileName="{x:Null}" Output="{x:Null}" DisplayName="Write Text File: 요청 본문 보관" sap2010:Annotation.AnnotationText="요청 본문을 UTF-8 로 저장한다. 파일 이름은 call_id.json. 개인정보가 들어 있으므로 시연 후 지운다." Encoding="65001" File="[LocalResource.FromPath(&quot;C:\CallCenter\output\unsent\&quot; + callId + &quot;.json&quot;)]" Text="[requestBody]" /></Sequence>
+                <ui:LogMessage DisplayName="Log UNSENT" sap2010:WorkflowViewState.IdRef="LogMessage_901" Message="[&quot;UNSENT: &quot; + callId + &quot; 서버에 못 보내 output\unsent 에 보관 (상태 코드 &quot; + saveStatus.ToString() + &quot;)&quot;]" />
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <If Condition="[saveStatus = 200 OrElse (saveStatus = 409 AndAlso saveBody IsNot Nothing AndAlso saveBody.Contains(&quot;INVALID_STATE&quot;))]" sap2010:Annotation.AnnotationText="200 은 저장 완료. 409 INVALID_STATE 는 이미 반영된 것이므로 성공으로 본다(설계서 4.2)." DisplayName="If: 저장 성공(이미 반영 포함)" sap2010:WorkflowViewState.IdRef="If_903">
+                <If.Then>
+                  <ui:LogMessage DisplayName="Log SAVED" sap2010:WorkflowViewState.IdRef="LogMessage_902" Message="[callId + If(saveStatus = 409, &quot; 이미 반영됨(INVALID_STATE)으로 보고 성공 처리&quot;, &quot; 저장 완료&quot;)]" />
+                </If.Then>
+                <If.Else>
+                  <ui:LogMessage DisplayName="Log SAVE_REJECTED" Level="Warn" sap2010:WorkflowViewState.IdRef="LogMessage_903" Message="[callId + &quot; 서버가 저장을 거절함 (상태 코드 &quot; + saveStatus.ToString() + &quot;)&quot;]" />
+                </If.Else>
+              </If>
+            </If.Else>
+          </If>
+          <If Condition="[Not String.IsNullOrEmpty(audioPath)]" DisplayName="If: 임시 음성 경로가 있을 때" sap2010:Annotation.AnnotationText="서버에서 받아 온 임시 음성이 있을 때만 지운다. 받기에 실패해 경로가 비었으면 건너뛴다."><If.Then><TryCatch DisplayName="Try Catch: 임시 음성 삭제 보호" sap2010:Annotation.AnnotationText="삭제 중 예외가 나도 통화 처리 결과에는 영향이 없게 한다. 예외 종류만 로그에 남긴다."><TryCatch.Try><ui:DeleteFileX DisplayName="Delete File: 임시 음성" sap2010:Annotation.AnnotationText="결과를 서버에 저장한 뒤 임시 폴더의 음성을 지운다. 음성에는 개인정보가 있어 남기지 않는다." FileResource="{x:Null}" Path="[audioPath]" /></TryCatch.Try><TryCatch.Catches><Catch x:TypeArguments="s:Exception"><ActivityAction x:TypeArguments="s:Exception"><ActivityAction.Argument><DelegateInArgument x:TypeArguments="s:Exception" Name="exception" /></ActivityAction.Argument><ui:LogMessage DisplayName="Log Message: 임시 음성 삭제 실패" sap2010:Annotation.AnnotationText="삭제 실패를 알린다. 예외 메시지에 경로가 들어갈 수 있어 종류만 남긴다." Level="Warn" Message="[&quot;임시 음성 삭제 실패: &quot; + exception.GetType().Name]" /></ActivityAction></Catch></TryCatch.Catches></TryCatch></If.Then></If>
         </Sequence>
       </If.Then>
     </If>
