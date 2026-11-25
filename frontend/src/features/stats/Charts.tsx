@@ -20,7 +20,7 @@ import { useStats, type DateRange } from './useStats'
 
 const FONT = 11 // 차트가 작아서 글자도 조금 작게
 const TOP_RADIUS: [number, number, number, number] = [3, 3, 0, 0] // 막대 위쪽 모서리는 작게만 둥글린다
-const AGENT_COLORS = ['#4198f2', '#fbbd05'] // 통화 건수, 후속조치
+const AGENT_COLORS = ['#1e9eff', '#ffd233'] // 통화 건수, 후속조치
 /** 막대 위로 올렸을 때 보이는 배경 강조(둥근 모서리) */
 const TOOLTIP_CURSOR = { fill: 'var(--hover-bg)', radius: 4 }
 const GRID = { vertical: false } as const
@@ -67,7 +67,11 @@ export default function Charts({ range }: { range: DateRange }) {
   if (!data) return null
 
   const byCategory = data.by_category
-  const byDay = data.by_day.map((d) => ({
+  // 엑셀 요약 시트처럼 통화가 있는 날 중 최근 14일만, 날짜 오름차순으로 보여 준다(설계서_4 요약 시트 규칙)
+  const byDay = [...data.by_day]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-14)
+    .map((d) => ({
     date: d.date.slice(5),
     ...d.by_category,
     total: CATEGORIES.reduce((sum, c) => sum + (d.by_category[c] ?? 0), 0),
@@ -84,7 +88,7 @@ export default function Charts({ range }: { range: DateRange }) {
       </ChartCard>
 
       {/* 2) 일자별 유형 추이: 쌓은 막대, 조각 사이에 얇은 틈 */}
-      <ChartCard title="일자별 유형 추이" hint="색 = 유형, 위 숫자 = 합계" empty={byDay.length === 0} footer={<CategoryLegend />}>
+      <ChartCard title="일자별 유형 추이" hint="최근 14일 · 위 숫자 = 합계" empty={byDay.length === 0} footer={<CategoryLegend />}>
         <ResponsiveContainer>
           <ComposedChart data={byDay} margin={{ top: 18, right: 4, left: 4 }} barCategoryGap="28%">
             <CartesianGrid {...GRID} />
@@ -107,7 +111,7 @@ export default function Charts({ range }: { range: DateRange }) {
             ))}
             {/* 합계를 막대 위에 적기 위한 보이지 않는 선 */}
             <Line dataKey="total" stroke="none" dot={false} activeDot={false} legendType="none" isAnimationActive={false}>
-              <LabelList dataKey="total" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+              <LabelList dataKey="total" position="top" fontSize={FONT} fontWeight={700} formatter={showValue} />
             </Line>
           </ComposedChart>
         </ResponsiveContainer>
@@ -123,10 +127,10 @@ export default function Charts({ range }: { range: DateRange }) {
             <Tooltip cursor={TOOLTIP_CURSOR} content={<ChartTooltip />} />
             <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: FONT }} />
             <Bar dataKey="count" name="통화 건수" fill={AGENT_COLORS[0]} radius={TOP_RADIUS} maxBarSize={22}>
-              <LabelList dataKey="count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+              <LabelList dataKey="count" position="top" fontSize={FONT} fontWeight={700} formatter={showValue} />
             </Bar>
             <Bar dataKey="follow_up_count" name="후속조치" fill={AGENT_COLORS[1]} radius={TOP_RADIUS} maxBarSize={22}>
-              <LabelList dataKey="follow_up_count" position="top" fontSize={FONT} fontWeight={600} formatter={showValue} />
+              <LabelList dataKey="follow_up_count" position="top" fontSize={FONT} fontWeight={700} formatter={showValue} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -147,7 +151,7 @@ export default function Charts({ range }: { range: DateRange }) {
               maxBarSize={14}
               background={{ fill: 'var(--hover-bg)', radius: 3 }}
             >
-              <LabelList dataKey="complaint_count" position="right" fontSize={FONT} fontWeight={600} />
+              <LabelList dataKey="complaint_count" position="right" fontSize={FONT} fontWeight={700} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>

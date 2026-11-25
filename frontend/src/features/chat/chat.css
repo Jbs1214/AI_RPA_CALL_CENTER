@@ -16,12 +16,13 @@
      9. 모바일
    ========================================================================== */
 
+/* 파랑은 위치·선택·핵심 행동(열기·보내기 버튼)에만 쓴다. 나머지는 회색 계열이다. */
+
 /* 1. 변수 ------------------------------------------------------------- */
 .cb-root {
   /* 색: 전부 tokens.css 에서 가져온다 (다크 값도 거기서 바뀐다) */
   --cb-accent-bg: var(--color-accent); /* 보내기 버튼, 내 말풍선 */
   --cb-accent-hover: var(--color-accent-hover);
-  --cb-accent-fg: var(--accent-strong); /* 칩, 제안 버튼의 글자 */
   --cb-accent-weak: var(--accent-weak); /* 옅은 파랑 면 */
   --cb-bg: var(--color-bg); /* 메시지 영역 바탕 */
   --cb-surface: var(--color-surface); /* 창, 상대 말풍선, 카드 */
@@ -31,15 +32,18 @@
   --cb-sub: var(--color-text-sub);
   --cb-muted: var(--color-muted);
   --cb-hover: var(--hover-bg);
+  --cb-on-accent: var(--on-accent); /* 파랑 면 위의 글자 */
 
-  /* 모양: 모서리는 8px 하나. 원형은 아바타·점·열기 버튼만 */
-  --cb-radius: var(--radius);
+  /* 모양: 바깥(창) 12px, 안쪽(버튼, 입력창, 말풍선, 카드) 8px, 뱃지 6px. 원형은 아바타·점·열기 버튼만 */
+  --cb-radius: var(--radius); /* 12px */
+  --cb-radius-md: var(--radius-md); /* 8px */
+  --cb-radius-sm: var(--radius-sm); /* 6px */
   --cb-gap: 12px;
   --cb-edge: 24px; /* 화면 가장자리와의 거리 */
-  --cb-ease: 0.15s;
+  --cb-ease: var(--motion); /* 200ms ease */
 
   font-family: var(--font-ui);
-  letter-spacing: -0.1px;
+  letter-spacing: -0.01em;
 }
 
 /* 키보드로 움직일 때 2px 바깥선을 항상 보이게 */
@@ -62,7 +66,7 @@
   border: 0;
   border-radius: 50%;
   background: var(--cb-accent-bg);
-  color: #fff;
+  color: var(--cb-on-accent);
   cursor: pointer;
   box-shadow: var(--shadow-lift); /* 떠 있는 버튼이라 그림자 허용 */
   transition: background var(--cb-ease), opacity var(--cb-ease);
@@ -160,7 +164,7 @@
   width: 32px;
   height: 32px;
   border: 0;
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: transparent;
   color: var(--cb-sub);
   cursor: pointer;
@@ -227,7 +231,7 @@
 .cb-bubble {
   padding: 8px 12px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-surface);
   color: var(--cb-text);
   font-size: 14px;
@@ -237,8 +241,8 @@
 }
 .cb-row.me .cb-bubble {
   border-color: transparent;
-  background: var(--cb-accent-bg);
-  color: #fff;
+  background: var(--cb-text); /* 라이트: 검정, 다크: 흰색 */
+  color: var(--cb-surface);
 }
 .cb-bubble.error {
   border-color: transparent;
@@ -286,7 +290,7 @@
 .cb-chip {
   padding: 6px 10px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-surface);
   color: var(--cb-sub);
   font-family: inherit;
@@ -341,7 +345,7 @@
   gap: 8px;
   padding: 3px 3px 3px 12px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-surface);
   transition: border-color var(--cb-ease);
 }
@@ -370,9 +374,9 @@
   width: 32px;
   height: 32px;
   border: 0;
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-accent-bg);
-  color: #fff;
+  color: var(--cb-on-accent);
   cursor: pointer;
   transition: background var(--cb-ease);
 }
@@ -410,15 +414,15 @@
 .cb-tag {
   display: inline-block;
   padding: 0 8px;
-  border-radius: var(--cb-radius);
-  background: var(--cb-accent-weak);
-  color: var(--cb-accent-fg);
+  border-radius: var(--cb-radius-sm);
+  background: var(--cb-elevated);
+  color: var(--cb-sub);
   font-size: 12px;
   line-height: 20px;
 }
 .cb-tag.ai {
-  background: var(--cb-elevated);
-  color: var(--cb-sub);
+  background: var(--cb-accent-weak);
+  color: var(--cb-text);
 }
 
 /* 통화 카드 */
@@ -426,7 +430,7 @@
 .cb-stat {
   padding: 8px 12px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-surface);
 }
 .cb-card-top {
@@ -446,9 +450,8 @@
 }
 .cb-card-link {
   margin-top: 4px;
-  color: var(--cb-accent-fg);
+  color: var(--cb-sub);
   font-size: 12px;
-  font-weight: 500;
   text-align: right;
 }
 .cb-card-id {
@@ -463,7 +466,7 @@
   align-items: center;
   gap: 4px;
   padding: 0 8px;
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-sm);
   font-size: 12px;
   line-height: 20px;
 }
@@ -502,7 +505,6 @@
   margin-bottom: 4px;
   color: var(--cb-sub);
   font-size: 12px;
-  font-weight: 500;
 }
 .cb-stat-row {
   display: flex;
@@ -545,12 +547,12 @@
   min-height: 32px;
   padding: 6px 12px;
   border: 1px solid var(--cb-line);
-  border-radius: var(--cb-radius);
+  border-radius: var(--cb-radius-md);
   background: var(--cb-surface);
-  color: var(--cb-accent-fg);
+  color: var(--cb-text);
   font-family: inherit;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: background var(--cb-ease);
 }

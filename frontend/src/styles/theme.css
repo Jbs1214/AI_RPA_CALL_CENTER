@@ -14,7 +14,7 @@ body {
   font-family: var(--font-ui);
   font-size: 14px;
   line-height: 22px;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.14px;
   font-variant-numeric: tabular-nums; /* 바뀌는 숫자가 흔들리지 않게 */
 }
 h1,
@@ -86,7 +86,7 @@ h3 {
 .chart-tooltip__value {
   margin-left: 12px;
   font-family: var(--font-num);
-  font-weight: 500;
+  font-weight: 400;
 }
 .chart-tooltip__total {
   margin-top: 6px;
@@ -128,4 +128,12 @@ h3 {
 }
 .text-danger {
   color: var(--color-danger);
+}
+
+/* 라이트·다크를 바꾸는 동안에는 전환 효과를 끈다(요소마다 색이 따로 바뀌어 깜빡이는 것 방지) */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
 }

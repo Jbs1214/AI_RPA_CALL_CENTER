@@ -134,8 +134,8 @@
 "키는 category, customer_question, action_taken, follow_up_needed, customer_name 다섯 개입니다." + vbLf +
 "category는 질의, 불만, 건의, 교육 내용, 기타 문의 중 정확히 하나만 씁니다. 두 개 이상 쓰지 않습니다." + vbLf +
 "customer_question은 고객의 문의나 불만 요지를 150자 내외 한 문장으로, 줄바꿈 없이 씁니다." + vbLf +
-"action_taken은 상담원이 해 준 조치를 150자 내외로, 줄바꿈 없이 씁니다. 조치가 없으면 빈 문자열입니다." + vbLf +
-"follow_up_needed는 후속 조치가 필요하면 true, 아니면 false입니다. 따옴표 없는 불린값으로 씁니다." + vbLf +
+"action_taken은 상담원이 해 준 조치를 150자 이내로, 줄바꿈 없이 씁니다. 조치가 없으면 빈 문자열입니다. follow_up_needed가 true이면 action_taken 맨 끝에 공백 하나와 [후속] 무엇을, 언제까지 형식의 문장을 40자 안팎으로 덧붙입니다. 대화에 기한이 없으면 언제까지 자리에 기한 미정이라고 쓰고, 대화에 없는 내용은 지어내지 않습니다. follow_up_needed가 false이면 [후속]을 붙이지 않습니다." + vbLf +
+"follow_up_needed는 담당자가 나중에 하겠다고 한 일(회신, 확인, 발송, 처리)이 통화가 끝난 뒤에도 남아 있으면 true, 통화 중에 모두 끝났으면 false입니다. 따옴표 없는 불린값으로 씁니다." + vbLf +
 "customer_name은 성만 남기고 나머지는 ○로 쓰고(예: 김○○), 이름이 없으면 null입니다." + vbLf +
 "[대화]" + vbLf + in_maskedTranscript]</InArgument>
       </Assign.Value>

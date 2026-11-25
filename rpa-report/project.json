@@ -1,7 +1,7 @@
 {
   "name": "CallCenter_RPA_Report",
   "projectId": "ef38e67d-6ae6-47a4-b0c8-6ddf49ee2508",
-  "description": "서버의 완료 통화 목록으로 4시트 엑셀 대시보드를 다시 만든다",
+  "description": "서버의 완료 통화 목록으로 3시트 엑셀 대시보드를 다시 만든다",
   "main": "Main.xaml",
   "dependencies": {
     "UiPath.System.Activities": "[26.10.0]"
@@ -10,7 +10,7 @@
   "entitiesStores": [],
   "schemaVersion": "4.1",
   "studioVersion": "26.10.0.0",
-  "projectVersion": "1.0.7",
+  "projectVersion": "1.0.8",
   "runtimeOptions": {
     "autoDispose": false,
     "netFrameworkLazyLoading": false,

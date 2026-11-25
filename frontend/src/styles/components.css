@@ -5,7 +5,7 @@
      1. 패널 (.panel)
      2. 뱃지와 점 (.badge, .dot), 빈 상태 (.empty)
      3. 지표 칸 (.kpi-card)
-     4. 업로드 영역 (.upload)
+     4. 업로드 띠 (.upload)
      5. 모바일 통화 카드 목록 (.call-card)
      6. 표 아래 쪽 번호 (.ant-pagination)
    영역은 그림자 없이 1px 보더와 배경 명도 차이로만 나눈다.
@@ -23,7 +23,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px var(--pad);
+  padding: 8px var(--pad);
   border-bottom: 1px solid var(--color-line);
 }
 .panel__title {
@@ -35,6 +35,15 @@
 }
 .panel__body {
   padding: var(--pad);
+}
+/* 제목 줄 오른쪽 링크("전체 보기") */
+.panel__head a {
+  color: var(--color-accent);
+  font-size: 13px;
+  text-decoration: none;
+}
+.panel__head a:hover {
+  text-decoration: underline;
 }
 
 /* 2. 뱃지와 점 ---------------------------------------------------------------- */
@@ -65,7 +74,7 @@
   background: var(--color-elevated);
   color: var(--color-text-sub);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
 }
 .badge--ok {
@@ -97,6 +106,7 @@
   background: transparent;
   color: var(--color-text-sub);
   cursor: pointer;
+  transition: background-color var(--motion), color var(--motion);
 }
 .icon-btn:hover {
   background: var(--hover-bg);
@@ -110,11 +120,11 @@ button:focus-visible {
 
 /* 현재 쪽 번호는 채운 원색이 아니라 옅은 파랑 면 */
 .ant-pagination .ant-pagination-item-active {
-  border-color: transparent;
-  background: var(--accent-weak);
+  border-color: var(--color-accent);
+  background: var(--color-accent);
 }
 .ant-pagination .ant-pagination-item-active a {
-  color: var(--accent-strong);
+  color: var(--on-accent);
 }
 
 /* 빈 상태: 빈 박스 대신 선 아이콘과 한 줄 안내 */
@@ -138,7 +148,7 @@ button:focus-visible {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  padding: 12px var(--pad);
+  padding: 10px var(--pad);
   background: var(--color-surface);
 }
 .kpi-card__label {
@@ -157,6 +167,18 @@ button:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.kpi-card__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8px;
+  min-width: 0;
+}
+.kpi-card__sub {
+  color: var(--color-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
 .kpi-card__value {
   overflow: hidden;
   color: var(--color-text);
@@ -168,7 +190,7 @@ button:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* 수치 색은 의미가 있을 때만(주의, 오류) */
+/* 수치 색은 의미가 있을 때만: 사람이 처리해야 하는 것(danger)을 빨갛게 */
 .kpi-card--warn .kpi-card__value {
   color: var(--wait-fg);
 }
@@ -182,38 +204,101 @@ button:focus-visible {
   padding: 8px var(--pad);
   border-top: 1px solid var(--color-line);
 }
+@media (min-width: 1200px) {
+  .kpi-tags {
+    position: absolute;
+    top: 10px;
+    right: var(--pad);
+    padding: 0;
+    border-top: 0;
+  }
+}
 @media (max-width: 767px) {
   .kpi-card__value {
     font-size: 20px;
   }
 }
-
-/* 4. 업로드 영역: 아이콘과 글자를 가로로 놓아 높이를 줄인다 -------------------- */
-.upload .ant-upload.ant-upload-drag {
-  background: var(--upload-bg);
+/* 4. 업로드 띠: 옅은 색 면 위에 왼쪽 글자·버튼, 오른쪽 끌어놓기 칸 --------------------- */
+.upload {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  align-items: center;
+  gap: 12px 28px;
+  padding: 12px 24px;
+  border: 1px solid var(--band-line);
+  border-radius: var(--radius);
+  background: var(--band-bg);
 }
-.upload .ant-upload-drag .ant-upload-btn {
-  padding: 12px 16px;
+.upload__intro {
+  min-width: 0;
 }
-.upload .ant-upload-drag-container {
+.upload__title {
+  margin: 0 0 4px;
+  color: var(--color-text);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 28px;
+}
+.upload__desc {
+  margin: 0 0 12px;
+  color: var(--color-text-sub);
+  font-size: 14px;
+  cursor: help;
+}
+.upload__buttons {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 8px;
+}
+.upload .ant-upload-wrapper {
+  display: block;
+}
+.upload__buttons .ant-upload-wrapper {
+  display: inline-block;
+}
+/* 끌어놓기 칸: 흰 면 위의 점선 */
+.upload .upload__drop .ant-upload.ant-upload-drag {
+  border-color: var(--band-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.upload .upload__drop .ant-upload-btn {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 4px 16px;
+  gap: 12px;
+  padding: 12px 16px;
 }
-.upload .ant-upload-drag-icon {
+.upload .upload__drop .ant-upload-drag-icon {
   margin: 0 !important;
-  font-size: 32px;
+  font-size: 28px;
 }
-.upload .ant-upload-text,
-.upload .ant-upload-hint {
+.upload .upload__drop .ant-upload-text {
   margin: 0 !important;
+  font-size: 14px;
 }
-.upload__copy {
-  text-align: left;
+.upload > .upload-queue,
+.upload__alert {
+  grid-column: 1 / -1;
 }
-
+.upload-meta {
+  display: grid;
+  gap: 8px;
+  width: 240px;
+}
+.upload-meta__note {
+  margin: 0;
+  color: var(--color-text-sub);
+  font-size: 12px;
+}
+@media (max-width: 999px) {
+  .upload {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+}
 /* 올리기 전에 담아 둔 파일 목록 */
 .upload-queue {
   display: grid;
@@ -249,18 +334,6 @@ button:focus-visible {
 .upload-queue__row .ant-tag {
   flex: none;
   margin: 0;
-}
-/* 업로드 시작 / 초기화 버튼 줄 */
-.upload-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-@media (max-width: 767px) {
-  .upload__copy {
-    text-align: center;
-  }
 }
 
 /* 5. 모바일 통화 카드 목록 (.call-card) -------------------------------------- */
@@ -344,4 +417,15 @@ button:focus-visible {
 /* 6. 쪽 번호는 가운데 정렬 ---------------------------------------------------- */
 .ant-table-wrapper .ant-pagination {
   justify-content: center;
+}
+
+/* 패널 안 여백을 줄여 한눈에 보이게 한다 */
+.page .panel__body {
+  padding: 12px var(--pad);
+}
+
+/* 표 행을 조금 낮춘다(한눈에 보이게) */
+.ant-table-small .ant-table-tbody > tr > td {
+  padding-top: 5px;
+  padding-bottom: 5px;
 }

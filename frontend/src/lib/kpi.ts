@@ -23,5 +23,8 @@ export function computeKpi(stats: Stats) {
     complaint,
     complaintRatio,
     topCategory: stats.analyzed === 0 ? '-' : top,
+    topCount: Math.max(topCount, 0),
+    /** 분석된 통화 중 n건의 비율(정수 반올림). 분석된 통화가 0이면 0 */
+    percentOf: (n: number) => (stats.analyzed === 0 ? 0 : Math.round((n / stats.analyzed) * 100)),
   }
 }

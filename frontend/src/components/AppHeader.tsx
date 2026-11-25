@@ -1,32 +1,36 @@
-import { useQuery } from '@tanstack/react-query'
-import { fetchHealth } from '../api/calls'
+﻿import { NavLink } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 
-/** 위쪽 얇은 헤더: 현재 위치와 서버 상태. 상태는 GET /health 의 실제 응답이다. */
-export default function AppHeader() {
-  const { data, isError, isLoading } = useQuery({
-    queryKey: ['health'],
-    queryFn: fetchHealth,
-    staleTime: 30_000,
-    refetchInterval: 30_000,
-    refetchIntervalInBackground: false,
-  })
-  const ok = data?.status === 'ok'
-  const tone = isLoading ? 'wait' : ok ? 'ok' : 'err'
-  const text = isLoading ? '서버 확인 중' : ok ? '서버 정상' : isError ? '서버 연결 안 됨' : '서버 점검 필요'
+interface NavItem {
+  to: string
+  label: string
+  /** true 이면 주소가 정확히 같을 때만 현재 메뉴로 친다 */
+  end?: boolean
+}
 
+const NAV: NavItem[] = [
+  { to: '/', label: '대시보드', end: true },
+  { to: '/stats', label: '통계' },
+]
+
+/**
+ * 위쪽 메뉴 줄: 왼쪽 로고(AIRPA), 가운데 왼쪽에 메뉴, 오른쪽 끝에 라이트/다크 버튼.
+ * 안쪽은 본문과 같은 폭에 맞춘다. 현재 메뉴는 글자가 진해지고 아래에 파란 막대가 붙는다.
+ */
+export default function AppHeader() {
   return (
-    <header className="topbar">
-      <div className="topbar__path">
-        <span>대시보드</span>
-        <span className="topbar__sep">/</span>
-        <b>통화 분석</b>
-      </div>
-      <div className="topbar__tools">
-        <span className={`topbar__status topbar__status--${tone}`}>
-          <i className="dot" />
-          {text}
-        </span>
+    <header className="topnav">
+      <div className="topnav__inner">
+        <NavLink to="/" className="topnav__logo" aria-label="AIRPA 대시보드로 이동">
+          <span className="topnav__logo-ai">AI</span>RPA
+        </NavLink>
+        <nav className="topnav__menu" aria-label="화면 이동">
+          {NAV.map(({ to, label, end }) => (
+            <NavLink key={to} to={to} end={end} className="topnav__link">
+              {label}
+            </NavLink>
+          ))}
+        </nav>
         <ThemeToggle />
       </div>
     </header>

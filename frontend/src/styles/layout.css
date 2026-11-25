@@ -2,11 +2,12 @@
    화면 배치 (레이아웃) 스타일 — 규칙은 frontend/DESIGN.md 5장
 
    차례
-     1. 틀 (사이드바 + 헤더 + 본문)
-     2. 본문 두 칸 (왼쪽 넓게, 오른쪽 좁게)
+     1. 틀 (위쪽 메뉴 줄 + 본문 페이지)
+     2. 페이지 머리 (.page-head)
      3. 지표 칸 (.kpi-grid)
      4. 차트 (.chart-grid, .chart-card, .donut)
-     5. 필터 줄 (.toolbar)
+     5. 통화 상세 옆 패널 (.detail)
+     6. 필터 줄 (.toolbar)
    값은 tokens.css 의 변수를 쓴다.
    ========================================================================== */
 
@@ -14,182 +15,141 @@
 html {
   scroll-behavior: smooth;
 }
-.shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-  min-height: 100vh;
-}
-.shell__main {
-  min-width: 0;
-}
 
-/* 사이드바: 왼쪽에 붙어 있고 스크롤해도 따라온다 */
-.sidebar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: 100vh;
-  box-sizing: border-box;
-  padding: 12px;
-  border-right: 1px solid var(--color-line);
-  background: var(--color-surface);
-}
-.sidebar__brand {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px 8px 8px;
-}
-.sidebar__logo {
-  color: var(--color-text);
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-.sidebar__name {
-  color: var(--color-muted);
-  font-size: 11px;
-}
-.sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.sidebar__link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: var(--radius-md);
-  color: var(--color-text-sub);
-  font-size: 13px;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.sidebar__link:hover {
-  background: var(--hover-bg);
-  color: var(--color-text);
-}
-
-/* 헤더: 48px, 아래 1px 선 */
-.topbar {
+/* 위쪽 메뉴 줄: 사이트 머리처럼 흰 면 + 아래 선. 안쪽은 본문과 같은 폭·여백에 맞춘다 */
+.topnav {
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  height: var(--header-h);
-  padding: 0 var(--page-gutter);
   border-bottom: 1px solid var(--color-line);
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
-.topbar__path {
+.topnav__inner {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-text-sub);
-  font-size: 13px;
-}
-.topbar__path b {
-  color: var(--color-text);
-  font-weight: 700;
-}
-.topbar__sep {
-  color: var(--color-muted);
-}
-.topbar__tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.topbar__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-num);
-  font-size: 12px;
-}
-.topbar__status--ok {
-  color: var(--state-ok);
-}
-.topbar__status--wait {
-  color: var(--wait-fg);
-}
-.topbar__status--err {
-  color: var(--err-fg);
-}
-
-/* 2. 본문 두 칸 --------------------------------------------------------------- */
-.workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* 약 2 : 1 */
-  align-items: start;
-  gap: var(--gap);
+  align-items: stretch;
   box-sizing: border-box;
   width: 100%;
   max-width: var(--page-max);
+  height: 56px;
   margin: 0 auto;
-  padding: var(--gap) var(--page-gutter) calc(var(--gap) * 4); /* 아래는 챗봇 버튼에 안 가리게 */
+  padding: 0 var(--page-gutter);
 }
-.workspace__main,
-.workspace__side {
+/* 로고: 굵고 촘촘한 글자, AI 두 글자만 파랑 */
+.topnav__logo {
+  display: flex;
+  align-items: center;
+  margin-right: 36px;
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  text-decoration: none;
+}
+.topnav__logo-ai {
+  color: var(--color-accent);
+}
+.topnav__menu {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex: 1;
+}
+/* 메뉴: 현재 메뉴는 글자가 진해지고 줄 아래에 파란 막대 */
+.topnav__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  color: var(--color-muted);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--motion);
+}
+.topnav__link:hover {
+  color: var(--color-text);
+}
+.topnav__link.active {
+  color: var(--color-text);
+}
+.topnav__link.active::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  bottom: -1px;
+  left: 14px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--color-accent);
+}
+.topnav .icon-btn {
+  align-self: center;
+}
+/* 본문 페이지: 가운데 정렬 + 최대 폭, 영역을 세로로 쌓는다 */
+.page {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* 안의 표가 넓어도 화면 밖으로 밀지 않는다 */
-  gap: var(--gap);
+  align-content: start;
+  gap: var(--gap-sm);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max);
   min-width: 0;
+  margin: 0 auto;
+  padding: 8px var(--page-gutter) 8px; /* 한 화면에 들어오게 여백을 줄인다 */
 }
-.panel,
-#charts {
-  scroll-margin-top: calc(var(--header-h) + 8px);
-}
-
-@media (max-width: 1199px) {
-  .workspace {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* 좁은 화면: 사이드바가 위쪽 가로 줄이 된다(하단 탭바는 챗봇 버튼과 겹쳐 쓰지 않는다) */
 @media (max-width: 767px) {
-  .shell {
-    grid-template-columns: minmax(0, 1fr);
+  .page {
+    padding-top: 16px;
   }
-  .sidebar {
-    position: static;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    height: auto;
-    padding: 6px 12px;
-    border-right: 0;
-    border-bottom: 1px solid var(--color-line);
-    overflow-x: auto;
-  }
-  .sidebar__brand {
-    flex: none;
-    padding: 0 8px 0 0;
-  }
-  .sidebar__name {
-    display: none;
-  }
-  .sidebar__nav {
-    flex-direction: row;
-  }
-  .topbar {
-    position: static;
-  }
+}
+
+/* 2. 페이지 머리 -------------------------------------------------------------- */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.page-head__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+}
+.page-head__desc {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+.page-head__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+  color: var(--color-text-sub);
+  font-size: 13px;
+  text-decoration: none;
+}
+.page-head__back:hover {
+  color: var(--color-text);
 }
 
 /* 3. 지표 칸 ----------------------------------------------------------------- */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1px; /* 칸 사이 1px 선은 바탕색이 비쳐 만든다 */
   background: var(--color-line);
+}
+@media (max-width: 1199px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 @media (max-width: 479px) {
   .kpi-grid {
@@ -200,20 +160,22 @@ html {
 /* 4. 차트 -------------------------------------------------------------------- */
 .chart-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--gap-sm);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  --chart-h: 260px;
 }
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (max-width: 767px) {
   .chart-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    --chart-h: 220px;
   }
 }
 
 .chart-card__hint {
   color: var(--color-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
-/* 높이는 ChartCard 의 height 값이 --chart-h 로 들어온다 */
+/* 높이는 .chart-grid 의 --chart-h (ChartCard 의 height 값이 있으면 그 값) */
 .chart-card__body {
   display: flex;
   flex-direction: column;
@@ -284,7 +246,7 @@ html {
 }
 .donut__legend b {
   font-family: var(--font-num);
-  font-weight: 500;
+  font-weight: 700;
 }
 .donut__pct {
   width: 32px;
@@ -311,12 +273,22 @@ html {
   border-radius: 2px;
 }
 
-/* 5. 필터 줄 ----------------------------------------------------------------- */
+/* 5. 통화 상세(옆 패널): 항목을 위에서 아래로 쌓는다 ------------------------------ */
+.detail__title {
+  margin: 20px 0 8px;
+  color: var(--color-text-sub);
+  font-size: 13px;
+  font-weight: 700;
+}
+.detail__title:first-child {
+  margin-top: 0;
+}
+/* 6. 필터 줄 ----------------------------------------------------------------- */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 @media (max-width: 767px) {
   /* 모바일에서는 입력칸이 한 줄을 꽉 채운다 */
@@ -326,5 +298,29 @@ html {
   .toolbar .ant-picker,
   .toolbar .ant-input-search {
     flex-basis: 100%;
+  }
+}
+
+/* 필터 줄: 검색칸이 남는 폭을 다 쓰고, 나머지는 제 크기로 */
+.toolbar__search {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+.toolbar .ant-picker-range {
+  width: 250px;
+}
+/* 상세 조건 팝오버: 2열 */
+.toolbar-detail {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  gap: 8px;
+}
+@media (max-width: 767px) {
+  .toolbar__search {
+    flex-basis: 100%;
+  }
+  .toolbar-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(300px, 80vw);
   }
 }

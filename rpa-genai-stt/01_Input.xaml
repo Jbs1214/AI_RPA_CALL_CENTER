@@ -409,7 +409,7 @@
                                 <OutArgument x:TypeArguments="x:String">[failMsg]</OutArgument>
                               </Assign.To>
                               <Assign.Value>
-                                <InArgument x:TypeArguments="x:String">[If(sttStatusCode = 408 OrElse sttStatusCode = 504, "STT_TIMEOUT", "STT_FAILED") + ": HTTP " + sttStatusCode.ToString()]</InArgument>
+                                <InArgument x:TypeArguments="x:String">[If(sttStatusCode = 0, "STT_FAILED: CLOVA 연결 실패", If(sttStatusCode = 408 OrElse sttStatusCode = 504, "STT_TIMEOUT", "STT_FAILED") + ": HTTP " + sttStatusCode.ToString())]</InArgument>
                               </Assign.Value>
                             </Assign>
                           </If.Then>
