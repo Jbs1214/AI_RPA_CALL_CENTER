@@ -39,6 +39,9 @@
       "ignoredFiles": [
         "output\\콜센터_엑셀_최신.xlsx",
         "tools\\build_template.py",
+        "tools\\build_template_v5.ps1",
+        "tools\\build_template_v5_labels.json",
+        "templates\\콜센터_엑셀_템플릿_v4.xlsx",
         "HANDOFF.md",
         "CLAUDE.md",
         "README.md",
