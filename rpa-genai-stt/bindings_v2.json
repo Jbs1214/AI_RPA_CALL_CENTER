@@ -85,11 +85,11 @@
       "activityDisplayName": "Content Generation",
       "activityId": "ConnectorActivity_1",
       "resource": "Connection",
-      "key": "e99a4c08-f6d0-4ae7-a483-9cb53a7c5adf",
-      "id": "Connectione99a4c08-f6d0-4ae7-a483-9cb53a7c5adfe99a4c08-f6d0-4ae7-a483-9cb53a7c5adfFalse",
+      "key": "e0a8f021-7fba-4375-adfc-15ef411490f7",
+      "id": "Connectione0a8f021-7fba-4375-adfc-15ef411490f7e0a8f021-7fba-4375-adfc-15ef411490f7False",
       "value": {
         "ConnectionId": {
-          "defaultValue": "e99a4c08-f6d0-4ae7-a483-9cb53a7c5adf",
+          "defaultValue": "e0a8f021-7fba-4375-adfc-15ef411490f7",
           "isExpression": false
         }
       },
