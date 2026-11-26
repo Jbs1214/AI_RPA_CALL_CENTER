@@ -116,6 +116,9 @@
       <Variable x:TypeArguments="x:String" Name="str_errorMessage" />
       <Variable x:TypeArguments="x:String" Name="str_body" />
       <Variable x:TypeArguments="x:Boolean" Name="bool_aiParseFailed" />
+      <Variable x:TypeArguments="x:Int32" Name="int_charCount" />
+      <Variable x:TypeArguments="x:String" Name="str_qualityReason" />
+      <Variable x:TypeArguments="x:Double" Default="3" Name="dbl_minCharsPerSec" />
       <Variable x:TypeArguments="uwahm:HttpResponseSummary" Name="httpRes" />
     </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
@@ -328,12 +331,35 @@
                 </Catch>
               </TryCatch.Catches>
             </TryCatch>
-            <Assign sap2010:Annotation.AnnotationText="확신도가 0.7 미만이거나 AI 응답 파싱에 실패했으면 사람이 검토해야 한다." DisplayName="Assign: needs_review" sap2010:WorkflowViewState.IdRef="Assign_20">
+            <Sequence sap2010:Annotation.AnnotationText="STT 결과가 온전한지 본다. 신뢰도가 높아도 말이 빠질 수 있어(잡음 음성 0.82, 영어 음성 0.91) 따로 검사한다.&#xA;고객이나 상담원 발화가 한 줄도 없거나, 통화 길이에 비해 글자가 적으면 사유를 남기고 검토 필요로 보낸다.&#xA;기준 3.0자/초: 11/25 시험에서 정상 통화 3.76~5.11, 말이 빠진 통화 0.08~2.04." DisplayName="음성 인식 품질 검사" sap2010:WorkflowViewState.IdRef="Sequence_950">
+              <Assign sap2010:Annotation.AnnotationText="화자 표시, 공백, 기호를 뺀 글자 수." DisplayName="Assign: 글자 수" sap2010:WorkflowViewState.IdRef="Assign_950">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Int32">[int_charCount]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Int32">[System.Text.RegularExpressions.Regex.Replace(If(in_transcript, ""), "\[(상담원|고객)\]|[^가-힣0-9A-Za-z]", "").Length]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign sap2010:Annotation.AnnotationText="걸린 사유를 이어 붙인다. 문제가 없으면 빈 값." DisplayName="Assign: 품질 사유" sap2010:WorkflowViewState.IdRef="Assign_951">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[str_qualityReason]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[(If(If(in_transcript, "").Contains("[고객]"), "", "고객 발화 없음, ") + If(If(in_transcript, "").Contains("[상담원]"), "", "상담원 발화 없음, ") + If(in_durationSec &gt; 0 AndAlso int_charCount / in_durationSec &lt; dbl_minCharsPerSec, "발화량 부족, ", "")).TrimEnd(" "c, ","c)]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <If sap2010:Annotation.AnnotationText="걸린 사유가 있을 때만 경고를 남긴다. 대화 내용은 쓰지 않는다." Condition="[str_qualityReason &lt;&gt; &quot;&quot;]" DisplayName="If: 품질 문제가 있는가" sap2010:WorkflowViewState.IdRef="If_950">
+                <If.Then>
+                  <ui:LogMessage DisplayName="Log Message: 품질 검사" sap2010:WorkflowViewState.IdRef="LogMessage_950" Level="Warn" Message="[&quot;QUALITY: &quot; + in_callId + &quot; &quot; + str_qualityReason + &quot; (글자 &quot; + int_charCount.ToString() + &quot;, 길이 &quot; + in_durationSec.ToString() + &quot;초)&quot;]" />
+                </If.Then>
+              </If>
+            </Sequence>
+            <Assign sap2010:Annotation.AnnotationText="확신도가 0.7 미만이거나 AI 응답 파싱에 실패했거나 품질 검사에 걸렸으면 사람이 검토해야 한다." DisplayName="Assign: needs_review" sap2010:WorkflowViewState.IdRef="Assign_20">
               <Assign.To>
                 <OutArgument x:TypeArguments="x:Object">[dict_body("needs_review")]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="x:Object">[in_confidence &lt; 0.7 OrElse bool_aiParseFailed]</InArgument>
+                <InArgument x:TypeArguments="x:Object">[in_confidence &lt; 0.7 OrElse bool_aiParseFailed OrElse str_qualityReason &lt;&gt; ""]</InArgument>
               </Assign.Value>
             </Assign>
             <If sap2010:Annotation.AnnotationText="이름이 없으면 null, 있으면 이름을 분석 JSON 에 넣는다." Condition="[in_custName = &quot;&quot;]" DisplayName="If: 고객 이름이 비었는가" sap2010:WorkflowViewState.IdRef="If_3">
